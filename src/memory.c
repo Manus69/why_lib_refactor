@@ -1,8 +1,6 @@
 #include "why.h"
 #include "macro.h"
-
-#include <stdlib.h>
-#include <string.h>
+#include "declarations.h"
 
 void* mem_expand(void* memory, Uint size, Uint extra_size)
 {

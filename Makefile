@@ -3,9 +3,9 @@ lib_header = why.h
 driver_name = test
 
 cc = gcc
-flags = -Wall -Wextra -g -fsanitize=address
+flags = -Wall -Wextra -g #-fsanitize=address
 driver_flags = $(flags)
-release_flags = -Wall -Wextra -O2 -flto
+release_flags = -Wall -Wextra -O3 -flto
 release_driver_flags = $(release_flags)
 
 src_dir = src/

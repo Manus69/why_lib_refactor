@@ -1,6 +1,5 @@
-#include <stdlib.h>
-
 #include "why.h"
+#include "declarations.h"
 #include "array.h"
 #include "rational.h"
 
