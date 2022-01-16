@@ -1,0 +1,5 @@
+obj/*
+*.a
+test
+*.txt
+.vscode
