@@ -1,78 +1,23 @@
-#include "block.h"
 #include "declarations.h"
-#include "rational.h"
-#include "macro.h"
+#include "block.h"
 
-static void _init(Block* block, void* memory, Uint item_size, Uint n_items, 
-                    void (*get)(void* , const Block* , Uint ),
-                    void (*swap)(Block* , Uint , Uint ))
-{
-    block->memory = memory;
-    block->item_size = item_size;
-    block->n_items = n_items;
-    block->get = get;
-    block->swap = swap;
-}
+#define BLOCK_MIN_SIZE (1)
 
-static Int _create_mem(Block* block, Uint n_items, Uint item_size, 
-                    void (*get)(void* , const Block* , Uint ),
-                    void (*swap)(Block* , Uint , Uint ))
-{
-    void* memory;
-
-    memory = malloc(n_items * item_size);
-
-    if (!memory)
-        return WHY_ERROR;
-    
-    _init(block, memory, item_size, n_items, get, swap);
-
-    return WHY_OK;
-}
-
-Int BlockInitByte(Block* block, Uint n_items)
-{
-    return _create_mem(block, n_items, sizeof(Byte), BlockGetByteWRAP, BlockSwapByte);
-}
-
-Int BlockInitInt(Block* block, Uint n_items)
-{
-    return _create_mem(block, n_items, sizeof(Int), BlockGetIntWRAP, BlockSwapInt);
-}
-
-Int BlockInitUint(Block* block, Uint n_items)
-{
-    return _create_mem(block, n_items, sizeof(Uint), BlockGetUintWRAP, BlockSwapUint);
-}
-
-Int BlockInitFloat(Block* block, Uint n_items)
-{
-    return _create_mem(block, n_items, sizeof(Float), BlockGetFloatWRAP, BlockSwapFloat);
-}
-
-Int BlockInitRational(Block* block, Uint n_items)
-{
-    return _create_mem(block, n_items, sizeof(Rational), BlockGetRationalWRAP, BlockSwapRational);
-}
-
-Int BlockInitComplex(Block* block, Uint n_items)
-{
-    return _create_mem(block, n_items, sizeof(Rational), BlockGetComplexWRAP, BlockSwapComplex);
-}
-
-Int BlockInitPtr(Block* block, Uint n_items)
-{
-    return _create_mem(block, n_items, sizeof(void *), BlockGetPtrWRAP, BlockSwapPtr);
-}
-
-static Block* _create(Uint n_items, Int (*init)(Block* , Uint))
+static Block* _create(Uint n_items, const TypeInterface* interface)
 {
     Block* block;
 
+    n_items = (n_items < BLOCK_MIN_SIZE) ? BLOCK_MIN_SIZE : n_items;
+
     if ((block = malloc(sizeof(*block))))
     {
-        if (init(block, n_items) != WHY_ERROR)
+        if ((block->memory = malloc(n_items * interface->size)))
+        {
+            block->n_items = n_items;
+            block->interface = (TypeInterface *)interface;
+
             return block;
+        }
         free(block);
     }
 
@@ -81,42 +26,77 @@ static Block* _create(Uint n_items, Int (*init)(Block* , Uint))
 
 Block* BlockCreateByte(Uint n_items)
 {
-    return _create(n_items, BlockInitByte);
+    return _create(n_items, &ByteInterface);
 }
 
 Block* BlockCreateInt(Uint n_items)
 {
-    return _create(n_items, BlockInitInt);
+    return _create(n_items, &IntInterface);
 }
 
 Block* BlockCreateUint(Uint n_items)
 {
-    return _create(n_items, BlockInitUint);
+    return _create(n_items, &UintInterface);
 }
 
 Block* BlockCreateFloat(Uint n_items)
 {
-    return _create(n_items, BlockInitFloat);
+    return _create(n_items, &FloatInterface);
 }
 
 Block* BlockCreateRational(Uint n_items)
 {
-    return _create(n_items, BlockInitRational);
+    return _create(n_items, &RationalInterface);
 }
 
 Block* BlockCreateComplex(Uint n_items)
 {
-    return _create(n_items, BlockInitComplex);
+    return _create(n_items, &ComplexInterface);
 }
 
 Block* BlockCreatePtr(Uint n_items)
 {
-    return _create(n_items, BlockInitPtr);
+    return _create(n_items, &PtrInterface);
+}
+
+void BlockDestroyNoMem(Block* block)
+{
+    if (!block)
+        return ;
+    
+    free(block);
+}
+
+void BlockDestroy(Block* block)
+{
+    if (!block)
+        return ;
+    
+    free(block->memory);
+    free(block);
+}
+
+void* BlockDestroyReturnContent(Block* block)
+{
+    void* content;
+
+    if (!block)
+        return NULL;
+    
+    content = block->memory;
+    free(block);
+
+    return content;
 }
 
 Uint BlockGetSize(const Block* block)
 {
-    return block->n_items * block->item_size;
+    return block->interface->size * block->n_items;
+}
+
+void* BlockGetContent(const Block* block)
+{
+    return block->memory;
 }
 
 Uint BlockGetNItems(const Block* block)
@@ -126,185 +106,95 @@ Uint BlockGetNItems(const Block* block)
 
 Int BlockExpand(Block* block, Uint extra_items)
 {
-    Uint    new_size;
     Uint    extra_size;
-    Uint    old_size;
     void*   new_memory;
 
-    old_size = BlockGetSize(block);
-    extra_size = extra_items * block->item_size;
-    new_size = old_size + extra_size;
+    extra_size = extra_items * block->interface->size;
+    new_memory = realloc(block->memory, BlockGetSize(block) + extra_size);
 
-    if (new_size < old_size)
+    if (!new_memory)
         return WHY_ERROR;
 
-    if (!(new_memory = mem_expand(block->memory, old_size, extra_size)))
-        return WHY_ERROR;
-    
-    free(block->memory);
     block->memory = new_memory;
-    block->n_items = block->n_items + extra_items;
+    block->n_items += extra_items;
 
     return WHY_OK;
 }
 
-void BlockDestroy(Block* block)
+void* BlockPointAt(const Block* block, Uint index)
 {
-    free(block->memory);
-    free(block);
+    return block->memory + (index * block->interface->size);
+}
+
+Int BlockCopyItems(Block* block, Uint index, const void* pointer, Uint n_items)
+{
+    void* ptr;
+
+    if (index + n_items > block->n_items)
+    {
+        if (BlockExpand(block, n_items) != WHY_OK)
+            return WHY_ERROR;
+    }
+
+    ptr = BlockPointAt(block, index);
+    memcpy(ptr, pointer, n_items * block->interface->size);
+
+    return WHY_OK;
+}
+
+ssize_t BlockReadFromFile(Block* block, Uint index, int file, Uint n_bytes)
+{
+    Uint extra_items;
+
+    assert(block->interface == &ByteInterface);
+
+    if (index + n_bytes > block->n_items)
+    {
+        extra_items = n_bytes > block->n_items ? n_bytes : block->n_items;
+        if (BlockExpand(block, extra_items) != WHY_OK)
+            return -1;
+    }
+
+    return read(file, block->memory + index, n_bytes);
 }
 
 void BlockGet(void* target, const Block* block, Uint index)
 {
-    return block->get(target, block, index);
+    return block->interface->get(target, block->memory, index);
 }
 
-void* BlockPointAt(const Block* block, Uint index)
+void BlockSet(Block* block, Uint index, const void* item)
 {
-    return block->memory + block->item_size * index;
+    return block->interface->set(block->memory, index, item);
 }
 
 void BlockSwap(Block* block, Uint j, Uint k)
 {
-    return block->swap(block, j, k);
+    return block->interface->swap(block->memory, j, k);
 }
 
-Byte BlockGetByte(const Block* block, Uint index)
+Int BlockCompare(const Block* block, Uint j, Uint k, Int (*compare)(const void* lhs, const void* rhs))
 {
-    return MEM_GET(block->memory, index, Byte);
+    void* _lhs;
+    void* _rhs;
+
+    _lhs = BlockPointAt(block, j);
+    _rhs = BlockPointAt(block, k);
+
+    return compare(_lhs, _rhs);
 }
 
-Int BlockGetInt(const Block* block, Uint index)
+void BlockMap(const Block* block, Uint index, Uint n_items, void (*function)(const void *))
 {
-    return MEM_GET(block->memory, index, Int);
-}
+    void*   item;
+    Uint    cap;
 
-Uint BlockGetUint(const Block* block, Uint index)
-{
-    return MEM_GET(block->memory, index, Uint);
-}
+    cap = index + n_items;
+    while (index < cap)
+    {
+        item = BlockPointAt(block, index);
+        function(item);
 
-Float BlockGetFloat(const Block* block, Uint index)
-{
-    return MEM_GET(block->memory, index, Float);
-}
-
-Rational BlockGetRational(const Block* block, Uint index)
-{
-    return MEM_GET(block->memory, index, Rational);
-}
-
-Complex BlockGetComplex(const Block* block, Uint index)
-{
-    return MEM_GET(block->memory, index, Complex);
-}
-
-void* BlockGetPtr(const Block* block, Uint index)
-{
-    return MEM_GET(block->memory, index, void *);
-}
-
-void BlockSetByte(Block* block, Uint index, Byte value)
-{
-    MEM_SET(block->memory, index, value, Byte);
-}
-
-void BlockSetInt(Block* block, Uint index, Int n)
-{
-    MEM_SET(block->memory, index, n, Int);
-}
-
-void BlockSetUint(Block* block, Uint index, Uint n)
-{
-    MEM_SET(block->memory, index, n, Uint);
-}
-
-void BlockSetFloat(Block* block, Uint index, Float x)
-{
-    MEM_SET(block->memory, index, x, Float);
-}
-
-void BlockSetRational(Block* block, Uint index, Rational p)
-{
-    MEM_SET(block->memory, index, p, Rational);
-}
-
-void BlockSetComplex(Block* block, Uint index, Complex z)
-{
-    MEM_SET(block->memory, index, z, Complex);
-}
-
-void BlockSetPtr(Block* block, Uint index, void* ptr)
-{
-    MEM_SET(block->memory, index, ptr, void *);
-}
-
-void BlockGetByteWRAP(void* target, const Block* block, Uint index)
-{
-    TARGET_SET(target, block->memory, index, Byte);
-}
-
-void BlockGetIntWRAP(void* target, const Block* block, Uint index)
-{
-    TARGET_SET(target, block->memory, index, Int);
-}
-
-void BlockGetUintWRAP(void* target, const Block* block, Uint index)
-{
-    TARGET_SET(target, block->memory, index, Uint);
-}
-
-void BlockGetFloatWRAP(void* target, const Block* block, Uint index)
-{
-    TARGET_SET(target, block->memory, index, Float);
-}
-
-void BlockGetComplexWRAP(void* target, const Block* block, Uint index)
-{
-    TARGET_SET(target, block->memory, index, Complex);
-}
-
-void BlockGetRationalWRAP(void* target, const Block* block, Uint index)
-{
-    TARGET_SET(target, block->memory, index, Rational);
-}
-
-void BlockGetPtrWRAP(void* target, const Block* block, Uint index)
-{
-    TARGET_SET(target, block->memory, index, void *);
-}
-
-void BlockSwapByte(Block* block, Uint j, Uint k)
-{
-    MEM_SWAP(block->memory, j, k, Byte);
-}
-
-void BlockSwapInt(Block* block, Uint j, Uint k)
-{
-    MEM_SWAP(block->memory, j, k, Int);
-}
-
-void BlockSwapUint(Block* block, Uint j, Uint k)
-{
-    MEM_SWAP(block->memory, j, k, Uint);
-}
-
-void BlockSwapFloat(Block* block, Uint j, Uint k)
-{
-    MEM_SWAP(block->memory, j, k, Float);
-}
-
-void BlockSwapRational(Block* block, Uint j, Uint k)
-{
-    MEM_SWAP(block->memory, j, k, Rational);
-}
-
-void BlockSwapComplex(Block* block, Uint j, Uint k)
-{
-    MEM_SWAP(block->memory, j, k, Complex);
-}
-
-void BlockSwapPtr(Block* block, Uint j, Uint k)
-{
-    MEM_SWAP(block->memory, j, k, void *);
+        ++ index;
+    }
 }

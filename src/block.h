@@ -5,12 +5,9 @@
 
 struct Block
 {
-    void*   memory;
-    Uint    n_items;
-    Uint    item_size;
-
-    void    (*get)(void* target, const Block* block, Uint index);
-    void    (*swap)(Block* block, Uint j, Uint k);
+    void*           memory;
+    TypeInterface*  interface;
+    Uint            n_items;
 };
 
 #endif
