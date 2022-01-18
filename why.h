@@ -10,21 +10,21 @@
 
 #define Complex         complex
 
-typedef int_fast64_t    Int;
-typedef uint_fast64_t   Uint;
-typedef unsigned char   Byte;
-typedef double          Float;
-typedef void *          Ptr;
+typedef int_fast64_t            Int;
+typedef uint_fast64_t           Uint;
+typedef unsigned char           Byte;
+typedef double                  Float;
+typedef void *                  Ptr;
 
-typedef struct TypeInterface TypeInterface;
-typedef struct ArInterface ArInterface;
-typedef struct Rational Rational;
+typedef struct TypeInterface    TypeInterface;
+typedef struct ArInterface      ArInterface;
+typedef struct Rational         Rational;
 
-typedef struct Block    Block;
-typedef struct Array    Array;
-typedef struct List     List;
-typedef struct Tree     Tree;
-typedef struct Matrix   Matrix;
+typedef struct Block            Block;
+typedef struct Array            Array;
+typedef struct List             List;
+typedef struct Tree             Tree;
+typedef struct Matrix           Matrix;
 
 enum Status
 {
@@ -47,15 +47,16 @@ struct ArInterface
     void (*mult)(void* target, const void* lhs, const void* rhs);
 };
 
-extern const TypeInterface PtrInterface;
-extern const TypeInterface ByteInterface;
-extern const TypeInterface IntInterface;
-extern const TypeInterface UintInterface;
-extern const TypeInterface FloatInterface;
-extern const TypeInterface RationalInterface;
-extern const TypeInterface ComplexInterface;
+extern const TypeInterface  PtrInterface;
+extern const TypeInterface  ByteInterface;
+extern const TypeInterface  IntInterface;
+extern const TypeInterface  UintInterface;
+extern const TypeInterface  FloatInterface;
+extern const TypeInterface  RationalInterface;
+extern const TypeInterface  ComplexInterface;
 
-extern const ArInterface RationalArInterface;
+extern const ArInterface    RationalArInterface;
+extern const ArInterface    FloatArInterface;
 
 Int         WhyStart(void);
 void        WhyEnd(void);
@@ -118,6 +119,15 @@ void        RationalOneWRAP(void* target);
 void        RationalAddWRAP(void* target, const void* lhs, const void* rhs);
 void        RationalMultWRAP(void* target, const void* lhs, const void* rhs);
 
+void        FloatZero(Float* x);
+void        FloatOne(Float* x);
+void        FloatAdd(Float* x, const Float* lhs, const Float* rhs);
+void        FloatMult(Float* x, const Float* lhs, const Float* rhs);
+void        FloatZeroWRAP(void* target);
+void        FloatOneWRAP(void* target);
+void        FloatAddWRAP(void* target, const void* lhs, const void* rhs);
+void        FloatMultWRAP(void* target, const void* lhs, const void* rhs);
+
 Int         CompareInt(const void* lhs, const void* rhs);
 Int         CompareUint(const void* lhs, const void* rhs);
 Int         ComapreFloat(const void* lhs, const void* rhs);
@@ -126,11 +136,19 @@ Int         CompareCstr(const void* lhs, const void* rhs);
 Uint        MathRandom(void);
 Uint        MathRandomInRange(Uint n);
 
+Matrix*     MatrixCreateFloat(Uint n_rows, Uint n_cols);
+void        MatrixDestroy(Matrix* matrix);
+void        MatrixGet(void* target, const Matrix* matrix, Uint row, Uint col);
+void        MatrixSetNth(Matrix* matrix, Uint n, const void* item);
+void        MatrixSet(Matrix* matrix, Uint row, Uint col, const void* item);
+void*       MatrixPointAt(const Matrix* matrix, Uint row, Uint col);
+void        MatrixDot(void* target, const Matrix* lhs, const Matrix* rhs, Uint row, Uint col);
+
 Byte*       ReadFile(const char* name);
 Array*      ReadFileByLine(const char* name);
 
-void        PrintCstr(const char* str);
-void        PrintCstrN(const char* str);
+void        PrintCstr(const void* str);
+void        PrintCstrN(const void* str);
 void        PrintTimeDiff(long start, long end);
 void        PrintRational(const Rational* p);
 void        PrintRationalN(const Rational* p);

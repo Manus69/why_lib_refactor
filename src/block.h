@@ -5,9 +5,9 @@
 
 struct Block
 {
-    void*           memory;
-    TypeInterface*  interface;
-    Uint            n_items;
+    void*                   memory;
+    const TypeInterface*    interface;
+    Uint                    n_items;
 };
 
 #endif

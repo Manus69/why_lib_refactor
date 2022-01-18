@@ -6,3 +6,8 @@ const ArInterface RationalArInterface = {RationalZeroWRAP,
                                         RationalOneWRAP,
                                         RationalAddWRAP,
                                         RationalMultWRAP};
+
+const ArInterface FloatArInterface =    {FloatZeroWRAP,
+                                        FloatOneWRAP,
+                                        FloatAddWRAP,
+                                        FloatMultWRAP};

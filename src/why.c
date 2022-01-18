@@ -1,5 +1,6 @@
 #include "why.h"
 #include "declarations.h"
+#include "matrix.h"
 
 struct Why
 {
@@ -15,11 +16,15 @@ Int WhyStart(void)
     _why.start = clock();
     srandom(_why.start);
 
+    if (MatrixUnitInit(R0_SIZE, R1_SIZE, ROW_REG_SIZE) != WHY_OK)
+        return WHY_ERROR;
+
     return WHY_OK;
 }
 
 void WhyEnd(void)
 {
+    MatrixUnitTerminate();
     _why.end = clock();
     PrintTimeDiff(_why.start, _why.end);
 }

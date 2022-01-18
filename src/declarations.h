@@ -16,5 +16,7 @@
 
 void*       mem_expand(void* memory, Uint size, Uint extra_size);
 ssize_t     BlockReadFromFile(Block* block, Uint index, int file, Uint n_bytes);
+Int         MatrixUnitInit(Uint r0_size, Uint r1_size, Uint row_reg_size);
+void        MatrixUnitTerminate(void);
 
 #endif

@@ -14,7 +14,7 @@ static Block* _create(Uint n_items, const TypeInterface* interface)
         if ((block->memory = malloc(n_items * interface->size)))
         {
             block->n_items = n_items;
-            block->interface = (TypeInterface *)interface;
+            block->interface = interface;
 
             return block;
         }

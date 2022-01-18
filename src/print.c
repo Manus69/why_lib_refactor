@@ -3,15 +3,15 @@
 #include "rational.h"
 #include "declarations.h"
 
-void PrintCstr(const char* str)
+void PrintCstr(const void* str)
 {
     if (!str)
         printf("NULL");
     else
-        printf("%s", str);
+        printf("%s", *(char **)str);
 }
 
-void PrintCstrN(const char* str)
+void PrintCstrN(const void* str)
 {
     PrintCstr(str);
     printf("\n");

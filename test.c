@@ -49,8 +49,35 @@ void input_test()
     Byte* bytes;
 
     bytes = ReadFile("text_file.txt");
-    printf("%s", (char *)bytes);
+    // printf("%s", (char *)bytes);
 
+    Uint size = 30000;
+    Block* block = BlockCreate(size, Ptr);
+    Uint n = 0;
+    Byte* start = bytes;
+
+    while (true)
+    {
+        while (*start == '\n')
+        {
+            *start = '\0';
+            ++ start;
+        }
+        
+        BlockSet(block, n, start);
+        ++ n;
+
+        while (*start != '\n' && *start)
+            ++ start;
+
+        if (!*start)
+            break ;
+    }
+
+    // PrintBlock(block, 0, n, PrintCstrN);
+    QuickSort(block, 0, n - 1, CompareCstr);
+    PrintBlock(block, 0, n, PrintCstrN);
+    BlockDestroy(block);
     free(bytes);
 }
 
@@ -150,6 +177,34 @@ void type_interface_test()
     free(mem);
 }
 
+void matrix_test()
+{
+    Matrix* A;
+    Matrix* B;
+
+    A = MatrixCreateFloat(2, 2);
+    B = MatrixCreateFloat(2, 2);
+
+    Float _A[4] = {1.0, 2.0, 0.0, 1.0};
+    Float _B[4] = {1.0, 2.0, 0.0, 1.0};
+
+    Uint n = 0;
+    while (n < 4)
+    {
+        MatrixSetNth(A, n, &_A[n]);
+        MatrixSetNth(B, n, &_B[n]);
+
+        ++ n;
+    }
+
+    Float x;
+    MatrixDot(&x, A, B, 0, 1);
+    printf("%f\n", x);
+
+    MatrixDestroy(A);
+    MatrixDestroy(B);
+}
+
 int main()
 {
     WhyStart();
@@ -157,7 +212,9 @@ int main()
     // ar_interface_test();
     // block_test();
     // input_test();
-    sort_test();
+    // sort_test();
+    matrix_test();
+
 
     WhyEnd();
     return EXIT_SUCCESS;
