@@ -1,4 +1,3 @@
-#include "type_interface.h"
 #include "rational.h"
 #include "macro.h"
 

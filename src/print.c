@@ -17,15 +17,21 @@ void PrintCstrN(const void* str)
     printf("\n");
 }
 
-void PrintRational(const Rational* p)
+void PrintRational(const void* p)
 {
-    printf("%ld / %ld", p->top, p->bot);
+    printf("%ld / %ld", ((Rational *)p)->top, ((Rational *)p)->bot);
 }
 
-void PrintRationalN(const Rational* p)
+void PrintRationalN(const void* p)
 {
     PrintRational(p);
     printf("\n");
+}
+
+void PrintRationalS(const void* p)
+{
+    PrintRational(p);
+    printf(" ");
 }
 
 void PrintUint(const void* n)
@@ -37,6 +43,17 @@ void PrintUintN(const void* n)
 {
     PrintUint(n);
     printf("\n");
+}
+
+void PrintFloat(const void* x)
+{
+    printf("%.2f", *(Float *)x);
+}
+
+void PrintFloatS(const void* x)
+{
+    PrintFloat(x);
+    printf(" ");
 }
 
 void PrintTimeDiff(time_t start, time_t end)
@@ -67,4 +84,31 @@ void PrintBits(Uint n)
 void PrintBlock(const Block* block, Uint index, Uint n_items, void (*print)(const void *))
 {
     return BlockMap(block, index, n_items, print);
+}
+
+void PrintMatrix(const Matrix* matrix, void (*print)(const void* ))
+{
+    Uint n_rows;
+    Uint n;
+    void (*_print)(void *);
+
+    _print = (void (*)(void *))print;
+    n_rows = MatrixNRows(matrix);
+    n = 0;
+
+    while (n < n_rows)
+    {
+        MatrixMapRow((Matrix *)matrix, n, _print);
+        printf("\n");
+
+        ++ n;
+    }
+}
+
+void PrintDeck(const Deck* deck, void (*print)(const void *))
+{
+    void (*_print)(void *);
+
+    _print = (void (*)(void *))print;
+    DeckMap((Deck *)deck, _print);
 }

@@ -46,39 +46,15 @@ void block_test()
 
 void input_test()
 {
-    Byte* bytes;
+    Deck* lines;
 
-    bytes = ReadFile("text_file.txt");
-    // printf("%s", (char *)bytes);
+    lines = ReadFileAllLines("text_file.txt");
 
-    Uint size = 30000;
-    Block* block = BlockCreate(size, Ptr);
-    Uint n = 0;
-    Byte* start = bytes;
+    // PrintDeck(lines, PrintCstrN);
+    SortDeck(lines, CompareCstr);
+    // PrintDeck(lines, PrintCstrN);
 
-    while (true)
-    {
-        while (*start == '\n')
-        {
-            *start = '\0';
-            ++ start;
-        }
-        
-        BlockSet(block, n, start);
-        ++ n;
-
-        while (*start != '\n' && *start)
-            ++ start;
-
-        if (!*start)
-            break ;
-    }
-
-    // PrintBlock(block, 0, n, PrintCstrN);
-    QuickSort(block, 0, n - 1, CompareCstr);
-    PrintBlock(block, 0, n, PrintCstrN);
-    BlockDestroy(block);
-    free(bytes);
+    DeckDestroy(lines);
 }
 
 void sort_test()
@@ -100,7 +76,11 @@ void sort_test()
 
     // PrintBlock(block, 0, size, PrintUintN);
     QuickSort(block, 0, size - 1, CompareUint);
+    // InsertionSort(block, 0, size - 1, CompareUint);
     // PrintBlock(block, 0, size, PrintUintN);
+    BlockGet(&x, block, size - 1);
+    PrintUintN(&x);
+
     BlockDestroy(block);
 }
 
@@ -121,16 +101,7 @@ void tt_generate2(Uint size)
 
 void ar_interface_test()
 {
-    Rational p;
-    Rational q;
-
-    RationalArInterface.one(&p);
-    PrintRationalN(&p);
-    RationalArInterface.add(&q, &p, &p);
-    PrintRationalN(&q);
-    RationalArInterface.mult(&p, &q, &q);
-    PrintRationalN(&p);
-
+    ;
 }
 
 void type_interface_test()
@@ -148,7 +119,7 @@ void type_interface_test()
 
     memset(mem, 0, 256);
     
-    Rational p, q;
+    Rational p;
     Uint n = 0;
     Uint limit = (1 << 20);
     // Float x = 3.14;
@@ -179,30 +150,91 @@ void type_interface_test()
 
 void matrix_test()
 {
-    Matrix* A;
-    Matrix* B;
+    Uint size = 100; 
+    
+    Matrix* A = MatrixCreateFloat(size, size);
+    Matrix* B = MatrixCreateFloat(size, size);
 
-    A = MatrixCreateFloat(2, 2);
-    B = MatrixCreateFloat(2, 2);
-
-    Float _A[4] = {1.0, 2.0, 0.0, 1.0};
-    Float _B[4] = {1.0, 2.0, 0.0, 1.0};
-
+    Float x = 1.0;
     Uint n = 0;
-    while (n < 4)
-    {
-        MatrixSetNth(A, n, &_A[n]);
-        MatrixSetNth(B, n, &_B[n]);
 
+    size = size * size;
+    while (n < size)
+    {
+        MatrixSetNth(B, n, &x);
         ++ n;
     }
 
-    Float x;
-    MatrixDot(&x, A, B, 0, 1);
-    printf("%f\n", x);
+    // PrintMatrix(B, PrintFloatS);
+    MatrixMult(A, B, B);
+    PrintMatrix(A, PrintFloatS);
 
     MatrixDestroy(A);
     MatrixDestroy(B);
+}
+
+void matrix_rational_test()
+{
+    Uint size = 100;
+    Matrix* A = MatrixCreateRational(size, size);
+    Matrix* B = MatrixCreateRational(size, size);
+    Uint n = 0;
+    Rational p;
+
+    RationalOne(&p);
+    size = size * size;
+    while (n < size)
+    {
+        MatrixSetNth(A, n, &p);
+        ++ n;
+    }
+
+    // PrintMatrix(A, PrintRationalS);
+    MatrixMult(B, A, A);
+    PrintMatrix(B, PrintRationalS);
+
+    MatrixDestroy(A);
+    MatrixDestroy(B);
+}
+
+void matrix_add_test()
+{
+    Uint size = 100;
+    Matrix* A = MatrixCreateFloat(size, size);
+    Matrix* B = MatrixCreateFloat(size, size);
+
+    Uint n = 0;
+    Float x;
+    size = size * size;
+    while (n < size)
+    {
+        x = n;
+        MatrixSetNth(A, n, &x);
+        ++ n;
+    }
+
+    // PrintMatrix(A, PrintFloatS);
+    MatrixAdd(A, A, A);
+    PrintMatrix(A, PrintFloatS);
+
+    MatrixDestroy(A);
+    MatrixDestroy(B);
+}
+
+void deck_test()
+{
+    Deck* deck;
+
+    deck = DeckCreatePtr(NULL, NULL);
+    DeckPushFront(deck, "first");
+    DeckPushBack(deck, "ass");
+    DeckPushBack(deck, "thsi is a test");
+    DeckPushBack(deck, "cock");
+    DeckPushBack(deck, "what?");
+    DeckPushBack(deck, "does it work");
+    PrintDeck(deck, PrintCstrN);
+    
+    DeckDestroy(deck);
 }
 
 int main()
@@ -213,8 +245,10 @@ int main()
     // block_test();
     // input_test();
     // sort_test();
-    matrix_test();
-
+    // matrix_test();
+    matrix_add_test();
+    // matrix_rational_test();
+    // deck_test();
 
     WhyEnd();
     return EXIT_SUCCESS;

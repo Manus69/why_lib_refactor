@@ -21,7 +21,7 @@ typedef struct ArInterface      ArInterface;
 typedef struct Rational         Rational;
 
 typedef struct Block            Block;
-typedef struct Array            Array;
+typedef struct Deck             Deck;
 typedef struct List             List;
 typedef struct Tree             Tree;
 typedef struct Matrix           Matrix;
@@ -60,6 +60,7 @@ extern const ArInterface    FloatArInterface;
 
 Int         WhyStart(void);
 void        WhyEnd(void);
+Int         WhySavePtr(const void* ptr);
 
 void        GetPtr(void* target, const void* memory, Uint index);
 void        SetPtr(void* memory, Uint index, const void* ptr);
@@ -93,7 +94,7 @@ Block*      BlockCreateComplex(Uint n_items);
 Block*      BlockCreatePtr(Uint n_items);
 
 Uint        BlockGetSize(const Block* block);
-Uint        BlockGetNItems(const Block* block);
+Uint        BlockNItems(const Block* block);
 Int         BlockExpand(Block* block, Uint extra_items);
 void        BlockDestroy(Block* block);
 void        BlockDestroyNoMem(Block* block);
@@ -107,7 +108,21 @@ void        BlockSwap(Block* block, Uint j, Uint k);
 Int         BlockCompare(const Block* block, Uint j, Uint k, Int (*compare)(const void* lhs, const void* rhs));
 void        BlockMap(const Block* block, Uint index, Uint n_items, void (*function)(const void *));
 
-void        QuickSort(Block* block, Int left_index, Int right_index, Int (*compare)(const void* lhs, const void* rhs));
+Deck*       DeckCreatePtr(void* (*copy)(const void *), void (*destroy)(void *));
+void        DeckDestroy(Deck* deck);
+Uint        DeckNItems(const Deck* deck);
+void        DeckSet(Deck* deck, Uint index, const void* item);
+void*       DeckPointAt(Deck* deck, Uint index);
+Int         DeckPushBack(Deck* deck, const void* item);
+Int         DeckPushFront(Deck* deck, const void* item);
+void        DeckMap(Deck* deck, void (*function)(void *));
+void        DeckReserve(Deck* deck, Uint n_items);
+Int         DeckLast(void* target, const Deck* deck);
+Int         DeckFirst(void* target, const Deck* deck);
+
+void        InsertionSort(Block* block, Int left_index, Int right_index, Int (*compare)(const void *, const void *));
+void        QuickSort(Block* block, Int left_index, Int right_index, Int (*compare)(const void *, const void *));
+void        SortDeck(Deck* deck, Int (*compare)(const void *, const void *));
 
 void        RationalInit(Rational* p, Int top, Int bot);
 void        RationalZero(Rational* p);
@@ -137,24 +152,35 @@ Uint        MathRandom(void);
 Uint        MathRandomInRange(Uint n);
 
 Matrix*     MatrixCreateFloat(Uint n_rows, Uint n_cols);
+Matrix*     MatrixCreateRational(Uint n_rows, Uint n_cols);
 void        MatrixDestroy(Matrix* matrix);
+Uint        MatrixNRows(const Matrix* matrix);
+Uint        MatrixNCols(const Matrix* matrix);
 void        MatrixGet(void* target, const Matrix* matrix, Uint row, Uint col);
 void        MatrixSetNth(Matrix* matrix, Uint n, const void* item);
 void        MatrixSet(Matrix* matrix, Uint row, Uint col, const void* item);
 void*       MatrixPointAt(const Matrix* matrix, Uint row, Uint col);
 void        MatrixDot(void* target, const Matrix* lhs, const Matrix* rhs, Uint row, Uint col);
+Int         MatrixMult(Matrix* target, const Matrix* lhs, const Matrix* rhs);
+Int         MatrixAdd(Matrix* target, const Matrix* lhs, const Matrix* rhs);
+void        MatrixMapRow(Matrix* matrix, Uint row, void (*function)(void* ));
 
 Byte*       ReadFile(const char* name);
-Array*      ReadFileByLine(const char* name);
+Deck*       ReadFileAllLines(const char* name);
 
 void        PrintCstr(const void* str);
 void        PrintCstrN(const void* str);
 void        PrintTimeDiff(long start, long end);
-void        PrintRational(const Rational* p);
-void        PrintRationalN(const Rational* p);
+void        PrintRational(const void* p);
+void        PrintRationalN(const void* p);
+void        PrintRationalS(const void* p);
+void        PrintFloat(const void* x);
+void        PrintFloatS(const void* x);
 void        PrintUintN(const void* n);
 void        PrintNBits(Uint number, Uint n_bits);
 void        PrintBits(Uint n);
 void        PrintBlock(const Block* block, Uint index, Uint n_items, void (*print)(const void *));
+void        PrintMatrix(const Matrix* matrix, void (*print)(const void* ));
+void        PrintDeck(const Deck* deck, void (*print)(const void *));  
 
 #endif

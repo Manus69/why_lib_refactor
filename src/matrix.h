@@ -3,7 +3,7 @@
 
 #define MATRIX_COL_MAX  (1 << 7)
 #define R0_SIZE         (1 << 6)
-#define R1_SIZE         (1 << 6);
+#define R1_SIZE         (1 << 6)
 #define ROW_REG_SIZE    (1 << 12)
 
 struct Matrix

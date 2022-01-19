@@ -2,7 +2,7 @@
 #include "macro.h"
 #include "declarations.h"
 
-void* mem_expand(void* memory, Uint size, Uint extra_size)
+void* MemExpand(void* memory, Uint size, Uint extra_size)
 {
     void*   new_memory;
     Uint    new_size;
@@ -19,4 +19,9 @@ void* mem_expand(void* memory, Uint size, Uint extra_size)
         return memcpy(new_memory, memory, size);
 
     return NULL;
+}
+
+void MemDestroy(void* ptr)
+{
+    free(*(void **)ptr);
 }

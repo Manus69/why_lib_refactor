@@ -44,9 +44,41 @@ Byte* ReadFile(const char* name)
     return BlockDestroyReturnContent(block);
 }
 
-Array* ReadFileByLine(const char* name)
+Deck* ReadFileAllLines(const char* name)
 {
-    (void)name;
+    Byte* bytes;
+    Deck* lines;
+    Byte* current;
 
-    return NULL;
+    if (!(bytes = ReadFile(name)))
+        return NULL;
+
+    WhySavePtr(bytes);
+
+    if (!(lines = DeckCreatePtr(NULL, NULL)))
+        return NULL;
+
+    DeckReserve(lines, (1 << 12));
+    current = bytes;
+    while (true)
+    {
+        while (*current && *current == '\n')
+            ++ current;
+        
+        if (!*current)
+            break ;
+
+        DeckPushBack(lines, current);
+
+        while (*current && *current != '\n')
+            ++ current;
+        
+        if (!*current)
+            break ;
+        
+        *current = '\0';
+        ++ current;
+    }
+
+    return lines;
 }

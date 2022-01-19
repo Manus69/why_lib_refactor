@@ -29,6 +29,7 @@ void MatrixUnitTerminate(void)
 {
     free(_register0);
     free(_register1);
+    free(_row_register);
 }
 
 static Matrix* _create(Uint n_rows, Uint n_cols, Block* (block_create)(Uint), const ArInterface* interface)
@@ -60,10 +61,25 @@ Matrix* MatrixCreateFloat(Uint n_rows, Uint n_cols)
     return _create(n_rows, n_cols, BlockCreateFloat, &FloatArInterface);
 }
 
+Matrix* MatrixCreateRational(Uint n_rows, Uint n_cols)
+{
+    return _create(n_rows, n_cols, BlockCreateRational, &RationalArInterface);
+}
+
 void MatrixDestroy(Matrix* matrix)
 {
     BlockDestroy(matrix->block);
     free(matrix);
+}
+
+Uint MatrixNRows(const Matrix* matrix)
+{
+    return matrix->n_rows;
+}
+
+Uint MatrixNCols(const Matrix* matrix)
+{
+    return matrix->n_cols;
 }
 
 bool MatrixDimEqual(const Matrix* lhs, const Matrix* rhs)
@@ -128,7 +144,7 @@ static void _get_product_row(Uint row, const Matrix* lhs, const Matrix* rhs)
     Uint n;
 
     n = 0;
-    while (n < lhs->n_cols)
+    while (n < rhs->n_cols)
     {
         MatrixDot(_register0, lhs, rhs, row, n);
         lhs->block->interface->set(_row_register, n, _register0);
@@ -139,10 +155,76 @@ static void _get_product_row(Uint row, const Matrix* lhs, const Matrix* rhs)
 
 static void _copy_row(Matrix* matrix, Uint row)
 {
-    ;
+    Uint    n;
+    Uint    index;
+    void*   item;
+
+    n = 0;
+    index = row * matrix->n_cols;
+
+    while (n < matrix->n_cols)
+    {
+        item = _row_register + (n * matrix->block->interface->size);
+        MatrixSetNth(matrix, index, item);
+
+        ++ n;
+        ++ index;
+    }
 }
 
-void MatrixMult(Matrix* target, const Matrix* lhs, const Matrix* rhs)
+Int MatrixMult(Matrix* target, const Matrix* lhs, const Matrix* rhs)
 {
-    ;
+    Uint row;
+
+    if (!MatrixMultipliable(lhs, rhs))
+        return WHY_ERROR;
+
+    row = 0;
+    while (row < target->n_rows)
+    {
+        _get_product_row(row, lhs, rhs);
+        _copy_row(target, row);
+        ++ row;
+    }
+
+    return WHY_OK;
+}
+
+Int MatrixAdd(Matrix* target, const Matrix* lhs, const Matrix* rhs)
+{
+    void*   _lhs;
+    void*   _rhs;
+    void*   _cell;
+    Uint    n;
+
+    if (!MatrixDimEqual(lhs, rhs))
+        return WHY_ERROR;
+
+    n = 0;
+    while (n < lhs->block->n_items)
+    {
+        _lhs = BlockPointAt(lhs->block, n);
+        _rhs = BlockPointAt(rhs->block, n);
+        _cell = BlockPointAt(target->block, n);
+        lhs->interface->add(_cell, _lhs, _rhs);
+
+        ++ n;
+    }
+
+    return WHY_OK;
+}
+
+void MatrixMapRow(Matrix* matrix, Uint row, void (*function)(void* ))
+{
+    Uint    n;
+    void*   item;
+
+    n = 0;
+    while (n < matrix->n_cols)
+    {
+        item = MatrixPointAt(matrix, row, n);
+        function(item);
+
+        ++ n;
+    }
 }

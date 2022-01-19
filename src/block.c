@@ -99,7 +99,7 @@ void* BlockGetContent(const Block* block)
     return block->memory;
 }
 
-Uint BlockGetNItems(const Block* block)
+Uint BlockNItems(const Block* block)
 {
     return block->n_items;
 }
