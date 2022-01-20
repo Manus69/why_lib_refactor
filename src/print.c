@@ -19,7 +19,7 @@ void PrintCstrN(const void* str)
 
 void PrintRational(const void* p)
 {
-    printf("%ld / %ld", ((Rational *)p)->top, ((Rational *)p)->bot);
+    printf("%ld/%ld", ((Rational *)p)->top, ((Rational *)p)->bot);
 }
 
 void PrintRationalN(const void* p)
@@ -34,6 +34,13 @@ void PrintRationalS(const void* p)
     printf(" ");
 }
 
+void PrintRationalP(const void* p)
+{
+    printf("(");
+    PrintRational(p);
+    printf(") ");
+}
+
 void PrintUint(const void* n)
 {
     printf("%zu", *(Uint *)n);
@@ -42,6 +49,17 @@ void PrintUint(const void* n)
 void PrintUintN(const void* n)
 {
     PrintUint(n);
+    printf("\n");
+}
+
+void PrintInt(const void* n)
+{
+    printf("%ld", *(Int *)n);
+}
+
+void PrintIntS(const void* n)
+{
+    PrintInt(n);
     printf("\n");
 }
 
@@ -98,11 +116,20 @@ void PrintMatrix(const Matrix* matrix, void (*print)(const void* ))
 
     while (n < n_rows)
     {
+        printf("[ ");
         MatrixMapRow((Matrix *)matrix, n, _print);
+        printf("]");
         printf("\n");
 
         ++ n;
     }
+    printf("\n");
+}
+
+void PrintMatrixN(const void* matrix, void (*print)(const void *))
+{
+    PrintMatrix(matrix, print);
+    printf("\n");
 }
 
 void PrintDeck(const Deck* deck, void (*print)(const void *))

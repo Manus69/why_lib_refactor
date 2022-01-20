@@ -109,6 +109,7 @@ Int DeckPushFront(Deck* deck, const void* item)
 {
     Uint left_index;
 
+    left_index = deck->left_insert_index;
     if (deck->left_insert_index == 0)
     {
         if (BlockExpand(deck->block, deck->block->n_items) != WHY_OK)
@@ -134,7 +135,7 @@ Int DeckLast(void* target, const Deck* deck)
     if (DeckNItems(deck))
     {
         BlockGet(target, deck->block, deck->right_insert_index - 1);
-        
+
         return WHY_OK;
     }
     

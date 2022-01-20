@@ -3,10 +3,20 @@
 
 const ArInterface RationalArInterface = {RationalZeroWRAP,
                                         RationalOneWRAP,
+                                        RationalNegateWRAP,
+                                        RationalInvWRAP,
                                         RationalAddWRAP,
-                                        RationalMultWRAP};
+                                        RationalMultWRAP,
+                                        RationalDivWRAP,
+                                        RationalEqualsWRAP,
+                                        RationalIsZeroWRAP};
 
 const ArInterface FloatArInterface =    {FloatZeroWRAP,
                                         FloatOneWRAP,
+                                        FloatNegateWRAP,
+                                        FloatInvWRAP,
                                         FloatAddWRAP,
-                                        FloatMultWRAP};
+                                        FloatMultWRAP,
+                                        RationalDivWRAP,
+                                        FloatEqualsWRAP,
+                                        FloatIsZeroWRAP};

@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <complex.h>
+#include <stdbool.h>
 
 #define NOT_FOUND (-1)
 #define WHY_MAX (1LU << 32)
@@ -43,8 +44,13 @@ struct ArInterface
 {
     void (*zero)(void* target);
     void (*one)(void* target);
+    void (*negate)(void* target, const void* number);
+    void (*invert)(void* target, const void* number);
     void (*add)(void* target, const void* lhs, const void* rhs);
     void (*mult)(void* target, const void* lhs, const void* rhs);
+    void (*div)(void* target, const void* lhs, const void* rhs);
+    bool (*equals)(const void* lhs, const void* rhs);
+    bool (*is_zero)(const void* number);
 };
 
 extern const TypeInterface  PtrInterface;
@@ -125,23 +131,44 @@ void        QuickSort(Block* block, Int left_index, Int right_index, Int (*compa
 void        SortDeck(Deck* deck, Int (*compare)(const void *, const void *));
 
 void        RationalInit(Rational* p, Int top, Int bot);
+Rational    RationalCopy(const Rational* p);
 void        RationalZero(Rational* p);
 void        RationalOne(Rational* p);
 void        RationalAdd(Rational* p, const Rational* lhs, const Rational* rhs);
 void        RationalMult(Rational* p, const Rational* lhs, const Rational* rhs);
+void        RationalDiv(Rational* target, const Rational* lhs, const Rational* rhs);
+void        RationalInv(Rational* target, const Rational* p);
+bool        RationalEquals(const Rational* p, const Rational* q);
+void        RationalNegate(Rational* target, const Rational* p);
+bool        RationalEqualsWRAP(const void* p, const void* q);
 void        RationalZeroWRAP(void* target);
 void        RationalOneWRAP(void* target);
 void        RationalAddWRAP(void* target, const void* lhs, const void* rhs);
 void        RationalMultWRAP(void* target, const void* lhs, const void* rhs);
+bool        RationalIsZeroWRAP(const void* p);
+void        RationalInvWRAP(void* target, const void* p);
+void        RationalNegateWRAP(void* target, const void* p);
+void        RationalDivWRAP(void* target, const void* lhs, const void* rhs);
 
 void        FloatZero(Float* x);
 void        FloatOne(Float* x);
 void        FloatAdd(Float* x, const Float* lhs, const Float* rhs);
 void        FloatMult(Float* x, const Float* lhs, const Float* rhs);
+void        FloatDiv(Float* target, const Float* top, const Float* bot);
+bool        FloatEquals(const Float* x, const Float* y);
+bool        FloatIsZero(const Float* x);
+void        FloatNegate(Float* target, const Float* x);
+void        FloatInv(Float* target, const Float* x);
 void        FloatZeroWRAP(void* target);
 void        FloatOneWRAP(void* target);
 void        FloatAddWRAP(void* target, const void* lhs, const void* rhs);
 void        FloatMultWRAP(void* target, const void* lhs, const void* rhs);
+void        FloatDivWRAP(void* target, const void* top, const void* bot);
+void        FloatABS(Float* target, const Float* x);
+bool        FloatEqualsWRAP(const void* x, const void* y);
+bool        FloatIsZeroWRAP(const void* x);
+void        FloatNegateWRAP(void* target, const void* x);
+void        FloatInvWRAP(void* target, const void* x);
 
 Int         CompareInt(const void* lhs, const void* rhs);
 Int         CompareUint(const void* lhs, const void* rhs);
@@ -150,12 +177,15 @@ Int         CompareCstr(const void* lhs, const void* rhs);
 
 Uint        MathRandom(void);
 Uint        MathRandomInRange(Uint n);
+Uint        MathGCD(Uint a, Uint b);
 
 Matrix*     MatrixCreateFloat(Uint n_rows, Uint n_cols);
 Matrix*     MatrixCreateRational(Uint n_rows, Uint n_cols);
 void        MatrixDestroy(Matrix* matrix);
+void        MatrixInitFromArray(Matrix* matrix, const void* array);
 Uint        MatrixNRows(const Matrix* matrix);
 Uint        MatrixNCols(const Matrix* matrix);
+Uint        MatrixNItems(const Matrix* matrix);
 void        MatrixGet(void* target, const Matrix* matrix, Uint row, Uint col);
 void        MatrixSetNth(Matrix* matrix, Uint n, const void* item);
 void        MatrixSet(Matrix* matrix, Uint row, Uint col, const void* item);
@@ -164,16 +194,27 @@ void        MatrixDot(void* target, const Matrix* lhs, const Matrix* rhs, Uint r
 Int         MatrixMult(Matrix* target, const Matrix* lhs, const Matrix* rhs);
 Int         MatrixAdd(Matrix* target, const Matrix* lhs, const Matrix* rhs);
 void        MatrixMapRow(Matrix* matrix, Uint row, void (*function)(void* ));
+//these should be made private
+void        MatrixSwapRows(Matrix* matrix, Uint j, Uint k);
+void        MatrixScaleRow(Matrix* matrix, Uint row, const void* value);
+void        MatrixAddRows(Matrix* matrix, Uint j, Uint k);
+void        MatrixAddScaledRows(Matrix* matrix, Uint target, Uint source, const void* factor);
+Int         MatrixFindPivotRow(const Matrix* matrix);
+void        MatrixRowEliminate(Matrix* matrix, Uint pivot_row, Uint target_row);
+void        MatrixEchelonForm(Matrix* matrix);
 
 Byte*       ReadFile(const char* name);
 Deck*       ReadFileAllLines(const char* name);
 
+void        PrintInt(const void* n);
+void        PrintIntS(const void* n);
 void        PrintCstr(const void* str);
 void        PrintCstrN(const void* str);
 void        PrintTimeDiff(long start, long end);
 void        PrintRational(const void* p);
 void        PrintRationalN(const void* p);
 void        PrintRationalS(const void* p);
+void        PrintRationalP(const void* p);
 void        PrintFloat(const void* x);
 void        PrintFloatS(const void* x);
 void        PrintUintN(const void* n);
@@ -181,6 +222,7 @@ void        PrintNBits(Uint number, Uint n_bits);
 void        PrintBits(Uint n);
 void        PrintBlock(const Block* block, Uint index, Uint n_items, void (*print)(const void *));
 void        PrintMatrix(const Matrix* matrix, void (*print)(const void* ));
+void        PrintMatrixN(const void* matrix, void (*print)(const void *));
 void        PrintDeck(const Deck* deck, void (*print)(const void *));  
 
 #endif

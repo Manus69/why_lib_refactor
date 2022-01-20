@@ -15,5 +15,6 @@
 #include <assert.h>
 
 #define Q_SORT_THRESHOLD (1 << 4)
+#define FLT_EPSILON (((Float)1) / (1 << 20) )
 
 #endif

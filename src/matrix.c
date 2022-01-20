@@ -2,6 +2,9 @@
 #include "declarations.h"
 #include "block.h"
 #include "matrix.h"
+//
+#include "rational.h"
+//
 
 static void* _register0 = NULL;
 static void* _register1 = NULL;
@@ -66,6 +69,23 @@ Matrix* MatrixCreateRational(Uint n_rows, Uint n_cols)
     return _create(n_rows, n_cols, BlockCreateRational, &RationalArInterface);
 }
 
+void MatrixInitFromArray(Matrix* matrix, const void* array)
+{
+    Uint n;
+    Uint n_items;
+
+    n_items = MatrixNItems(matrix);
+    n = 0;
+
+    while (n < n_items)
+    {
+        MatrixSetNth(matrix, n, array);
+        array += matrix->block->interface->size;
+
+        ++ n;
+    }
+}
+
 void MatrixDestroy(Matrix* matrix)
 {
     BlockDestroy(matrix->block);
@@ -80,6 +100,11 @@ Uint MatrixNRows(const Matrix* matrix)
 Uint MatrixNCols(const Matrix* matrix)
 {
     return matrix->n_cols;
+}
+
+Uint MatrixNItems(const Matrix* matrix)
+{
+    return matrix->n_rows * matrix->n_cols;
 }
 
 bool MatrixDimEqual(const Matrix* lhs, const Matrix* rhs)
@@ -172,6 +197,27 @@ static void _copy_row(Matrix* matrix, Uint row)
     }
 }
 
+static Uint _row_size(const Matrix* matrix)
+{
+    return matrix->n_cols * matrix->block->interface->size;
+}
+
+static void _copy_register_to_row(Matrix* matrix, Uint row)
+{
+    void*   ptr;
+
+    ptr = MatrixPointAt(matrix, row, 0);
+    memcpy(ptr, _row_register, _row_size(matrix));
+}
+
+static void _copy_row_to_register(const Matrix* matrix, Uint row)
+{
+    void* ptr;
+
+    ptr = MatrixPointAt(matrix, row, 0);
+    memcpy(_row_register, ptr, _row_size(matrix));
+}
+
 Int MatrixMult(Matrix* target, const Matrix* lhs, const Matrix* rhs)
 {
     Uint row;
@@ -183,7 +229,8 @@ Int MatrixMult(Matrix* target, const Matrix* lhs, const Matrix* rhs)
     while (row < target->n_rows)
     {
         _get_product_row(row, lhs, rhs);
-        _copy_row(target, row);
+        // _copy_row(target, row);
+        _copy_register_to_row(target, row);
         ++ row;
     }
 
@@ -214,6 +261,76 @@ Int MatrixAdd(Matrix* target, const Matrix* lhs, const Matrix* rhs)
     return WHY_OK;
 }
 
+void MatrixSwapRows(Matrix* matrix, Uint j, Uint k)
+{
+    void* j_ptr;
+    void* k_ptr;
+
+    j_ptr = MatrixPointAt(matrix, j, 0);
+    k_ptr = MatrixPointAt(matrix, k, 0);
+    _copy_row_to_register(matrix, j);
+    memcpy(j_ptr, k_ptr, _row_size(matrix));
+    _copy_register_to_row(matrix, k);
+}
+
+void MatrixScaleRow(Matrix* matrix, Uint row, const void* value)
+{
+    void*   ptr;
+    Uint    n;
+
+    n = 0;
+    while (n < matrix->n_cols)
+    {
+        ptr = MatrixPointAt(matrix, row, n);
+        matrix->interface->mult(ptr, ptr, value);
+        ++ n;
+    }
+}
+
+void MatrixAddRows(Matrix* matrix, Uint j, Uint k)
+{
+    void*   lhs;
+    void*   rhs;
+    Uint    n;
+
+    n = 0;
+    while (n < matrix->n_cols)
+    {
+        lhs = MatrixPointAt(matrix, j, n);
+        rhs = MatrixPointAt(matrix, k, n);
+        matrix->interface->add(lhs, lhs, rhs);
+
+        ++ n;
+    }
+}
+
+void MatrixAddScaledRows(Matrix* matrix, Uint target, Uint source, const void* factor)
+{
+    void*   lhs;
+    void*   rhs;
+    Uint    n;
+
+    if (matrix->interface->is_zero(factor))
+        return ;
+    
+    n = 0;
+    while (n < matrix->n_cols)
+    {
+        lhs = MatrixPointAt(matrix, target, n);
+        rhs = MatrixPointAt(matrix, source, n);
+
+        //
+        // Rational p = RationalCopy(lhs);
+        // p = RationalCopy(factor);
+        //
+        
+        matrix->interface->mult(_register0, rhs, factor);
+        matrix->interface->add(lhs, lhs, _register0);
+
+        ++ n;
+    }
+}
+
 void MatrixMapRow(Matrix* matrix, Uint row, void (*function)(void* ))
 {
     Uint    n;
@@ -227,4 +344,132 @@ void MatrixMapRow(Matrix* matrix, Uint row, void (*function)(void* ))
 
         ++ n;
     }
+}
+
+static bool _is_suitable(const Matrix* matrix, Uint row, Uint col)
+{
+    void* item;
+
+    item = MatrixPointAt(matrix, row, col);
+
+    return !matrix->interface->is_zero(item);
+}
+
+static Int _find_suitable_element(const Matrix* matrix, Uint col)
+{
+    Uint row;
+
+    row = 0;
+    while (row < matrix->n_rows)
+    {
+        if (_is_suitable(matrix, row, col))
+            return row;
+        ++ row;
+    }
+
+    return NOT_FOUND;
+}
+
+static Int _find_pivot_row(const Matrix* matrix, Uint col)
+{
+    Int row;
+
+    while (col < matrix->n_cols)
+    {
+        row = _find_suitable_element(matrix, col);
+        if (row != NOT_FOUND)
+            return row;
+        
+        ++ col;
+    }
+
+    return NOT_FOUND;
+}
+
+Int MatrixFindPivotRow(const Matrix* matrix)
+{
+    return _find_pivot_row(matrix, 0);
+}
+
+static Int _find_nonzero_col(const Matrix* matrix, Uint row)
+{
+    Uint    n;
+    void*   item;
+
+    n = 0;
+    while (n < matrix->n_cols)
+    {
+        item = MatrixPointAt(matrix, row, n);
+        if (!matrix->interface->is_zero(item))
+            return n;
+        
+        ++ n;
+    }
+
+    return NOT_FOUND;
+}
+
+static void* _compute_multiplier(const Matrix* matrix, Uint pivot_row, Uint pivot_col, Uint target_row)
+{
+    void* pivot;
+    void* target;
+
+    pivot = MatrixPointAt(matrix, pivot_row, pivot_col);
+    target = MatrixPointAt(matrix, target_row, pivot_col);
+
+    matrix->interface->div(_register1, target, pivot);
+    matrix->interface->negate(_register1, _register1);
+
+    return _register1;
+}
+
+static void _eliminate(Matrix* matrix, Uint pivot_row, Uint pivot_col, Uint target_row)
+{
+    void* multiplier;
+
+    multiplier = _compute_multiplier(matrix, pivot_row, pivot_col, target_row);
+    MatrixAddScaledRows(matrix, target_row, pivot_row, multiplier);
+}
+
+void MatrixRowEliminate(Matrix* matrix, Uint pivot_row, Uint target_row)
+{
+    Uint col;
+
+    col = _find_nonzero_col(matrix, pivot_row);
+    _eliminate(matrix, pivot_row, col, target_row);
+}
+
+void MatrixEliminateBelow(Matrix* matrix, Uint pivot_row)
+{
+    Uint target_row;
+
+    target_row = pivot_row + 1;
+    while (target_row < matrix->n_rows)
+    {
+        MatrixRowEliminate(matrix, pivot_row, target_row);
+        ++ target_row;
+    }    
+}
+
+static void _echelon_form(Matrix* matrix, Uint index)
+{
+    Int pivot_row;
+
+    while (index + 1 < matrix->n_cols && index + 1 < matrix->n_rows)
+    {
+        pivot_row = _find_pivot_row(matrix, index);
+        if (pivot_row == NOT_FOUND)
+            return ;
+        
+        if (pivot_row != (Int)index)
+            MatrixSwapRows(matrix, index, pivot_row);
+
+        MatrixEliminateBelow(matrix, pivot_row);
+        index = pivot_row + 1;
+    }
+}
+
+void MatrixEchelonForm(Matrix* matrix)
+{
+    _echelon_form(matrix, 0);
 }

@@ -150,7 +150,7 @@ void type_interface_test()
 
 void matrix_test()
 {
-    Uint size = 100; 
+    Uint size = 10; 
     
     Matrix* A = MatrixCreateFloat(size, size);
     Matrix* B = MatrixCreateFloat(size, size);
@@ -161,13 +161,27 @@ void matrix_test()
     size = size * size;
     while (n < size)
     {
+        x += n;
         MatrixSetNth(B, n, &x);
         ++ n;
     }
 
+    PrintMatrix(B, PrintFloatS);
+    printf("\n");
+    // MatrixAddRows(B, 0, 1);
+    Float f = -1;
+    MatrixAddScaledRows(B, 0, 1, &f);
+    PrintMatrix(B, PrintFloatS);
+    //
+    // Float factor = -1;
+    // MatrixScaleRow(B, 0, &factor);
     // PrintMatrix(B, PrintFloatS);
-    MatrixMult(A, B, B);
-    PrintMatrix(A, PrintFloatS);
+    // printf("\n");
+    //
+    // MatrixSwapRows(B, 0, 2);
+    // PrintMatrix(B, PrintFloatS);
+    // MatrixMult(A, B, B);
+    // PrintMatrix(A, PrintFloatS);
 
     MatrixDestroy(A);
     MatrixDestroy(B);
@@ -175,26 +189,14 @@ void matrix_test()
 
 void matrix_rational_test()
 {
-    Uint size = 100;
-    Matrix* A = MatrixCreateRational(size, size);
-    Matrix* B = MatrixCreateRational(size, size);
-    Uint n = 0;
-    Rational p;
-
-    RationalOne(&p);
-    size = size * size;
-    while (n < size)
-    {
-        MatrixSetNth(A, n, &p);
-        ++ n;
-    }
-
-    // PrintMatrix(A, PrintRationalS);
-    MatrixMult(B, A, A);
-    PrintMatrix(B, PrintRationalS);
+    Matrix* A = MatrixCreateRational(2, 3);
+    Rational array[] = {{1, 1}, {1, 1}, {3, 1}, {3, 1}, {-2, 1}, {4, 1}};
+    MatrixInitFromArray(A, array);
+    PrintMatrix(A, PrintRationalP);
+    MatrixEchelonForm(A);
+    PrintMatrix(A, PrintRationalP);
 
     MatrixDestroy(A);
-    MatrixDestroy(B);
 }
 
 void matrix_add_test()
@@ -246,8 +248,8 @@ int main()
     // input_test();
     // sort_test();
     // matrix_test();
-    matrix_add_test();
-    // matrix_rational_test();
+    // matrix_add_test();
+    matrix_rational_test();
     // deck_test();
 
     WhyEnd();
