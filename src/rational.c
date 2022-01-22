@@ -2,8 +2,18 @@
 
 void RationalInit(Rational* p, Int top, Int bot)
 {
-    p->top = top;
-    p->bot = bot;
+    Int gcd;
+
+    if (top < 0 && bot < 0)
+    {
+        top = -top;
+        bot = -bot;
+    }
+
+    gcd = MathGCDInt(top, bot);
+
+    p->top = top / gcd;
+    p->bot = bot / gcd;
 }
 
 Rational RationalCopy(const Rational* p)

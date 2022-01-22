@@ -29,7 +29,7 @@ typedef struct Matrix           Matrix;
 
 enum Status
 {
-    WHY_OK = 0, WHY_ERROR, 
+    WHY_OK = 0, WHY_ERROR = -1, 
 };
 
 struct TypeInterface
@@ -170,6 +170,10 @@ bool        FloatIsZeroWRAP(const void* x);
 void        FloatNegateWRAP(void* target, const void* x);
 void        FloatInvWRAP(void* target, const void* x);
 
+void        UintInit(Uint* target, Uint value);
+
+void        IntInit(Int* target, Int value);
+
 Int         CompareInt(const void* lhs, const void* rhs);
 Int         CompareUint(const void* lhs, const void* rhs);
 Int         ComapreFloat(const void* lhs, const void* rhs);
@@ -178,6 +182,7 @@ Int         CompareCstr(const void* lhs, const void* rhs);
 Uint        MathRandom(void);
 Uint        MathRandomInRange(Uint n);
 Uint        MathGCD(Uint a, Uint b);
+Int         MathGCDInt(Int a, Int b);
 
 Matrix*     MatrixCreateFloat(Uint n_rows, Uint n_cols);
 Matrix*     MatrixCreateRational(Uint n_rows, Uint n_cols);
@@ -202,11 +207,20 @@ void        MatrixAddScaledRows(Matrix* matrix, Uint target, Uint source, const 
 Int         MatrixFindPivotRow(const Matrix* matrix);
 void        MatrixRowEliminate(Matrix* matrix, Uint pivot_row, Uint target_row);
 void        MatrixEchelonForm(Matrix* matrix);
+void        MatrixEliminateUp(Matrix* matrix);
+
+bool        IsDigit(char c);
+bool        IsAlpha(char c);
+bool        IsSpace(char c);
+Int         ParseUint(Uint* target, const char* string);
+Int         ParseInt(Int* target, const char* string);
+Int         ParseRational(Rational* target, const char* string);
 
 Byte*       ReadFile(const char* name);
 Deck*       ReadFileAllLines(const char* name);
 
 void        PrintInt(const void* n);
+void        PrintIntN(const void* n);
 void        PrintIntS(const void* n);
 void        PrintCstr(const void* str);
 void        PrintCstrN(const void* str);

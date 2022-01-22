@@ -355,11 +355,8 @@ static bool _is_suitable(const Matrix* matrix, Uint row, Uint col)
     return !matrix->interface->is_zero(item);
 }
 
-static Int _find_suitable_element(const Matrix* matrix, Uint col)
+static Int _find_suitable_element(const Matrix* matrix, Uint row, Uint col)
 {
-    Uint row;
-
-    row = 0;
     while (row < matrix->n_rows)
     {
         if (_is_suitable(matrix, row, col))
@@ -370,15 +367,16 @@ static Int _find_suitable_element(const Matrix* matrix, Uint col)
     return NOT_FOUND;
 }
 
-static Int _find_pivot_row(const Matrix* matrix, Uint col)
+static Int _find_pivot_row(const Matrix* matrix, Uint row, Uint col)
 {
-    Int row;
+    Int _row;
 
+    _row = row;
     while (col < matrix->n_cols)
     {
-        row = _find_suitable_element(matrix, col);
-        if (row != NOT_FOUND)
-            return row;
+        _row = _find_suitable_element(matrix, _row, col);
+        if (_row != NOT_FOUND)
+            return _row;
         
         ++ col;
     }
@@ -388,7 +386,7 @@ static Int _find_pivot_row(const Matrix* matrix, Uint col)
 
 Int MatrixFindPivotRow(const Matrix* matrix)
 {
-    return _find_pivot_row(matrix, 0);
+    return _find_pivot_row(matrix, 0, 0);
 }
 
 static Int _find_nonzero_col(const Matrix* matrix, Uint row)
@@ -455,9 +453,12 @@ static void _echelon_form(Matrix* matrix, Uint index)
 {
     Int pivot_row;
 
-    while (index + 1 < matrix->n_cols && index + 1 < matrix->n_rows)
+    while (index < matrix->n_cols && index < matrix->n_rows)
     {
-        pivot_row = _find_pivot_row(matrix, index);
+        //
+        // PrintMatrix(matrix, PrintRationalP);
+        //
+        pivot_row = _find_pivot_row(matrix, index, index);
         if (pivot_row == NOT_FOUND)
             return ;
         
@@ -472,4 +473,47 @@ static void _echelon_form(Matrix* matrix, Uint index)
 void MatrixEchelonForm(Matrix* matrix)
 {
     _echelon_form(matrix, 0);
+}
+
+static void _normalize_row(Matrix* matrix, Uint row, Uint pivot_col)
+{
+    void* pivot;
+
+    pivot = MatrixPointAt(matrix, row, pivot_col);
+    matrix->interface->invert(_register0, pivot);
+    MatrixScaleRow(matrix, row, _register0);
+}
+
+void _eliminate_up(Matrix* matrix, Uint pivot_row, Uint pivot_col)
+{
+    Int row;
+
+    row = pivot_row - 1;
+    while (row >= 0)
+    {
+        _eliminate(matrix, pivot_row, pivot_col, row);
+        -- row;
+    }
+}
+
+void MatrixEliminateUp(Matrix* matrix)
+{
+    Int row;
+    Int col;
+
+    row = matrix->n_rows - 1;
+    while (row >= 0)
+    {
+        col = _find_nonzero_col(matrix, row);
+
+        if (col == NOT_FOUND)
+        {
+            -- row;
+            continue ;
+        }
+        _normalize_row(matrix, row, col);
+        _eliminate_up(matrix, row, col);
+
+        -- row;
+    }
 }

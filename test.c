@@ -189,12 +189,30 @@ void matrix_test()
 
 void matrix_rational_test()
 {
-    Matrix* A = MatrixCreateRational(2, 3);
-    Rational array[] = {{1, 1}, {1, 1}, {3, 1}, {3, 1}, {-2, 1}, {4, 1}};
+    // Matrix* A = MatrixCreateRational(2, 3);
+    // Rational array[] = {{0, 1}, {1, 1}, {3, 1}, {3, 1}, {-2, 1}, {4, 1}};
+
+    // Matrix* A = MatrixCreateRational(3, 4);
+    // Rational array[] = {{1, 1}, {-2, 1}, {1, 1}, {0, 1},
+    //                     {2, 1}, {1, 1}, {-3, 1}, {5, 1},
+    //                     {4, 1}, {-7, 1}, {1, 1}, {-1, 1}};
+
+    // Matrix* A = MatrixCreateRational(3, 5);
+    // Rational array[] = {{1, 1}, {-1, 1}, {1, 1}, {-1, 1}, {1, 1},
+    //                     {2, 1}, {1, 1}, {-3, 1}, {0, 1}, {2, 1},
+    //                     {5, 1}, {-2, 1}, {0, 1}, {-3, 1}, {5, 1}};
+
+
+    Matrix* A = MatrixCreateRational(3, 1);
+    Rational array[] = {{2, 1}, {-2, 1}, {1, 1}};
+
     MatrixInitFromArray(A, array);
     PrintMatrix(A, PrintRationalP);
     MatrixEchelonForm(A);
     PrintMatrix(A, PrintRationalP);
+    MatrixEliminateUp(A);
+    PrintMatrix(A, PrintRationalP);
+
 
     MatrixDestroy(A);
 }
@@ -239,6 +257,33 @@ void deck_test()
     DeckDestroy(deck);
 }
 
+void parse_test()
+{
+    Uint n;
+    Int status;
+
+    status = ParseUint(&n, "0");
+    PrintIntS(&status);
+    PrintUintN(&n);
+
+    status = ParseUint(&n, "137x");
+    PrintIntS(&status);
+    PrintUintN(&n);
+
+    status = ParseUint(&n, "999999999999999999999999999999999999999999");
+    PrintIntS(&status);
+    PrintUintN(&n);
+
+    Int m;
+    status = ParseInt(&m, "-1");
+    PrintIntS(&status);
+    PrintIntN(&m);
+
+    status = ParseInt(&m, "-99999999999999999999999999999999999");
+    PrintIntS(&status);
+    PrintIntN(&m);
+}
+
 int main()
 {
     WhyStart();
@@ -249,8 +294,9 @@ int main()
     // sort_test();
     // matrix_test();
     // matrix_add_test();
-    matrix_rational_test();
+    // matrix_rational_test();
     // deck_test();
+    parse_test();
 
     WhyEnd();
     return EXIT_SUCCESS;

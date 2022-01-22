@@ -28,3 +28,8 @@ Uint MathGCD(Uint a, Uint b)
 
     return MathGCD(b, r);
 }
+
+Int MathGCDInt(Int a, Int b)
+{
+    return MathGCD(a < 0 ? -a : a, b < 0 ? -b : b);
+}

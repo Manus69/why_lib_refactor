@@ -19,7 +19,17 @@ void PrintCstrN(const void* str)
 
 void PrintRational(const void* p)
 {
-    printf("%ld/%ld", ((Rational *)p)->top, ((Rational *)p)->bot);
+    Int top;
+    Int bot;
+
+    top = ((Rational *)p)->top;
+    bot = ((Rational *)p)->bot;
+    if (bot == 1)
+        printf("%ld", top);
+    else if (bot == -1)
+        printf("%ld", -top);
+    else
+        printf("%ld/%ld", ((Rational *)p)->top, ((Rational *)p)->bot);
 }
 
 void PrintRationalN(const void* p)
@@ -57,10 +67,16 @@ void PrintInt(const void* n)
     printf("%ld", *(Int *)n);
 }
 
-void PrintIntS(const void* n)
+void PrintIntN(const void* n)
 {
     PrintInt(n);
     printf("\n");
+}
+
+void PrintIntS(const void* n)
+{
+    PrintInt(n);
+    printf(" ");
 }
 
 void PrintFloat(const void* x)
