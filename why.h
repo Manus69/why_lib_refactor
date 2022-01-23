@@ -26,6 +26,7 @@ typedef struct Deck             Deck;
 typedef struct List             List;
 typedef struct Tree             Tree;
 typedef struct Matrix           Matrix;
+typedef struct Table            Table;
 
 enum Status
 {
@@ -116,15 +117,30 @@ void        BlockMap(const Block* block, Uint index, Uint n_items, void (*functi
 
 Deck*       DeckCreatePtr(void* (*copy)(const void *), void (*destroy)(void *));
 void        DeckDestroy(Deck* deck);
+void        DeckDestroyWRAP(void* deck);
 Uint        DeckNItems(const Deck* deck);
+void        DeckGet(void* target, const Deck* deck, Uint index);
 void        DeckSet(Deck* deck, Uint index, const void* item);
-void*       DeckPointAt(Deck* deck, Uint index);
+void*       DeckPointAt(const Deck* deck, Uint index);
 Int         DeckPushBack(Deck* deck, const void* item);
 Int         DeckPushFront(Deck* deck, const void* item);
 void        DeckMap(Deck* deck, void (*function)(void *));
 void        DeckReserve(Deck* deck, Uint n_items);
 Int         DeckLast(void* target, const Deck* deck);
 Int         DeckFirst(void* target, const Deck* deck);
+
+Int         TableAddRow(Table* table);
+Table*      TableCreatePtr(void* (*copy)(const void *), void (*destroy)(void *));
+Uint        TableNRows(const Table* table);
+Int         TablePush(Table* table, Uint row, const void* item);
+Int         TablePushLastRow(Table* table, const void* item);
+void        TableMap(Table* table, void (*function)(void *));
+void        TableMapRow(Table* table, Uint n, void (*function)(void *));
+void        TableDestroy(Table* table);
+Int         TableLast(void* target, const Table* table);
+Int         TableFirst(void* target, const Table* table);
+void*       TablePointAt(const Table* table, Uint row, Uint col);
+Deck*       TablePointAtRow(const Table* table, Uint row);
 
 void        InsertionSort(Block* block, Int left_index, Int right_index, Int (*compare)(const void *, const void *));
 void        QuickSort(Block* block, Int left_index, Int right_index, Int (*compare)(const void *, const void *));
@@ -186,6 +202,7 @@ Int         MathGCDInt(Int a, Int b);
 
 Matrix*     MatrixCreateFloat(Uint n_rows, Uint n_cols);
 Matrix*     MatrixCreateRational(Uint n_rows, Uint n_cols);
+Matrix*     MatrixCreateRationalFromTable(const Table* table);
 void        MatrixDestroy(Matrix* matrix);
 void        MatrixInitFromArray(Matrix* matrix, const void* array);
 Uint        MatrixNRows(const Matrix* matrix);
@@ -215,14 +232,28 @@ bool        IsSpace(char c);
 Int         ParseUint(Uint* target, const char* string);
 Int         ParseInt(Int* target, const char* string);
 Int         ParseRational(Rational* target, const char* string);
+Int         ParseUintWRAP(void* target, const char* string);
+Int         ParseIntWRAP(void* target, const char* string);
+Int         ParseRationalWRAP(void* target, const char* string);
+Int         ParseTable(Table* table, const char* string, char table_sep_left, char table_sep_right,
+                        char row_sep_left, char row_sep_right, char col_sep);
+
+char*       StringSubstring(const char* string, Uint length);
+Int         StringFindC(const char* string, char c);
+Deck*       StringSplitLength(const char* string, char separator, Uint length);
+Deck*       StringSplit(const char* string, char separator);
+Deck*       StringSplitDestructive(char* string, char separator);
+Deck*       StringSplitLengthDestructive(char* string, char separator, Uint length);
 
 Byte*       ReadFile(const char* name);
 Deck*       ReadFileAllLines(const char* name);
+Deck*       ReadFileAllLines2(const char* name);
 
 void        PrintInt(const void* n);
 void        PrintIntN(const void* n);
 void        PrintIntS(const void* n);
 void        PrintCstr(const void* str);
+void        PrintCstrS(const void* str);
 void        PrintCstrN(const void* str);
 void        PrintTimeDiff(long start, long end);
 void        PrintRational(const void* p);
@@ -237,6 +268,7 @@ void        PrintBits(Uint n);
 void        PrintBlock(const Block* block, Uint index, Uint n_items, void (*print)(const void *));
 void        PrintMatrix(const Matrix* matrix, void (*print)(const void* ));
 void        PrintMatrixN(const void* matrix, void (*print)(const void *));
-void        PrintDeck(const Deck* deck, void (*print)(const void *));  
+void        PrintDeck(const Deck* deck, void (*print)(const void *));
+void        PrintTable(const Table* table, void (*print)(const void* ));
 
 #endif

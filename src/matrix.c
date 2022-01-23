@@ -86,6 +86,85 @@ void MatrixInitFromArray(Matrix* matrix, const void* array)
     }
 }
 
+static Int _init_from_table(Matrix* matrix, const Table* table, 
+                                Int (*parse_element)(void * , const char *))
+{
+    Uint    row;
+    Uint    col;
+    Int     status;
+    void*   target;
+    void*   dest;
+
+    row = 0;
+    while (row < matrix->n_rows)
+    {
+        col = 0;
+        while (col < matrix->n_cols)
+        {
+            dest = TablePointAt(table, row, col);
+            target = MatrixPointAt(matrix, row, col);
+            status = parse_element(target, *(char **)dest);
+
+            if (status <= 0)
+                return status;
+            
+            ++ col;
+        }
+        ++ row;
+    }
+
+    return 1;
+}
+
+static Int _check_col_consistency(const Table* table)
+{
+    Uint    row;
+    Uint    n_cols;
+    Uint    n_rows;
+    Deck*   current_row;
+
+    current_row = TablePointAtRow(table, 0);
+    n_cols = DeckNItems(current_row);
+    n_rows = TableNRows(table);
+    row = 1;
+
+    while (row < n_rows)
+    {
+        current_row = TablePointAtRow(table, row);
+        if (DeckNItems(current_row) != n_cols)
+            return WHY_ERROR;
+        
+        ++ row;
+    }
+
+    return n_cols;
+}
+
+Matrix* MatrixCreateRationalFromTable(const Table* table)
+{
+    Uint    n_rows;
+    Int     n_cols;
+    Matrix* matrix;
+    Int     status;
+
+    if ((n_rows = TableNRows(table)) < 1)
+        return NULL;
+    
+    if ((n_cols = _check_col_consistency(table)) < 1)
+        return NULL;
+    
+    if (!(matrix = MatrixCreateRational(n_rows, n_cols)))
+        return NULL;
+    
+    if ((status = _init_from_table(matrix, table, ParseRationalWRAP)) <= 0)
+    {
+        MatrixDestroy(matrix);
+        return NULL;
+    }
+
+    return matrix;
+}
+
 void MatrixDestroy(Matrix* matrix)
 {
     BlockDestroy(matrix->block);
@@ -178,7 +257,7 @@ static void _get_product_row(Uint row, const Matrix* lhs, const Matrix* rhs)
     }
 }
 
-static void _copy_row(Matrix* matrix, Uint row)
+void _copy_row(Matrix* matrix, Uint row)
 {
     Uint    n;
     Uint    index;

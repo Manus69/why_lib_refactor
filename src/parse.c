@@ -15,6 +15,11 @@ bool IsSpace(char c)
     return (c == ' ') || (c == '\t');
 }
 
+bool IsWSpace(char c)
+{
+    return c == ' ';
+}
+
 Int ParseUint(Uint* target, const char* string)
 {
     Uint            result;
@@ -46,6 +51,11 @@ Int ParseUint(Uint* target, const char* string)
     return current - string;
 }
 
+Int ParseUintWRAP(void* target, const char* string)
+{
+    return ParseUint(target, string);
+}
+
 Int ParseInt(Int* target, const char* string)
 {
     Int     status;
@@ -71,6 +81,11 @@ Int ParseInt(Int* target, const char* string)
     return status;
 }
 
+Int ParseIntWRAP(void* target, const char* string)
+{
+    return ParseInt(target, string);
+}
+
 Int ParseRational(Rational* target, const char* string)
 {
     Int         top;
@@ -82,20 +97,34 @@ Int ParseRational(Rational* target, const char* string)
     if ((status = ParseInt(&top, string)) <= 0)
         return status;
     
-    while (*current && IsSpace(*current))
+    current += status;
+    if (*current && IsSpace(*current))
         ++ current;
     
     if (*current == '/')
         ++ current;
-    else return 0;
+    else
+    {
+        RationalInit(target, status, 1);
+        return current - string;
+    }
 
-    while (*current && IsSpace(*current))
+    if (*current && IsSpace(*current))
         ++ current;
 
     if ((status = ParseInt(&bot, current)) <= 0)
         return status;
     
+    if (bot == 0)
+        return WHY_ERROR;
+    
+    current += status;
     RationalInit(target, top, bot);
 
     return current - string;
+}
+
+Int ParseRationalWRAP(void* target, const char* string)
+{
+    return ParseRational(target, string);
 }

@@ -57,6 +57,11 @@ void DeckDestroy(Deck* deck)
     free(deck);
 }
 
+void DeckDestroyWRAP(void* deck)
+{
+    DeckDestroy(deck);
+}
+
 Uint DeckNItems(const Deck* deck)
 {
     return deck->right_insert_index - deck->left_insert_index - 1;
@@ -68,11 +73,18 @@ void DeckSet(Deck* deck, Uint index, const void* item)
     BlockSet(deck->block, index, item);
 }
 
-void* DeckPointAt(Deck* deck, Uint index)
+void* DeckPointAt(const Deck* deck, Uint index)
 {
     index = _index_to_abs(deck, index);
 
     return BlockPointAt(deck->block, index);
+}
+
+void DeckGet(void* target, const Deck* deck, Uint index)
+{
+    index = _index_to_abs(deck, index);
+
+    return BlockGet(target, deck->block, index);
 }
 
 Int DeckPushBack(Deck* deck, const void* item)

@@ -17,6 +17,12 @@ void PrintCstrN(const void* str)
     printf("\n");
 }
 
+void PrintCstrS(const void* str)
+{
+    PrintCstr(str);
+    printf(" ");
+}
+
 void PrintRational(const void* p)
 {
     Int top;
@@ -154,4 +160,22 @@ void PrintDeck(const Deck* deck, void (*print)(const void *))
 
     _print = (void (*)(void *))print;
     DeckMap((Deck *)deck, _print);
+}
+
+void PrintTable(const Table* table, void (*print)(const void* ))
+{
+    void (*_print)(void *);
+    Uint n;
+    Uint n_rows;
+
+    _print = (void (*)(void *))print;
+    n = 0;
+    n_rows = TableNRows(table);
+
+    while (n < n_rows)
+    {
+        TableMapRow((Table *)table, n, _print);
+        printf("\n");
+        ++ n;
+    }
 }

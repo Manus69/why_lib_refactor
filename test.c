@@ -48,10 +48,10 @@ void input_test()
 {
     Deck* lines;
 
-    lines = ReadFileAllLines("text_file.txt");
-
+    // lines = ReadFileAllLines("text_file.txt");
+    lines = ReadFileAllLines2("text_file.txt");
     // PrintDeck(lines, PrintCstrN);
-    SortDeck(lines, CompareCstr);
+    // SortDeck(lines, CompareCstr);
     // PrintDeck(lines, PrintCstrN);
 
     DeckDestroy(lines);
@@ -282,6 +282,97 @@ void parse_test()
     status = ParseInt(&m, "-99999999999999999999999999999999999");
     PrintIntS(&status);
     PrintIntN(&m);
+
+    Rational p;
+    status = ParseRational(&p, "2/4 ");
+    PrintIntS(&status);
+    PrintRationalN(&p);
+
+    status = ParseRational(&p, "-137 / 661");
+    PrintIntS(&status);
+    PrintRationalN(&p);
+
+    status = ParseRational(&p, "-2/0");
+    PrintIntS(&status);
+    PrintRationalN(&p);
+}
+
+void string_test()
+{
+    // char* str0 = strdup("this is a   test");
+    char* str0 = strdup("a,");
+
+    Deck* deck = StringSplitDestructive(str0, ',');
+    PrintDeck(deck, PrintCstrN);
+    printf("---\n%zu\n", DeckNItems(deck));
+
+    free(str0);
+    DeckDestroy(deck);
+
+    char* str = " this, is,,a test";
+    deck = StringSplit(str, ',');
+    // deck = StringSplitLength(str, ',', 2);
+    PrintDeck(deck, PrintCstrN);
+    DeckDestroy(deck);
+}
+
+static void _table_test(const char* string, char table_sep_left, char table_sep_right,
+                        char row_sep_left, char row_sep_right, char col_sep)
+{
+    Table* table;
+    Int status;
+
+    table = TableCreatePtr(NULL, NULL);
+    status = ParseTable(table, string, table_sep_left, table_sep_right, row_sep_left, row_sep_right, col_sep);
+    PrintCstrN(&string);
+    PrintTable(table, PrintCstrS);
+    printf("status = %ld\n---------\n", status);
+
+    TableDestroy(table);
+}
+
+void table_test()
+{
+    char* string;
+
+    string = "x;";
+    _table_test(string, 0, 0, 0, ';', ' ');
+
+    string = "a, b, c";
+    _table_test(string, 0, 0, 0, 0, ',');
+
+    string = "a, ,c";
+    _table_test(string, 0, 0, 0, 0, ',');
+
+    string = "[a, b][x, y]";
+    _table_test(string, 0, 0, '[', ']', ',');
+
+    string = "[a, b, c; x, y]";
+    _table_test(string, '[', ']', 0, ';', ',');
+
+    string = "a]";
+    _table_test(string, 0, ']', 0, ';', ',');
+}
+
+void matrix_table_test()
+{
+    Matrix* matrix;
+    Table* table;
+
+    table = TableCreatePtr(NULL, NULL);
+    Int status = ParseTable(table, "1/2,0;0,1", 0, 0, 0, ';', ',');
+    PrintTable(table, PrintCstrS);
+
+    if (status > 0)
+    {
+        matrix = MatrixCreateRationalFromTable(table);
+
+        PrintMatrix(matrix, PrintRationalP);
+        MatrixDestroy(matrix);
+    }
+
+    TableDestroy(table);
+
 }
 
 int main()
@@ -296,7 +387,10 @@ int main()
     // matrix_add_test();
     // matrix_rational_test();
     // deck_test();
-    parse_test();
+    // parse_test();
+    // table_test();
+    // string_test();
+    matrix_table_test();
 
     WhyEnd();
     return EXIT_SUCCESS;
