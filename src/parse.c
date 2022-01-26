@@ -105,7 +105,7 @@ Int ParseRational(Rational* target, const char* string)
         ++ current;
     else
     {
-        RationalInit(target, status, 1);
+        RationalInit(target, top, 1);
         return current - string;
     }
 

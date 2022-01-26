@@ -255,6 +255,17 @@ void deck_test()
     PrintDeck(deck, PrintCstrN);
     
     DeckDestroy(deck);
+
+    deck = DeckCreateUint();
+    Uint n;
+
+    n = 11;
+    DeckPushBack(deck, &n);
+    n = 661;
+    DeckPushBack(deck, &n);
+    PrintDeck(deck, PrintUintN);
+
+    DeckDestroy(deck);
 }
 
 void parse_test()
@@ -360,19 +371,53 @@ void matrix_table_test()
     Table* table;
 
     table = TableCreatePtr(NULL, NULL);
-    Int status = ParseTable(table, "1/2,0;0,1", 0, 0, 0, ';', ',');
+    Int status = ParseTable(table, "0 0 1;0 1 1;1 1 1", 0, 0, 0, ';', ' ');
     PrintTable(table, PrintCstrS);
 
     if (status > 0)
     {
         matrix = MatrixCreateRationalFromTable(table);
-
+        MatrixEchelonForm(matrix);
         PrintMatrix(matrix, PrintRationalP);
         MatrixDestroy(matrix);
     }
 
     TableDestroy(table);
+    char* system;
+    /*
+                00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 rhs
+                00 01 02 03 10 11 12 13 20 21 22 23 30 31 32 33 rhs
+                |        |       |       |       |
+    */
+    system =    "0 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 6\n"
+                "0 0 0 0 1 1 1 0 0 0 0 0 0 0 0 0 8\n"
+                "0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 0 7\n"
+                "0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 0 9\n"
+                "0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 3\n"
+                "0 1 0 0 0 1 0 0 0 0 1 0 0 1 0 0 10\n"
+                "0 0 1 0 0 0 1 1 0 0 1 0 0 0 0 0 10\n"
+                "0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 7\n"
+                "0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 6\n"
+                "0 0 1 1 0 0 1 0 0 0 0 0 0 0 0 0 8\n"
+                "0 0 0 0 0 0 0 0 0 1 0 0 1 1 0 0 7\n"
+                "0 0 0 0 0 0 0 0 0 0 1 1 0 0 1 0 9";
 
+    table = TableCreatePtr(NULL, NULL);
+    status = ParseTable(table, system, 0, 0, 0, 0, 0);
+    PrintTable(table, PrintCstrS);
+
+    if (status > 0)
+    {
+        matrix = MatrixCreateRationalFromTable(table);
+        PrintMatrix(matrix, PrintRationalP);
+        // MatrixDiagonalize(matrix);
+        MatrixEchelonForm(matrix);
+        PrintMatrix(matrix, PrintRationalP);
+        MatrixEliminateUp(matrix);
+        PrintMatrix(matrix, PrintRationalP);
+        MatrixDestroy(matrix);
+    }
+    TableDestroy(table);    
 }
 
 int main()
@@ -386,11 +431,11 @@ int main()
     // matrix_test();
     // matrix_add_test();
     // matrix_rational_test();
-    // deck_test();
+    deck_test();
     // parse_test();
     // table_test();
     // string_test();
-    matrix_table_test();
+    // matrix_table_test();
 
     WhyEnd();
     return EXIT_SUCCESS;

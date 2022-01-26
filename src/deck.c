@@ -43,6 +43,11 @@ Deck* DeckCreatePtr(void* (*copy)(const void *), void (*destroy)(void *))
     return _create(DECK_CAPACITY, copy, destroy, BlockCreatePtr);
 }
 
+Deck* DeckCreateUint()
+{
+    return _create(DECK_CAPACITY, NULL, NULL, BlockCreateUint);
+}
+
 static void _destroy_items(Deck* deck)
 {
     DeckMap(deck, deck->destroy);

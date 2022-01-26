@@ -116,6 +116,7 @@ Int         BlockCompare(const Block* block, Uint j, Uint k, Int (*compare)(cons
 void        BlockMap(const Block* block, Uint index, Uint n_items, void (*function)(const void *));
 
 Deck*       DeckCreatePtr(void* (*copy)(const void *), void (*destroy)(void *));
+Deck*       DeckCreateUint();
 void        DeckDestroy(Deck* deck);
 void        DeckDestroyWRAP(void* deck);
 Uint        DeckNItems(const Deck* deck);
@@ -199,6 +200,9 @@ Uint        MathRandom(void);
 Uint        MathRandomInRange(Uint n);
 Uint        MathGCD(Uint a, Uint b);
 Int         MathGCDInt(Int a, Int b);
+Uint        MathLCM(Uint a, Uint b);
+Uint        MathFib(Uint n);
+Deck*       MathFactor(Uint n);
 
 Matrix*     MatrixCreateFloat(Uint n_rows, Uint n_cols);
 Matrix*     MatrixCreateRational(Uint n_rows, Uint n_cols);
@@ -216,6 +220,7 @@ void        MatrixDot(void* target, const Matrix* lhs, const Matrix* rhs, Uint r
 Int         MatrixMult(Matrix* target, const Matrix* lhs, const Matrix* rhs);
 Int         MatrixAdd(Matrix* target, const Matrix* lhs, const Matrix* rhs);
 void        MatrixMapRow(Matrix* matrix, Uint row, void (*function)(void* ));
+void        MatrixDiagonalize(Matrix* matrix);
 //these should be made private
 void        MatrixSwapRows(Matrix* matrix, Uint j, Uint k);
 void        MatrixScaleRow(Matrix* matrix, Uint row, const void* value);

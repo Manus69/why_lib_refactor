@@ -397,11 +397,6 @@ void MatrixAddScaledRows(Matrix* matrix, Uint target, Uint source, const void* f
     {
         lhs = MatrixPointAt(matrix, target, n);
         rhs = MatrixPointAt(matrix, source, n);
-
-        //
-        // Rational p = RationalCopy(lhs);
-        // p = RationalCopy(factor);
-        //
         
         matrix->interface->mult(_register0, rhs, factor);
         matrix->interface->add(lhs, lhs, _register0);
@@ -453,7 +448,7 @@ static Int _find_pivot_row(const Matrix* matrix, Uint row, Uint col)
     _row = row;
     while (col < matrix->n_cols)
     {
-        _row = _find_suitable_element(matrix, _row, col);
+        _row = _find_suitable_element(matrix, row, col);
         if (_row != NOT_FOUND)
             return _row;
         
@@ -534,9 +529,6 @@ static void _echelon_form(Matrix* matrix, Uint index)
 
     while (index < matrix->n_cols && index < matrix->n_rows)
     {
-        //
-        // PrintMatrix(matrix, PrintRationalP);
-        //
         pivot_row = _find_pivot_row(matrix, index, index);
         if (pivot_row == NOT_FOUND)
             return ;
@@ -544,8 +536,11 @@ static void _echelon_form(Matrix* matrix, Uint index)
         if (pivot_row != (Int)index)
             MatrixSwapRows(matrix, index, pivot_row);
 
-        MatrixEliminateBelow(matrix, pivot_row);
-        index = pivot_row + 1;
+        MatrixEliminateBelow(matrix, index);
+        //
+        // PrintMatrix(matrix, PrintRationalP);
+        //
+        ++ index;
     }
 }
 
@@ -595,4 +590,10 @@ void MatrixEliminateUp(Matrix* matrix)
 
         -- row;
     }
+}
+
+void MatrixDiagonalize(Matrix* matrix)
+{
+    MatrixEchelonForm(matrix);
+    MatrixEliminateUp(matrix);
 }

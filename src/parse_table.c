@@ -66,6 +66,15 @@ static Int _parse_table_rows(Table* table, const Deck* rows, char row_sep_left, 
     return TOKEN_PARSE_SUCCESS;
 }
 
+static void _check_separators(char* row_sep_right, char* col_sep)
+{
+    if (!*row_sep_right)
+        *row_sep_right = '\n';
+    
+    if (!*col_sep)
+        *col_sep = ' ';
+}
+
 Int ParseTable(Table* table, const char* string, char table_sep_left, char table_sep_right,
                 char row_sep_left, char row_sep_right, char col_sep)
 {
@@ -98,7 +107,9 @@ Int ParseTable(Table* table, const char* string, char table_sep_left, char table
     
     if (table_sep_right)
         copy[right_index] = '\0';
-    
+
+    _check_separators(&row_sep_right, &col_sep);
+
     if (!(rows = StringSplitLengthDestructive(copy, row_sep_right, right_index + 1)))
     {
         free(copy);
@@ -106,12 +117,6 @@ Int ParseTable(Table* table, const char* string, char table_sep_left, char table
     }
     
     WhySavePtr(copy);
-    if (!row_sep_right)
-        row_sep_right = '\n';
-    
-    if (!col_sep)
-        col_sep = ' ';
-    
     status = _parse_table_rows(table, rows, row_sep_left, col_sep);
 
     DeckDestroy(rows); 

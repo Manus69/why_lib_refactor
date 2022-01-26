@@ -158,6 +158,9 @@ void PrintDeck(const Deck* deck, void (*print)(const void *))
 {
     void (*_print)(void *);
 
+    if (!deck)
+        return ;
+    
     _print = (void (*)(void *))print;
     DeckMap((Deck *)deck, _print);
 }
