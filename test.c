@@ -420,6 +420,22 @@ void matrix_table_test()
     TableDestroy(table);    
 }
 
+void math_test()
+{
+    // Deck* primes;
+
+    // primes = MathGetNPrimes(1000000);
+    // // PrintDeck(primes, PrintUintN);
+    // Uint n;
+    // DeckLast(&n, primes);
+    // PrintUintN(&n);
+    // DeckDestroy(primes);
+
+    Uint p = MathGetNthPrime(1000000);
+    PrintUintN(&p);
+
+}
+
 int main()
 {
     WhyStart();
@@ -431,11 +447,12 @@ int main()
     // matrix_test();
     // matrix_add_test();
     // matrix_rational_test();
-    deck_test();
+    // deck_test();
     // parse_test();
     // table_test();
     // string_test();
     // matrix_table_test();
+    math_test();
 
     WhyEnd();
     return EXIT_SUCCESS;

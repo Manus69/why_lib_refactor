@@ -198,3 +198,50 @@ void BlockMap(const Block* block, Uint index, Uint n_items, void (*function)(con
         ++ index;
     }
 }
+
+Int BlockWriteBytes(Block* block, Uint index, const Byte* bytes, Uint n_bytes)
+{
+    if (index + n_bytes + 1 > BlockGetSize(block))
+    {
+        if (BlockExpand(block, n_bytes + 1) != WHY_OK)
+            return WHY_ERROR;
+    }
+
+    memcpy(block->memory + index, bytes, n_bytes);
+
+    return WHY_OK;
+}
+
+Byte* StringConcatDeck(const Deck* strings)
+{
+    Block*  block;
+    Uint    index;
+    Uint    n;
+    Uint    length;
+    Byte*   string;
+
+    if (!(block = BlockCreateByte(BLOCK_CAPACITY)))
+        return NULL;
+    
+    n = 0;
+    index = 0;
+
+    while (n < DeckNItems(strings))
+    {
+        DeckGet(&string, strings, n);
+
+        length = strlen((char *)string);
+        if (BlockWriteBytes(block, index, string, length) != WHY_OK)
+        {
+            BlockDestroy(block);
+            return NULL;
+        }
+
+        index += length;
+        ++ n;
+    }
+
+    BlockSet(block, index, &ZERO_BYTE);
+
+    return BlockDestroyReturnContent(block);
+}

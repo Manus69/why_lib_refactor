@@ -3,7 +3,7 @@
 
 #include "why.h"
 
-#define DECK_CAPACITY (1 << 2)
+#define DECK_CAPACITY (1 << 10)
 
 struct Deck
 {

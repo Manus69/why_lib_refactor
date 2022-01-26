@@ -54,6 +54,8 @@ struct ArInterface
     bool (*is_zero)(const void* number);
 };
 
+extern const Byte           ZERO_BYTE;
+
 extern const TypeInterface  PtrInterface;
 extern const TypeInterface  ByteInterface;
 extern const TypeInterface  IntInterface;
@@ -198,11 +200,17 @@ Int         CompareCstr(const void* lhs, const void* rhs);
 
 Uint        MathRandom(void);
 Uint        MathRandomInRange(Uint n);
+bool        MathIsPrime(Uint n);
+Deck*       MathGetNPrimes(Uint n);
 Uint        MathGCD(Uint a, Uint b);
 Int         MathGCDInt(Int a, Int b);
+Uint        MathGCDArray(const Uint* array, Uint size);
 Uint        MathLCM(Uint a, Uint b);
+Uint        MathLCMArray(const Uint* array, Uint size);
 Uint        MathFib(Uint n);
 Deck*       MathFactor(Uint n);
+Block*      MathSieve(Uint size);
+Uint        MathGetNthPrime(Uint n);
 
 Matrix*     MatrixCreateFloat(Uint n_rows, Uint n_cols);
 Matrix*     MatrixCreateRational(Uint n_rows, Uint n_cols);
@@ -249,11 +257,14 @@ Deck*       StringSplitLength(const char* string, char separator, Uint length);
 Deck*       StringSplit(const char* string, char separator);
 Deck*       StringSplitDestructive(char* string, char separator);
 Deck*       StringSplitLengthDestructive(char* string, char separator, Uint length);
+Byte*       StringConcatDeck(const Deck* strings);
 
 Byte*       ReadFile(const char* name);
 Deck*       ReadFileAllLines(const char* name);
 Deck*       ReadFileAllLines2(const char* name);
 
+void        PrintByte(const void* b);
+void        PrintByteN(const void* b);
 void        PrintInt(const void* n);
 void        PrintIntN(const void* n);
 void        PrintIntS(const void* n);
@@ -270,7 +281,7 @@ void        PrintFloatS(const void* x);
 void        PrintUintN(const void* n);
 void        PrintNBits(Uint number, Uint n_bits);
 void        PrintBits(Uint n);
-void        PrintBlock(const Block* block, Uint index, Uint n_items, void (*print)(const void *));
+void        PrintBlock(const Block* block, void (*print)(const void *));
 void        PrintMatrix(const Matrix* matrix, void (*print)(const void* ));
 void        PrintMatrixN(const void* matrix, void (*print)(const void *));
 void        PrintDeck(const Deck* deck, void (*print)(const void *));

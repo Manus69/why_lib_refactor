@@ -68,6 +68,17 @@ void PrintUintN(const void* n)
     printf("\n");
 }
 
+void PrintByte(const void* b)
+{
+    printf("%u", *(Byte *)b);
+}
+
+void PrintByteN(const void* b)
+{
+    PrintByte(b);
+    printf("\n");
+}
+
 void PrintInt(const void* n)
 {
     printf("%ld", *(Int *)n);
@@ -121,9 +132,9 @@ void PrintBits(Uint n)
     PrintNBits(n, sizeof(Uint) * __CHAR_BIT__);
 }
 
-void PrintBlock(const Block* block, Uint index, Uint n_items, void (*print)(const void *))
+void PrintBlock(const Block* block, void (*print)(const void *))
 {
-    return BlockMap(block, index, n_items, print);
+    return BlockMap(block, 0, BlockNItems(block), print);
 }
 
 void PrintMatrix(const Matrix* matrix, void (*print)(const void* ))
