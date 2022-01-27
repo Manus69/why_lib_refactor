@@ -15,32 +15,22 @@
 #include "rational.h"
 //
 
+#define _FILE_NAME ("text_file.txt")
+
 void block_test()
 {
     Block* block;
 
-    block = BlockCreate(10, Ptr);
-    char* str0 = "ass";
-    char* str1 = "ka;flgjaiovbgja";
+    block = BlockCreateUint(4);
+    Uint numbers[] = {1, 10, 100, 1000};
+    BlockInitFromArray(block, numbers);
 
-    BlockSet(block, 1, str0);
-    BlockSet(block, 2, str1);
-    BlockSwap(block, 1, 2);
+    PrintBlock(block, PrintUintN);
 
-    char* str;
-    BlockGet(&str, block, 1);
-    printf("%s\n", str);
-    BlockDestroy(block);
+    Uint n = 0;
+    BlockFold(&n, block, UintAddWRAP);
+    PrintUintN(&n);
 
-    block = BlockCreate(100, Float);
-    Float x, y, z;
-    x = M_PI;
-    y = -1;
-    BlockSet(block, 30, &x);
-    BlockSet(block, 40, &y);
-    BlockSwap(block, 30, 40);
-    BlockGet(&z, block, 30);
-    printf("%f\n", z);
     BlockDestroy(block);
 }
 
@@ -310,21 +300,34 @@ void parse_test()
 
 void string_test()
 {
-    // char* str0 = strdup("this is a   test");
-    char* str0 = strdup("a,");
+    Deck* strings;
+    char* str;
 
-    Deck* deck = StringSplitDestructive(str0, ',');
-    PrintDeck(deck, PrintCstrN);
-    printf("---\n%zu\n", DeckNItems(deck));
+    str = strdup("  a  b");
+    strings = StringSplitStr(str, "  ");
 
-    free(str0);
-    DeckDestroy(deck);
+    PrintDeck(strings, PrintCstrP);
 
-    char* str = " this, is,,a test";
-    deck = StringSplit(str, ',');
-    // deck = StringSplitLength(str, ',', 2);
-    PrintDeck(deck, PrintCstrN);
-    DeckDestroy(deck);
+    DeckDestroy(strings);
+    free(str);
+
+    printf("\n------\n");
+    str = strdup(" a b");
+    strings = StringSplitDestructive(str, ' ');
+
+    PrintDeck(strings, PrintCstrP);
+
+    DeckDestroy(strings);
+    free(str);
+
+    // str = (char *)strdup("a--b--c");
+    str = (char *)ReadFile(_FILE_NAME);
+    Byte* another_str = StringSplitSplice(str, "\n");
+
+    PrintCstrN(&another_str);
+
+    free(str);
+    free(another_str);
 }
 
 static void _table_test(const char* string, char table_sep_left, char table_sep_right,
@@ -450,9 +453,9 @@ int main()
     // deck_test();
     // parse_test();
     // table_test();
-    // string_test();
+    string_test();
     // matrix_table_test();
-    math_test();
+    // math_test();
 
     WhyEnd();
     return EXIT_SUCCESS;

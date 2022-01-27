@@ -59,6 +59,11 @@ Block* BlockCreatePtr(Uint n_items)
     return _create(n_items, &PtrInterface);
 }
 
+void BlockInitFromArray(Block* block, const void* array)
+{
+    memcpy(block->memory, array, BlockGetSize(block));
+}
+
 void BlockDestroyNoMem(Block* block)
 {
     if (!block)
@@ -199,6 +204,27 @@ void BlockMap(const Block* block, Uint index, Uint n_items, void (*function)(con
     }
 }
 
+void BlockFoldNItems(void* target, const Block* block, Uint index, Uint n_items, 
+                    void (*fold)(void *, const void *, const void *))
+{
+    Uint    last_index;
+    void*   item;
+
+    last_index = index + n_items;
+    while (index < last_index)
+    {
+        item = BlockPointAt(block, index);
+        fold(target, target, item);
+
+        ++ index;
+    }
+}
+
+void BlockFold(void* target, const Block* block, void (*fold)(void *, const void *, const void *))
+{
+    return BlockFoldNItems(target, block, 0, BlockNItems(block), fold);
+}
+
 Int BlockWriteBytes(Block* block, Uint index, const Byte* bytes, Uint n_bytes)
 {
     if (index + n_bytes + 1 > BlockGetSize(block))
@@ -212,36 +238,64 @@ Int BlockWriteBytes(Block* block, Uint index, const Byte* bytes, Uint n_bytes)
     return WHY_OK;
 }
 
-Byte* StringConcatDeck(const Deck* strings)
+static bool _check_left(const Block* block, const void* item, Int (*compare)(const void *, const void *))
 {
-    Block*  block;
-    Uint    index;
-    Uint    n;
-    Uint    length;
-    Byte*   string;
+    const void* _item;
 
-    if (!(block = BlockCreateByte(BLOCK_CAPACITY)))
+    _item = BlockPointAt(block, 0);
+
+    if (compare(_item, item) < 0)
+        return false;
+    
+    return true;
+}
+
+static bool _check_right(const Block* block, const void* item, Int (*compare)(const void *, const void *))
+{
+    const void* _item;
+
+    _item = BlockPointAt(block, block->n_items - 1);
+
+    if (compare(_item, item) > 0)
+        return false;
+    
+    return true;
+}
+
+void* BlockBinSearch(const Block* block, const void* item, Int (*compare)(const void *, const void *))
+{
+    Uint    left;
+    Uint    right;
+    Uint    index;
+    Int     result;
+    void*   _item;
+
+    if (BlockNItems(block) == 0)
         return NULL;
     
-    n = 0;
-    index = 0;
+    if (!_check_left(block, item, compare))
+        return NULL;
+    
+    if (!_check_right(block, item, compare))
+        return NULL;
 
-    while (n < DeckNItems(strings))
+    left = 0;
+    right = BlockNItems(block) - 1;
+    
+    while (left < right)
     {
-        DeckGet(&string, strings, n);
+        index = (left + right) / 2;
 
-        length = strlen((char *)string);
-        if (BlockWriteBytes(block, index, string, length) != WHY_OK)
-        {
-            BlockDestroy(block);
-            return NULL;
-        }
+        _item = BlockPointAt(block, index);
+        result = compare(_item, item);
 
-        index += length;
-        ++ n;
+        if (result == 0)
+            return _item;
+        else if (result > 0)
+            left = index + 1;
+        else
+            right = index - 1;
     }
 
-    BlockSet(block, index, &ZERO_BYTE);
-
-    return BlockDestroyReturnContent(block);
+    return NULL;
 }

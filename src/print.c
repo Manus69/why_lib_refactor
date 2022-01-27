@@ -23,6 +23,13 @@ void PrintCstrS(const void* str)
     printf(" ");
 }
 
+void PrintCstrP(const void* str)
+{
+    printf("\"");
+    PrintCstr(str);
+    printf("\" ");
+}
+
 void PrintRational(const void* p)
 {
     Int top;
@@ -66,6 +73,12 @@ void PrintUintN(const void* n)
 {
     PrintUint(n);
     printf("\n");
+}
+
+void PrintUintS(const void* n)
+{
+    PrintUint(n);
+    printf(" ");
 }
 
 void PrintByte(const void* b)

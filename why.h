@@ -105,6 +105,7 @@ Block*      BlockCreatePtr(Uint n_items);
 Uint        BlockGetSize(const Block* block);
 Uint        BlockNItems(const Block* block);
 Int         BlockExpand(Block* block, Uint extra_items);
+void        BlockInitFromArray(Block* block, const void* array);
 void        BlockDestroy(Block* block);
 void        BlockDestroyNoMem(Block* block);
 void*       BlockDestroyReturnContent(Block* block);
@@ -114,8 +115,13 @@ Int         BlockCopyItems(Block* block, Uint index, const void* pointer, Uint n
 void        BlockGet(void* target, const Block* block, Uint index);
 void        BlockSet(Block* block, Uint index, const void* item);
 void        BlockSwap(Block* block, Uint j, Uint k);
+Int         BlockWriteBytes(Block* block, Uint index, const Byte* bytes, Uint n_bytes);
 Int         BlockCompare(const Block* block, Uint j, Uint k, Int (*compare)(const void* lhs, const void* rhs));
 void        BlockMap(const Block* block, Uint index, Uint n_items, void (*function)(const void *));
+void        BlockFold(void* target, const Block* block, void (*fold)(void *, const void *, const void *));
+void        BlockFoldNItems(void* target, const Block* block, Uint index, Uint n_items, 
+                            void (*fold)(void *, const void *, const void *));
+void*       BlockBinSearch(const Block* block, const void* item, Int (*compare)(const void *, const void *));
 
 Deck*       DeckCreatePtr(void* (*copy)(const void *), void (*destroy)(void *));
 Deck*       DeckCreateUint();
@@ -190,6 +196,8 @@ void        FloatNegateWRAP(void* target, const void* x);
 void        FloatInvWRAP(void* target, const void* x);
 
 void        UintInit(Uint* target, Uint value);
+void        UintAdd(Uint* target, const Uint* lhs, const Uint* rhs);
+void        UintAddWRAP(void* target, const void* lhs, const void* rhs);
 
 void        IntInit(Int* target, Int value);
 
@@ -257,7 +265,9 @@ Deck*       StringSplitLength(const char* string, char separator, Uint length);
 Deck*       StringSplit(const char* string, char separator);
 Deck*       StringSplitDestructive(char* string, char separator);
 Deck*       StringSplitLengthDestructive(char* string, char separator, Uint length);
-Byte*       StringConcatDeck(const Deck* strings);
+Deck*       StringSplitStr(char* string, const char* substring);
+Byte*       StringSplice(const Deck* strings);
+Byte*       StringSplitSplice(char* string, const char* substring);
 
 Byte*       ReadFile(const char* name);
 Deck*       ReadFileAllLines(const char* name);
@@ -271,6 +281,7 @@ void        PrintIntS(const void* n);
 void        PrintCstr(const void* str);
 void        PrintCstrS(const void* str);
 void        PrintCstrN(const void* str);
+void        PrintCstrP(const void* str);
 void        PrintTimeDiff(long start, long end);
 void        PrintRational(const void* p);
 void        PrintRationalN(const void* p);
@@ -279,6 +290,7 @@ void        PrintRationalP(const void* p);
 void        PrintFloat(const void* x);
 void        PrintFloatS(const void* x);
 void        PrintUintN(const void* n);
+void        PrintUintS(const void* n);
 void        PrintNBits(Uint number, Uint n_bits);
 void        PrintBits(Uint n);
 void        PrintBlock(const Block* block, void (*print)(const void *));
