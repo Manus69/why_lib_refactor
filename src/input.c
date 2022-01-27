@@ -98,3 +98,18 @@ Deck* ReadFileAllLines2(const char* name)
     return lines;
 }
 
+Byte* ReadFileSplitSplice(const char* name, const char* substring)
+{
+    Byte* bytes;
+    Byte* output;
+
+    if (!(bytes = ReadFile(name)))
+        return NULL;
+    
+    if (!(output = StringSplitSplice((char *)bytes, substring)))
+        return NULL;
+    
+    free(bytes);
+
+    return output;
+}

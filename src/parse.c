@@ -56,6 +56,22 @@ Int ParseUintWRAP(void* target, const char* string)
     return ParseUint(target, string);
 }
 
+Int ParseDigitSequence(Uint* target, const char* string)
+{
+    const char* start;
+
+    start = string;
+    while (*string == '0')
+        ++ string;
+
+    return (string - start) + ParseUint(target, string);
+}
+
+Int ParseDigitSequenceWRAP(void* target, const char* string)
+{
+    return ParseDigitSequence(target, string);
+}
+
 Int ParseInt(Int* target, const char* string)
 {
     Int     status;

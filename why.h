@@ -222,7 +222,10 @@ Uint        MathGetNthPrime(Uint n);
 
 Matrix*     MatrixCreateFloat(Uint n_rows, Uint n_cols);
 Matrix*     MatrixCreateRational(Uint n_rows, Uint n_cols);
+Matrix*     MatrixCreateUint(Uint n_rows, Uint n_cols);
 Matrix*     MatrixCreateRationalFromTable(const Table* table);
+Matrix*     MatrixCreateUintFromTable(const Table* table);
+Matrix*     MatrixCreateUintFromTableWithParser(const Table* table, Int (*parser)(void *, const char *));
 void        MatrixDestroy(Matrix* matrix);
 void        MatrixInitFromArray(Matrix* matrix, const void* array);
 Uint        MatrixNRows(const Matrix* matrix);
@@ -253,6 +256,8 @@ bool        IsSpace(char c);
 Int         ParseUint(Uint* target, const char* string);
 Int         ParseInt(Int* target, const char* string);
 Int         ParseRational(Rational* target, const char* string);
+Int         ParseDigitSequence(Uint* target, const char* string);
+Int         ParseDigitSequenceWRAP(void* target, const char* string);
 Int         ParseUintWRAP(void* target, const char* string);
 Int         ParseIntWRAP(void* target, const char* string);
 Int         ParseRationalWRAP(void* target, const char* string);
@@ -272,6 +277,7 @@ Byte*       StringSplitSplice(char* string, const char* substring);
 Byte*       ReadFile(const char* name);
 Deck*       ReadFileAllLines(const char* name);
 Deck*       ReadFileAllLines2(const char* name);
+Byte*       ReadFileSplitSplice(const char* name, const char* substring);
 
 void        PrintByte(const void* b);
 void        PrintByteN(const void* b);
