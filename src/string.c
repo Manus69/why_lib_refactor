@@ -21,6 +21,19 @@ Int StringFindC(const char* string, char c)
     return NOT_FOUND;
 }
 
+char* StringNCopy(const char* string, Uint n)
+{
+    char*   str;
+
+    if (!(str = malloc(n + 1)))
+        return NULL;
+    
+    memcpy(str, string, n);
+    str[n] = 0;
+
+    return str;
+}
+
 Deck* StringSplitLengthDestructive(char* string, char separator, Uint length)
 {
     Deck* deck;
@@ -154,4 +167,65 @@ Byte* StringSplitSplice(char* string, const char* substring)
     DeckDestroy(strings);
 
     return new_string;
+}
+
+Deck* StringCut(const char* string, Uint cut_size)
+{
+    Deck*   strings;
+    Uint    remaining_length;
+    Uint    cut_length;
+    char*   cut;
+
+    if (!(strings = DeckCreatePtr(NULL, free)))
+        return NULL;
+    
+    remaining_length = strlen(string);
+
+    while (remaining_length)
+    {
+        cut_length = cut_size >= remaining_length ? cut_size : remaining_length;
+
+        if (!(cut = StringNCopy(string, cut_length)))
+        {
+            DeckDestroy(strings);
+            return NULL;
+        }
+
+        DeckPushBack(strings, cut);
+
+        remaining_length -= cut_length;
+    }
+
+    return strings;
+}
+
+Deck* StringCutFromEnd(const char* string, Uint cut_size)
+{
+    Deck*       strings;
+    const char* left;
+    Uint        length;
+    Uint        _cut_size;
+    char*       cut;
+
+    if (!(strings = DeckCreatePtr(NULL, free)))
+        return NULL;
+    
+    length = strlen(string);
+    left = string + length;
+
+    while (length)
+    {
+        _cut_size = length >= cut_size ? cut_size : length;
+        left = left - _cut_size;
+        if (!(cut = StringNCopy(left, _cut_size)))
+        {
+            DeckDestroy(strings);
+            return NULL;
+        }
+
+        DeckPushBack(strings, cut);
+        length -= _cut_size;
+    }
+
+    return strings;
 }

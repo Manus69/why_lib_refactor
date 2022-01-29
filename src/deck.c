@@ -185,3 +185,18 @@ void DeckMap(Deck* deck, void (*function)(void *))
         ++ n;
     }
 }
+
+void DeckAppend(Deck* lhs, const Deck* rhs)
+{
+    Uint    n;
+    void*   item;
+
+    n = 0;
+    while (n < DeckNItems(rhs))
+    {
+        item = DeckPointAt(rhs, n);
+        DeckPushBack(lhs, item);
+
+        ++ n;
+    }
+}

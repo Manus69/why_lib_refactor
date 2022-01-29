@@ -321,13 +321,19 @@ void string_test()
     free(str);
 
     // str = (char *)strdup("a--b--c");
-    str = (char *)ReadFile(_FILE_NAME);
-    Byte* another_str = StringSplitSplice(str, "\n");
+    // str = (char *)ReadFile(_FILE_NAME);
+    // Byte* another_str = StringSplitSplice(str, "\n");
 
-    PrintCstrN(&another_str);
+    // PrintCstrN(&another_str);
 
-    free(str);
-    free(another_str);
+    // free(str);
+    // free(another_str);
+
+    printf("\n");
+    strings = StringCutFromEnd("0123456789", 3);
+    PrintDeck(strings, PrintCstrN);
+
+    DeckDestroy(strings);
 }
 
 static void _table_test(const char* string, char table_sep_left, char table_sep_right,
@@ -456,6 +462,7 @@ int main()
     string_test();
     // matrix_table_test();
     // math_test();
+
 
     WhyEnd();
     return EXIT_SUCCESS;

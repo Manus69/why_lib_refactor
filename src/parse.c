@@ -20,6 +20,41 @@ bool IsWSpace(char c)
     return c == ' ';
 }
 
+Int ParseUint32(uint32_t* target, const char* string, Uint length)
+{
+    Uint        result;
+    const char* current;
+
+    if (!string)
+        return WHY_ERROR;
+    
+    if (!*string || !length)
+        return 0;
+    
+    if (*string == '0')
+    {
+        *target = 0;
+        return 1;
+    }
+
+    current = string;
+    result = 0;
+
+    while (IsDigit(*current) && length)
+    {
+        result = result * 10 + (*current - '0');
+        ++ current;
+        -- length;
+        
+        if (result > UINT32_MAX)
+            return WHY_ERROR;
+    }
+
+    *target = (uint32_t)result;
+
+    return current - string;
+}
+
 Int ParseUint(Uint* target, const char* string)
 {
     Uint            result;

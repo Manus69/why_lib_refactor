@@ -8,6 +8,7 @@
 #define NOT_FOUND (-1)
 #define WHY_MAX (1LU << 32)
 #define ARRAY_DEFAULT_CAPACITY (1 << 1)
+#define MAX(x, y) ((x) > (y) ? (x) : (y)) //this is bad
 
 #define Complex         complex
 
@@ -20,6 +21,7 @@ typedef void *                  Ptr;
 typedef struct TypeInterface    TypeInterface;
 typedef struct ArInterface      ArInterface;
 typedef struct Rational         Rational;
+typedef struct Natural          Natural;
 
 typedef struct Block            Block;
 typedef struct Deck             Deck;
@@ -137,6 +139,7 @@ void        DeckMap(Deck* deck, void (*function)(void *));
 void        DeckReserve(Deck* deck, Uint n_items);
 Int         DeckLast(void* target, const Deck* deck);
 Int         DeckFirst(void* target, const Deck* deck);
+void        DeckAppend(Deck* lhs, const Deck* rhs);
 
 Int         TableAddRow(Table* table);
 Table*      TableCreatePtr(void* (*copy)(const void *), void (*destroy)(void *));
@@ -253,6 +256,7 @@ void        MatrixEliminateUp(Matrix* matrix);
 bool        IsDigit(char c);
 bool        IsAlpha(char c);
 bool        IsSpace(char c);
+Int         ParseUint32(uint32_t* target, const char* string, Uint length);
 Int         ParseUint(Uint* target, const char* string);
 Int         ParseInt(Int* target, const char* string);
 Int         ParseRational(Rational* target, const char* string);
@@ -265,6 +269,7 @@ Int         ParseTable(Table* table, const char* string, char table_sep_left, ch
                         char row_sep_left, char row_sep_right, char col_sep);
 
 char*       StringSubstring(const char* string, Uint length);
+char*       StringNCopy(const char* string, Uint n);
 Int         StringFindC(const char* string, char c);
 Deck*       StringSplitLength(const char* string, char separator, Uint length);
 Deck*       StringSplit(const char* string, char separator);
@@ -273,6 +278,8 @@ Deck*       StringSplitLengthDestructive(char* string, char separator, Uint leng
 Deck*       StringSplitStr(char* string, const char* substring);
 Byte*       StringSplice(const Deck* strings);
 Byte*       StringSplitSplice(char* string, const char* substring);
+Deck*       StringCut(const char* string, Uint cut_size);
+Deck*       StringCutFromEnd(const char* string, Uint cut_size);
 
 Byte*       ReadFile(const char* name);
 Deck*       ReadFileAllLines(const char* name);
