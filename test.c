@@ -445,6 +445,26 @@ void math_test()
 
 }
 
+void natural_test()
+{
+    Natural* n;
+    Natural* m;
+    /*
+                   012345678901234567890123456789
+    */
+    char* m_str = "99999999999999999999";
+    char* n_str = "1";
+
+    n = NaturalCreate(n_str);
+    m = NaturalCreate(m_str);
+
+    PrintNatural(m);
+    PrintNatural(n);
+
+    NaturalDestroy(m);
+    NaturalDestroy(n);
+}
+
 int main()
 {
     WhyStart();
@@ -459,10 +479,12 @@ int main()
     // deck_test();
     // parse_test();
     // table_test();
-    string_test();
+    // string_test();
     // matrix_table_test();
     // math_test();
+    natural_test();
 
+    // printf("%zu\n", UINT64_MAX);
 
     WhyEnd();
     return EXIT_SUCCESS;

@@ -1,7 +1,5 @@
 #include "declarations.h"
 
-#define TOKEN_PARSE_SUCCESS 1
-
 static Int _parse_table_row(Table* table, char* string, char col_sep)
 {
     Deck*   deck;

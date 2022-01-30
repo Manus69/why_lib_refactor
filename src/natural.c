@@ -1,7 +1,8 @@
 #include "declarations.h"
 #include "natural.h"
 
-#define STRING_CHARS_PER_DIGIT (9)
+#define STRING_CHARS_PER_DIGIT (18)
+#define DIGIT_MAX_VALUE (999999999999999999ULL)
 
 static Natural* _create(Uint capacity)
 {
@@ -44,26 +45,42 @@ static Int _expand_n_digits(Natural* n, Uint n_digits)
     return _expand_size(n, n_digits * sizeof(*n->digits));
 }
 
-static Int _parse_string(Natural* n, const char* string, Uint length)
+static Int _parse_string(Natural* natural, const char* string)
 {
-    uint32_t    digit;
-    Int         left_index;
-    Int         right_index;
+    const char* current;
+    Deck*       substrings;
+    Uint        result;
+    Uint        carry;
+    Uint        n;
 
-    right_index = length - 1;
-    left_index = right_index - STRING_CHARS_PER_DIGIT;
+    substrings = StringCut(string, STRING_CHARS_PER_DIGIT);
+    n = 0;
+    carry = 0;
 
-    if (left_index < 0)
-        left_index = 0;
-    
-    while (true)
+    while (n < DeckNItems(substrings))
     {
-        if ((ParseUint32(&digit, string + left_index, right_index - left_index + 1)) <= 0)
+        current = *(const char **)DeckPointAt(substrings, n);
+        if ((ParseUint(&result, current)) <= 0)
+        {
+            DeckDestroy(substrings);
             return WHY_ERROR;
-        
-        
+        }
 
+        result += carry;
+        if (result  <= DIGIT_MAX_VALUE)
+            _set_digit(natural, result, n);
+        else
+        {
+            _set_digit(natural, DIGIT_MAX_VALUE, n);
+            carry = result - DIGIT_MAX_VALUE;
+        }
+
+        ++ natural->n_digits;
+        ++ n;
     }
+    DeckDestroy(substrings);
+
+    return TOKEN_PARSE_SUCCESS;
 }
 
 Natural* NaturalCreate(const char* string)
@@ -72,12 +89,27 @@ Natural* NaturalCreate(const char* string)
     Uint        capacity;
     Natural*    n;
 
-    if (!length)
-        return 0;
+    if ((length = strlen(string)) == 0)
+        return NULL;
     
     capacity = length / STRING_CHARS_PER_DIGIT + (length % STRING_CHARS_PER_DIGIT != 0);
     if (!(n = _create(capacity)))
         return NULL;
 
+    if ((_parse_string(n, string) <= 0))
+    {
+        NaturalDestroy(n);
+        return NULL;
+    }
 
+    return n;
+}
+
+void NaturalDestroy(Natural* n)
+{
+    if (n)
+    {
+        free(n->digits);
+        free(n);
+    }
 }

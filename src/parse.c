@@ -45,7 +45,7 @@ Int ParseUint32(uint32_t* target, const char* string, Uint length)
         result = result * 10 + (*current - '0');
         ++ current;
         -- length;
-        
+
         if (result > UINT32_MAX)
             return WHY_ERROR;
     }

@@ -1,6 +1,7 @@
 #include "why.h"
 #include "macro.h"
 #include "rational.h"
+#include "natural.h"
 #include "declarations.h"
 
 void PrintCstr(const void* str)
@@ -203,6 +204,21 @@ void PrintTable(const Table* table, void (*print)(const void* ))
     {
         TableMapRow((Table *)table, n, _print);
         printf("\n");
+        ++ n;
+    }
+}
+
+void PrintNatural(const void* number)
+{
+    Natural*    _number;
+    Uint        n;
+
+    _number = number;
+    n = 0;
+
+    while (n < _number->n_digits)
+    {
+        PrintUint(&_number->digits[n]);
         ++ n;
     }
 }

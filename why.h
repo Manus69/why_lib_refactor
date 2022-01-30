@@ -6,9 +6,10 @@
 #include <stdbool.h>
 
 #define NOT_FOUND (-1)
-#define WHY_MAX (1LU << 32)
+#define WHY_MAX (1LU << 63)
 #define ARRAY_DEFAULT_CAPACITY (1 << 1)
 #define MAX(x, y) ((x) > (y) ? (x) : (y)) //this is bad
+#define TOKEN_PARSE_SUCCESS 1
 
 #define Complex         complex
 
@@ -178,6 +179,9 @@ void        RationalInvWRAP(void* target, const void* p);
 void        RationalNegateWRAP(void* target, const void* p);
 void        RationalDivWRAP(void* target, const void* lhs, const void* rhs);
 
+Natural*    NaturalCreate(const char* string);
+void        NaturalDestroy(Natural* n);
+
 void        FloatZero(Float* x);
 void        FloatOne(Float* x);
 void        FloatAdd(Float* x, const Float* lhs, const Float* rhs);
@@ -311,5 +315,6 @@ void        PrintMatrix(const Matrix* matrix, void (*print)(const void* ));
 void        PrintMatrixN(const void* matrix, void (*print)(const void *));
 void        PrintDeck(const Deck* deck, void (*print)(const void *));
 void        PrintTable(const Table* table, void (*print)(const void* ));
+void        PrintNatural(const void* number);
 
 #endif

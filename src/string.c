@@ -176,14 +176,14 @@ Deck* StringCut(const char* string, Uint cut_size)
     Uint    cut_length;
     char*   cut;
 
-    if (!(strings = DeckCreatePtr(NULL, free)))
+    if (!(strings = DeckCreatePtr(NULL, MemDestroy)))
         return NULL;
     
     remaining_length = strlen(string);
 
     while (remaining_length)
     {
-        cut_length = cut_size >= remaining_length ? cut_size : remaining_length;
+        cut_length = cut_size <= remaining_length ? cut_size : remaining_length;
 
         if (!(cut = StringNCopy(string, cut_length)))
         {
@@ -207,7 +207,7 @@ Deck* StringCutFromEnd(const char* string, Uint cut_size)
     Uint        _cut_size;
     char*       cut;
 
-    if (!(strings = DeckCreatePtr(NULL, free)))
+    if (!(strings = DeckCreatePtr(NULL, MemDestroy)))
         return NULL;
     
     length = strlen(string);
@@ -223,7 +223,7 @@ Deck* StringCutFromEnd(const char* string, Uint cut_size)
             return NULL;
         }
 
-        DeckPushBack(strings, cut);
+        DeckPushFront(strings, cut);
         length -= _cut_size;
     }
 
