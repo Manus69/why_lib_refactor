@@ -9,6 +9,7 @@
 #define WHY_MAX (1LU << 63)
 #define ARRAY_DEFAULT_CAPACITY (1 << 1)
 #define MAX(x, y) ((x) > (y) ? (x) : (y)) //this is bad
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define TOKEN_PARSE_SUCCESS 1
 
 #define Complex         complex
@@ -190,7 +191,9 @@ void        RationalDivWRAP(void* target, const void* lhs, const void* rhs);
 
 Natural*    NaturalCreate(const char* string);
 void        NaturalDestroy(Natural* n);
+void        NaturalDestroyWRAP(void* n);
 Int         NaturalAdd(Natural* target, const Natural* lhs, const Natural* rhs);
+char*       NaturalToString(const Natural* number);
 
 void        FloatZero(Float* x);
 void        FloatOne(Float* x);

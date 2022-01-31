@@ -247,10 +247,13 @@ void PrintNatural(const Natural* number)
     n = number->n_digits - 1;
     if (n < 0)
         return ;
-    
+        
+    PrintUint(number->digits[n]);
+    -- n;
+
     while (n >= 0)
     {
-        PrintUint(number->digits[n]);
+        printf("%018zu", number->digits[n]); //this is bad
         -- n;
     }
 }

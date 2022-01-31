@@ -3,6 +3,10 @@
 
 #define STRING_CHARS_PER_DIGIT (18)
 #define DIGIT_MAX_VALUE (999999999999999999ULL)
+#define FORMAT "%018zu"
+
+// #define STRING_CHARS_PER_DIGIT (2)
+// #define DIGIT_MAX_VALUE (99UL)
 
 static Natural* _create(Uint capacity)
 {
@@ -62,21 +66,32 @@ static Int _parse_string(Natural* natural, const char* string)
     Uint        carry;
     Uint        n;
 
+    // substrings = StringCut(string, STRING_CHARS_PER_DIGIT);
     substrings = StringCutFromEnd(string, STRING_CHARS_PER_DIGIT);
-    DeckReverse(substrings);
+
+    // PrintDeck(substrings, PrintCstrS);
+    // printf("\n");
+    // //
+    // // DeckReverse(substrings);
+    // //
+    // PrintDeck(substrings, PrintCstrS);
+    // printf("\n");
+
     n = 0;
     carry = 0;
 
     while (n < DeckNItems(substrings))
     {
         current = *(const char **)DeckPointAt(substrings, n);
-        if ((ParseUint(&result, current)) <= 0)
+        if ((ParseDigitSequence(&result, current)) <= 0)
         {
             DeckDestroy(substrings);
             return WHY_ERROR;
         }
 
         result += carry;
+        carry = 0;
+        
         if (result  <= DIGIT_MAX_VALUE)
             _set_digit(natural, result, n);
         else
@@ -129,7 +144,7 @@ void NaturalDestroyWRAP(void* n)
     NaturalDestroy(*(Natural **)n);
 }
 
-static void _add_digits(Natural* target, const Natural* lhs, const Natural* rhs, Uint index, Uint carry)
+static Uint _add_digits(Natural* target, const Natural* lhs, const Natural* rhs, Uint index, Uint carry)
 {
     Uint _lhs;
     Uint _rhs;
@@ -137,16 +152,24 @@ static void _add_digits(Natural* target, const Natural* lhs, const Natural* rhs,
 
     _lhs = lhs->n_digits > index ? lhs->digits[index] : 0;
     _rhs = rhs->n_digits > index ? rhs->digits[index] : 0;
+
+    if (target->n_digits <= index)
+        ++ target->n_digits;
+
     result = _lhs + _rhs + carry;
 
     if (result <= DIGIT_MAX_VALUE)
     {
         _set_digit(target, result, index);
+        return 0;
     }
     else
     {
         carry = result - DIGIT_MAX_VALUE;
-        return _add_digits(target, lhs, rhs, ++ index, carry);
+        result = carry - 1;
+        _set_digit(target, result, index);
+
+        return 1;
     }
 }
 
@@ -155,6 +178,8 @@ Int NaturalAdd(Natural* target, const Natural* lhs, const Natural* rhs)
     Int     diff;
     Uint    n;
     Uint    max_order;
+    Uint    min_order;
+    Uint    carry;
     
     max_order = MAX(lhs->n_digits, rhs->n_digits);
     diff = (Int)target->capacity - (Int)(max_order + 1);
@@ -162,17 +187,47 @@ Int NaturalAdd(Natural* target, const Natural* lhs, const Natural* rhs)
     {
         if (!(_expand_n_digits(target, -diff) <= 0))
             return WHY_ERROR;
-
+        
+        target->n_digits = max_order;
     }
 
+    min_order = MIN(lhs->n_digits, rhs->n_digits);
     n = 0;
-    while (n < max_order)
+    carry = 0;
+    while (n < min_order)
     {
-        PrintNaturalN(&lhs);
-        PrintNaturalN(&rhs);
-        _add_digits(target, lhs, rhs, n, 0);
+        carry = _add_digits(target, lhs, rhs, n, carry);
         ++ n;
     }
 
     return WHY_OK;
+}
+
+char* NaturalToString(const Natural* number)
+{
+    char*   buffer;
+    Uint    size;
+    Uint    index;
+    Int     n;
+
+    if (number->digits == 0)
+        return strdup("");
+
+    size = number->n_digits * STRING_CHARS_PER_DIGIT;
+    if (!(buffer = malloc(size + 1)))
+        return NULL;
+    
+    memset(buffer, 0, size + 1);
+    n = number->n_digits - 1;
+    index = 0;
+    index += sprintf(buffer, "%zu", number->digits[n]);
+    -- n;
+
+    while (n >= 0)
+    {
+        index += sprintf(buffer + index, FORMAT, number->digits[n]);
+        -- n;
+    }
+
+    return buffer;
 }

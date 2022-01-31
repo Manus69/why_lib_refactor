@@ -99,6 +99,12 @@ Int ParseDigitSequence(Uint* target, const char* string)
     while (*string == '0')
         ++ string;
 
+    if (*string == '\0')
+    {
+        *target = 0;
+        return (string - start);
+    }
+
     return (string - start) + ParseUint(target, string);
 }
 

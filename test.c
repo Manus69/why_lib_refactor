@@ -450,31 +450,38 @@ void natural_test()
     Natural* n;
     Natural* m;
     /*
-                   0123456789012345678901234567890
+                   0123456789|123456789|1234567890
     */
-    char* m_str = "9999999999999999999";
+    char* m_str = "157809211410916853570920356427320726420653771310417";
     // char* m_str = "9";
-    char* n_str = "1";
+    char* n_str = "91942213363574161572522430563301811072406154908250";
 
-    // Deck* strings = StringCut(m_str, 18);
-    // PrintDeck(strings, PrintCstrN);
-    // DeckDestroy(strings);
+    // // Deck* strings = StringCut(m_str, 18);
+    // // PrintDeck(strings, PrintCstrN);
+    // // DeckDestroy(strings);
 
     n = NaturalCreate(n_str);
     m = NaturalCreate(m_str);
 
-    printf("\n");
-    PrintNatural(m);
-    printf("\n");
-    PrintNatural(n);
-    printf("\n");
+    PrintNaturalN(&m);
+    PrintNaturalN(&n);
 
-    PrintNaturalN(&m);
+    // PrintNaturalN(&m);
     NaturalAdd(m, m, n);
-    PrintNaturalN(&m);
+    // PrintNaturalN(&m);
+    
+    char* str = NaturalToString(m);
+    printf("%.10s\n", str);
+    free(str);
 
     NaturalDestroy(m);
     NaturalDestroy(n);
+
+    // n_str = "46376937677490009712648124896970078050417018260538";
+
+    // n = NaturalCreate(n_str);
+    // PrintNaturalN(&n);
+    // NaturalDestroy(n);
 }
 
 int main()
