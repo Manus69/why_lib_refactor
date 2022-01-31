@@ -110,6 +110,11 @@ void TableDestroy(Table* table)
     free(table);
 }
 
+void TableDestroyWRAP(void* table_pointer)
+{
+    TableDestroy(*(Table **)table_pointer);
+}
+
 Int TableLast(void* target, const Table* table)
 {
     Deck* row;

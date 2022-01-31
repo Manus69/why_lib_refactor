@@ -158,3 +158,8 @@ void MatrixDestroy(Matrix* matrix)
     BlockDestroy(matrix->block);
     free(matrix);
 }
+
+void MatrixDestroyWRAP(void* matrix)
+{
+    MatrixDestroy(*(Matrix **)matrix);
+}

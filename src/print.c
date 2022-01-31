@@ -4,58 +4,73 @@
 #include "natural.h"
 #include "declarations.h"
 
-void PrintCstr(const void* str)
+#define NEW_LINE ("\n")
+#define SPACE (" ")
+
+void PrintObject(const void* object, void (*print)(const void *, const void *), const void* sep)
 {
-    if (!str)
-        printf("NULL");
-    else
-        printf("%s", *(char **)str);
+    print(object, sep);
+}
+
+void PrintCstr(const char* str)
+{
+    if (str)
+        printf("%s", str);
+}
+
+void PrintCstrWRAP(const void* str, const void* sep)
+{
+    PrintCstr(*(char **)str);
+    PrintCstr(sep);
 }
 
 void PrintCstrN(const void* str)
 {
-    PrintCstr(str);
-    printf("\n");
+    PrintCstrWRAP(str, NEW_LINE);
 }
 
 void PrintCstrS(const void* str)
 {
-    PrintCstr(str);
-    printf(" ");
+    PrintCstrWRAP(str, SPACE);
 }
 
 void PrintCstrP(const void* str)
 {
     printf("\"");
-    PrintCstr(str);
+    PrintCstr(*(char **)str);
     printf("\" ");
 }
 
-void PrintRational(const void* p)
+void PrintRational(const Rational* p)
 {
     Int top;
     Int bot;
 
-    top = ((Rational *)p)->top;
-    bot = ((Rational *)p)->bot;
+    top = p->top;
+    bot = p->bot;
+
     if (bot == 1)
         printf("%ld", top);
     else if (bot == -1)
         printf("%ld", -top);
     else
-        printf("%ld/%ld", ((Rational *)p)->top, ((Rational *)p)->bot);
+        printf("%ld/%ld", p->top, p->bot);
+}
+
+void PrintRationalWRAP(const void* p, const void* sep)
+{
+    PrintRational(p);
+    PrintCstr(sep);
 }
 
 void PrintRationalN(const void* p)
 {
-    PrintRational(p);
-    printf("\n");
+    PrintRationalWRAP(p, NEW_LINE);
 }
 
 void PrintRationalS(const void* p)
 {
-    PrintRational(p);
-    printf(" ");
+    PrintRationalWRAP(p, SPACE);
 }
 
 void PrintRationalP(const void* p)
@@ -65,65 +80,83 @@ void PrintRationalP(const void* p)
     printf(") ");
 }
 
-void PrintUint(const void* n)
+void PrintUint(const Uint n)
 {
-    printf("%zu", *(Uint *)n);
+    printf("%zu", n);
+}
+
+void PrintUintWRAP(const void* n, const void* sep)
+{
+    PrintUint(*(const Uint *)n);
+    PrintCstr(sep);
 }
 
 void PrintUintN(const void* n)
 {
-    PrintUint(n);
-    printf("\n");
+    PrintUintWRAP(n, NEW_LINE);
 }
 
 void PrintUintS(const void* n)
 {
-    PrintUint(n);
-    printf(" ");
+    PrintUintWRAP(n, SPACE);
 }
 
-void PrintByte(const void* b)
+void PrintByte(const Byte b)
 {
-    printf("%u", *(Byte *)b);
+    printf("%u", b);
+}
+
+void PrintByteWRAP(const void* byte, const void* sep)
+{
+    PrintByte(*(const Byte *)byte);
+    PrintCstr(sep);
 }
 
 void PrintByteN(const void* b)
 {
-    PrintByte(b);
-    printf("\n");
+    PrintByteWRAP(b, NEW_LINE);
 }
 
-void PrintInt(const void* n)
+void PrintInt(const Int n)
 {
-    printf("%ld", *(Int *)n);
+    printf("%ld", n);
+}
+
+void PrintIntWRAP(const void* n, const void* sep)
+{
+    PrintInt(*(const Int *)n);
+    PrintCstr(sep);
 }
 
 void PrintIntN(const void* n)
 {
-    PrintInt(n);
-    printf("\n");
+    PrintIntWRAP(n, NEW_LINE);
 }
 
 void PrintIntS(const void* n)
 {
-    PrintInt(n);
-    printf(" ");
+    PrintIntWRAP(n, SPACE);
 }
 
-void PrintFloat(const void* x)
+void PrintFloat(const Float x)
 {
-    printf("%.2f", *(Float *)x);
+    printf("%.2f", x);
+}
+
+void PrintFloatWRAP(const void* x, const void* sep)
+{
+    PrintFloat(*(const Float *)x);
+    PrintCstr(sep);
 }
 
 void PrintFloatS(const void* x)
 {
-    PrintFloat(x);
-    printf(" ");
+    PrintFloatWRAP(x, SPACE);
 }
 
-void PrintTimeDiff(time_t start, time_t end)
+void PrintTimeDiff(const void* start, const void* end)
 {
-    printf("Time elapsed: %f sec\n", (end - start) / ((double)CLOCKS_PER_SEC));
+    printf("Time elapsed: %f sec\n", (*(time_t *)end - *(time_t *)start) / ((double)CLOCKS_PER_SEC));
 }
 
 void PrintNBits(Uint number, Uint n_bits)
@@ -151,6 +184,11 @@ void PrintBlock(const Block* block, void (*print)(const void *))
     return BlockMap(block, 0, BlockNItems(block), print);
 }
 
+// void PrintBlockWRAP(const void* block, void (*print)(const void *, const void *), const void *sep)
+// {
+
+// }
+
 void PrintMatrix(const Matrix* matrix, void (*print)(const void* ))
 {
     Uint n_rows;
@@ -170,12 +208,6 @@ void PrintMatrix(const Matrix* matrix, void (*print)(const void* ))
 
         ++ n;
     }
-    printf("\n");
-}
-
-void PrintMatrixN(const void* matrix, void (*print)(const void *))
-{
-    PrintMatrix(matrix, print);
     printf("\n");
 }
 
@@ -208,17 +240,28 @@ void PrintTable(const Table* table, void (*print)(const void* ))
     }
 }
 
-void PrintNatural(const void* number)
+void PrintNatural(const Natural* number)
 {
-    Natural*    _number;
-    Uint        n;
+    Int n;
 
-    _number = number;
-    n = 0;
-
-    while (n < _number->n_digits)
+    n = number->n_digits - 1;
+    if (n < 0)
+        return ;
+    
+    while (n >= 0)
     {
-        PrintUint(&_number->digits[n]);
-        ++ n;
+        PrintUint(number->digits[n]);
+        -- n;
     }
+}
+
+void PrintNaturalWRAP(const void* number, const void* sep)
+{
+    PrintNatural(*(Natural **)number);
+    PrintCstr(sep);
+}
+
+void PrintNaturalN(const void* number)
+{
+    PrintNaturalWRAP(number, NEW_LINE);
 }

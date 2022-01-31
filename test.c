@@ -105,7 +105,7 @@ void type_interface_test()
     PtrInterface.set(mem, 2, str1);
 
     PtrInterface.get(&str, mem, 1);
-    PrintCstrN(str);
+    PrintCstrN(&str);
 
     memset(mem, 0, 256);
     
@@ -450,16 +450,28 @@ void natural_test()
     Natural* n;
     Natural* m;
     /*
-                   012345678901234567890123456789
+                   0123456789012345678901234567890
     */
-    char* m_str = "99999999999999999999";
+    char* m_str = "9999999999999999999";
+    // char* m_str = "9";
     char* n_str = "1";
+
+    // Deck* strings = StringCut(m_str, 18);
+    // PrintDeck(strings, PrintCstrN);
+    // DeckDestroy(strings);
 
     n = NaturalCreate(n_str);
     m = NaturalCreate(m_str);
 
+    printf("\n");
     PrintNatural(m);
+    printf("\n");
     PrintNatural(n);
+    printf("\n");
+
+    PrintNaturalN(&m);
+    NaturalAdd(m, m, n);
+    PrintNaturalN(&m);
 
     NaturalDestroy(m);
     NaturalDestroy(n);
@@ -484,7 +496,8 @@ int main()
     // math_test();
     natural_test();
 
-    // printf("%zu\n", UINT64_MAX);
+    // char* str = "ass";
+    // PrintCstrN(&str);
 
     WhyEnd();
     return EXIT_SUCCESS;

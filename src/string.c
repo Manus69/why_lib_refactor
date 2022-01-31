@@ -192,7 +192,7 @@ Deck* StringCut(const char* string, Uint cut_size)
         }
 
         DeckPushBack(strings, cut);
-
+        string += cut_length;
         remaining_length -= cut_length;
     }
 

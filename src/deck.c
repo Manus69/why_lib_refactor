@@ -64,7 +64,7 @@ void DeckDestroy(Deck* deck)
 
 void DeckDestroyWRAP(void* deck)
 {
-    DeckDestroy(deck);
+    DeckDestroy(*(Deck **)deck);
 }
 
 Uint DeckNItems(const Deck* deck)
@@ -199,4 +199,12 @@ void DeckAppend(Deck* lhs, const Deck* rhs)
 
         ++ n;
     }
+}
+
+void DeckReverse(Deck* deck)
+{
+    if (DeckNItems(deck) == 0)
+        return ;
+    
+    BlockReverseSlice(deck->block, deck->left_insert_index + 1, deck->right_insert_index - 1);
 }

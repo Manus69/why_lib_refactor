@@ -81,6 +81,11 @@ void BlockDestroy(Block* block)
     free(block);
 }
 
+void BlockDestroyWRAP(void* block_pointer)
+{
+    BlockDestroy(*(Block **)block_pointer);
+}
+
 void* BlockDestroyReturnContent(Block* block)
 {
     void* content;
@@ -298,4 +303,22 @@ void* BlockBinSearch(const Block* block, const void* item, Int (*compare)(const 
     }
 
     return NULL;
+}
+
+void BlockReverseSlice(Block* block, Uint left, Uint right)
+{
+    while (left < right)
+    {
+        BlockSwap(block, left, right);
+        ++ left;
+        -- right;
+    }
+}
+
+void BlockReverse(Block* block)
+{
+    if (block->n_items == 0)
+        return ;
+    
+    BlockReverseSlice(block, 0, block->n_items - 1);
 }

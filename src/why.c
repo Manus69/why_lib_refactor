@@ -29,7 +29,7 @@ void WhyEnd(void)
     MatrixUnitTerminate();
     DeckDestroy(_why.pointers);
     _why.end = clock();
-    PrintTimeDiff(_why.start, _why.end);
+    PrintTimeDiff(&_why.start, &_why.end);
 }
 
 Int WhySavePtr(const void* ptr)

@@ -74,6 +74,10 @@ Int         WhyStart(void);
 void        WhyEnd(void);
 Int         WhySavePtr(const void* ptr);
 
+void*       MemExpand(void* memory, Uint size, Uint extra_size);
+void*       MemExpandZero(void* memory, Uint size, Uint extra_size);
+void        MemDestroy(void* ptr);
+
 void        GetPtr(void* target, const void* memory, Uint index);
 void        SetPtr(void* memory, Uint index, const void* ptr);
 void        SwapPtr(void* memory, Uint j, Uint k);
@@ -110,6 +114,7 @@ Uint        BlockNItems(const Block* block);
 Int         BlockExpand(Block* block, Uint extra_items);
 void        BlockInitFromArray(Block* block, const void* array);
 void        BlockDestroy(Block* block);
+void        BlockDestroyWRAP(void* block_pointer);
 void        BlockDestroyNoMem(Block* block);
 void*       BlockDestroyReturnContent(Block* block);
 void*       BlockGetContent(const Block* block);
@@ -125,11 +130,13 @@ void        BlockFold(void* target, const Block* block, void (*fold)(void *, con
 void        BlockFoldNItems(void* target, const Block* block, Uint index, Uint n_items, 
                             void (*fold)(void *, const void *, const void *));
 void*       BlockBinSearch(const Block* block, const void* item, Int (*compare)(const void *, const void *));
+void        BlockReverseSlice(Block* block, Uint left, Uint right);
+void        BlockReverse(Block* block);
 
 Deck*       DeckCreatePtr(void* (*copy)(const void *), void (*destroy)(void *));
 Deck*       DeckCreateUint();
 void        DeckDestroy(Deck* deck);
-void        DeckDestroyWRAP(void* deck);
+void        DeckDestroyWRAP(void* deck_pointer);
 Uint        DeckNItems(const Deck* deck);
 void        DeckGet(void* target, const Deck* deck, Uint index);
 void        DeckSet(Deck* deck, Uint index, const void* item);
@@ -141,6 +148,7 @@ void        DeckReserve(Deck* deck, Uint n_items);
 Int         DeckLast(void* target, const Deck* deck);
 Int         DeckFirst(void* target, const Deck* deck);
 void        DeckAppend(Deck* lhs, const Deck* rhs);
+void        DeckReverse(Deck* deck);
 
 Int         TableAddRow(Table* table);
 Table*      TableCreatePtr(void* (*copy)(const void *), void (*destroy)(void *));
@@ -150,6 +158,7 @@ Int         TablePushLastRow(Table* table, const void* item);
 void        TableMap(Table* table, void (*function)(void *));
 void        TableMapRow(Table* table, Uint n, void (*function)(void *));
 void        TableDestroy(Table* table);
+void        TableDestroyWRAP(void* table_pointer);
 Int         TableLast(void* target, const Table* table);
 Int         TableFirst(void* target, const Table* table);
 void*       TablePointAt(const Table* table, Uint row, Uint col);
@@ -181,6 +190,7 @@ void        RationalDivWRAP(void* target, const void* lhs, const void* rhs);
 
 Natural*    NaturalCreate(const char* string);
 void        NaturalDestroy(Natural* n);
+Int         NaturalAdd(Natural* target, const Natural* lhs, const Natural* rhs);
 
 void        FloatZero(Float* x);
 void        FloatOne(Float* x);
@@ -234,6 +244,7 @@ Matrix*     MatrixCreateRationalFromTable(const Table* table);
 Matrix*     MatrixCreateUintFromTable(const Table* table);
 Matrix*     MatrixCreateUintFromTableWithParser(const Table* table, Int (*parser)(void *, const char *));
 void        MatrixDestroy(Matrix* matrix);
+void        MatrixDestroyWRAP(void* matrix_pointer);
 void        MatrixInitFromArray(Matrix* matrix, const void* array);
 Uint        MatrixNRows(const Matrix* matrix);
 Uint        MatrixNCols(const Matrix* matrix);
@@ -290,31 +301,39 @@ Deck*       ReadFileAllLines(const char* name);
 Deck*       ReadFileAllLines2(const char* name);
 Byte*       ReadFileSplitSplice(const char* name, const char* substring);
 
-void        PrintByte(const void* b);
-void        PrintByteN(const void* b);
-void        PrintInt(const void* n);
-void        PrintIntN(const void* n);
-void        PrintIntS(const void* n);
-void        PrintCstr(const void* str);
-void        PrintCstrS(const void* str);
+void        PrintCstr(const char* str);
+void        PrintCstrWRAP(const void* str_pointer, const void* sep);
 void        PrintCstrN(const void* str);
+void        PrintCstrS(const void* str);
 void        PrintCstrP(const void* str);
-void        PrintTimeDiff(long start, long end);
-void        PrintRational(const void* p);
+void        PrintRational(const Rational* p);
+void        PrintRationalWRAP(const void* p_pointer, const void* sep);
 void        PrintRationalN(const void* p);
 void        PrintRationalS(const void* p);
 void        PrintRationalP(const void* p);
-void        PrintFloat(const void* x);
-void        PrintFloatS(const void* x);
+void        PrintUint(const Uint n);
+void        PrintUintWRAP(const void* n_pointer, const void* sep);
 void        PrintUintN(const void* n);
 void        PrintUintS(const void* n);
+void        PrintByte(const Byte b);
+void        PrintByteWRAP(const void* byte_pointer, const void* sep);
+void        PrintByteN(const void* b);
+void        PrintInt(const Int n);
+void        PrintIntWRAP(const void* n_pointer, const void* sep);
+void        PrintIntN(const void* n);
+void        PrintIntS(const void* n);
+void        PrintFloat(const Float x);
+void        PrintFloatWRAP(const void* x_pointer, const void* sep);
+void        PrintFloatS(const void* x);
+void        PrintTimeDiff(const void* start, const void* end);
 void        PrintNBits(Uint number, Uint n_bits);
 void        PrintBits(Uint n);
 void        PrintBlock(const Block* block, void (*print)(const void *));
 void        PrintMatrix(const Matrix* matrix, void (*print)(const void* ));
-void        PrintMatrixN(const void* matrix, void (*print)(const void *));
 void        PrintDeck(const Deck* deck, void (*print)(const void *));
 void        PrintTable(const Table* table, void (*print)(const void* ));
-void        PrintNatural(const void* number);
+void        PrintNatural(const Natural* number);
+void        PrintNaturalWRAP(const void* number_pointer, const void* sep);
+void        PrintNaturalN(const void* number);
 
 #endif

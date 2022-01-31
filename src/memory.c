@@ -21,6 +21,19 @@ void* MemExpand(void* memory, Uint size, Uint extra_size)
     return NULL;
 }
 
+void* MemExpandZero(void* memory, Uint size, Uint extra_size)
+{
+    void* new;
+
+    if (!(new = MemExpand(memory, size, extra_size)))
+        return NULL;
+    
+    memset(new + size, 0, extra_size);
+
+    return new;
+}
+
+
 void MemDestroy(void* ptr)
 {
     free(*(void **)ptr);
