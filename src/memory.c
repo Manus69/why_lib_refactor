@@ -2,6 +2,19 @@
 #include "macro.h"
 #include "declarations.h"
 
+void* MemZero(Uint size)
+{
+    void* ptr;
+
+    if ((ptr = malloc(size)))
+    {
+        memset(ptr, 0, size);
+        return ptr;
+    }
+
+    return NULL;
+}
+
 void* MemExpand(void* memory, Uint size, Uint extra_size)
 {
     void*   new_memory;

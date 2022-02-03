@@ -10,6 +10,7 @@ struct Deck
     Block*  block;
     void*   (*copy)(const void* );
     void    (*destroy)(void *);
+    Block*  (*block_constructor)(Uint);
 
     Uint    left_insert_index;
     Uint    right_insert_index;

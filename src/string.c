@@ -228,3 +228,39 @@ Deck* StringCutFromEnd(const char* string, Uint cut_size)
 
     return strings;
 }
+
+char* StringConcat(const char* lhs, const char* rhs)
+{
+    char* result;
+    Uint lhs_length;
+    Uint rhs_length;
+
+    lhs_length = strlen(lhs);
+    rhs_length = strlen(rhs);
+
+    if (!(result = malloc(lhs_length + rhs_length + 1)))
+        return NULL;
+    
+    memcpy(result, lhs, lhs_length);
+    memcpy(result + lhs_length, rhs, rhs_length);
+
+    result[lhs_length + rhs_length] = 0;
+
+    return result;
+}
+
+char* StringPrepend(const char* string, char c)
+{
+    char*   new;
+    Uint    length;
+
+    length = strlen(string);
+    if (!(new = malloc(length + 2)))
+        return NULL;
+    
+    *new = c;
+    memcpy(new + 1, string, length);
+    new[length + 1] = 0;
+
+    return new;
+}

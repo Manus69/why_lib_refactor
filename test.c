@@ -234,28 +234,54 @@ void matrix_add_test()
 void deck_test()
 {
     Deck* deck;
+    Deck* new_deck;
 
-    deck = DeckCreatePtr(NULL, NULL);
-    DeckPushFront(deck, "first");
-    DeckPushBack(deck, "ass");
-    DeckPushBack(deck, "thsi is a test");
-    DeckPushBack(deck, "cock");
-    DeckPushBack(deck, "what?");
-    DeckPushBack(deck, "does it work");
-    PrintDeck(deck, PrintCstrN);
+    // deck = DeckCreatePtr(NULL, NULL);
+    // DeckPushFront(deck, "first");
+    // DeckPushBack(deck, "ass");
+    // DeckPushBack(deck, "thsi is a test");
+    // DeckPushBack(deck, "cock");
+    // DeckPushBack(deck, "what?");
+    // DeckPushBack(deck, "does it work");
+    // PrintDeck(deck, PrintCstrN);
     
+    // DeckDestroy(deck);
+
+    // deck = DeckCreateUint();
+    // Uint n;
+
+    // n = 11;
+    // DeckPushBack(deck, &n);
+    // n = 661;
+    // DeckPushBack(deck, &n);
+    // PrintDeck(deck, PrintUintN);
+    // DeckDestroy(deck);
+
+    void* ptr;
+    deck = StringSplit("11 22 33 44 11", ' ');
+    Int r = DeckCompare(deck, 2, 1, CompareCstr);
+    PrintIntN(&r);
+    DeckGet(&ptr, deck, 1);
+    PrintCstrN(&ptr);
+    ptr = strdup("ass");
+    DeckPushBack(deck, ptr);
+    PrintDeck(deck, PrintCstrP);
+    // new_deck = DeckUnique(deck, CompareCstr);
+    // PrintDeck(new_deck, PrintCstrP);
+    free(ptr);
     DeckDestroy(deck);
+    // DeckDestroy(new_deck);
 
-    deck = DeckCreateUint();
-    Uint n;
-
-    n = 11;
-    DeckPushBack(deck, &n);
-    n = 661;
-    DeckPushBack(deck, &n);
-    PrintDeck(deck, PrintUintN);
-
-    DeckDestroy(deck);
+    // deck = MathFactor(12);
+    // PrintDeck(deck, PrintUintS);
+    // r = DeckCompare(deck, 1, 2, CompareUint);
+    // PrintUintN(&r);
+    // DeckGet(ptr, deck, 1);
+    // PrintUintN(ptr);
+    // new_deck = DeckUnique(deck, CompareInt);
+    // PrintDeck(new_deck, PrintUintS);
+    // DeckDestroy(deck);
+    // DeckDestroy(new_deck);
 }
 
 void parse_test()
@@ -431,18 +457,22 @@ void matrix_table_test()
 
 void math_test()
 {
-    // Deck* primes;
+    // Uint p = MathGetNthPrime(1000000);
+    // PrintUintN(&p);
 
-    // primes = MathGetNPrimes(1000000);
-    // // PrintDeck(primes, PrintUintN);
-    // Uint n;
-    // DeckLast(&n, primes);
-    // PrintUintN(&n);
-    // DeckDestroy(primes);
 
-    Uint p = MathGetNthPrime(1000000);
-    PrintUintN(&p);
+    Deck* divisors;
+    Uint n;
 
+    n = 12;
+    divisors = MathFactor(n);
+    PrintDeck(divisors, PrintUintS);
+    DeckDestroy(divisors);
+
+    divisors = MathComputeDivisors(n);
+    PrintDeck(divisors, PrintUintS);
+
+    DeckDestroy(divisors);
 }
 
 void natural_test()
@@ -495,13 +525,13 @@ int main()
     // matrix_test();
     // matrix_add_test();
     // matrix_rational_test();
-    // deck_test();
+    deck_test();
     // parse_test();
     // table_test();
     // string_test();
     // matrix_table_test();
     // math_test();
-    natural_test();
+    // natural_test();
 
     // char* str = "ass";
     // PrintCstrN(&str);

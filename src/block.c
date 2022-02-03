@@ -243,11 +243,11 @@ Int BlockWriteBytes(Block* block, Uint index, const Byte* bytes, Uint n_bytes)
     return WHY_OK;
 }
 
-static bool _check_left(const Block* block, const void* item, Int (*compare)(const void *, const void *))
+static bool _check_left(const Block* block, Uint n, const void* item, Int (*compare)(const void *, const void *))
 {
     const void* _item;
 
-    _item = BlockPointAt(block, 0);
+    _item = BlockPointAt(block, n);
 
     if (compare(_item, item) < 0)
         return false;
@@ -255,11 +255,11 @@ static bool _check_left(const Block* block, const void* item, Int (*compare)(con
     return true;
 }
 
-static bool _check_right(const Block* block, const void* item, Int (*compare)(const void *, const void *))
+static bool _check_right(const Block* block, Uint n, const void* item, Int (*compare)(const void *, const void *))
 {
     const void* _item;
 
-    _item = BlockPointAt(block, block->n_items - 1);
+    _item = BlockPointAt(block, n);
 
     if (compare(_item, item) > 0)
         return false;
@@ -267,25 +267,18 @@ static bool _check_right(const Block* block, const void* item, Int (*compare)(co
     return true;
 }
 
-void* BlockBinSearch(const Block* block, const void* item, Int (*compare)(const void *, const void *))
+void* BlockBinSearchRange(const Block* block, const void* item,
+                            Int (*compare)(const void *, const void *), Uint left, Uint right)
 {
-    Uint    left;
-    Uint    right;
     Uint    index;
     Int     result;
     void*   _item;
 
-    if (BlockNItems(block) == 0)
+    if (!_check_left(block, left, item, compare))
         return NULL;
     
-    if (!_check_left(block, item, compare))
+    if (!_check_right(block, right, item, compare))
         return NULL;
-    
-    if (!_check_right(block, item, compare))
-        return NULL;
-
-    left = 0;
-    right = BlockNItems(block) - 1;
     
     while (left < right)
     {
@@ -303,6 +296,20 @@ void* BlockBinSearch(const Block* block, const void* item, Int (*compare)(const 
     }
 
     return NULL;
+}
+
+void* BlockBinSearch(const Block* block, const void* item, Int (*compare)(const void *, const void *))
+{
+    Uint    left;
+    Uint    right;
+    
+    left = 0;
+    right = BlockNItems(block) - 1;
+    
+    if (right == 0)
+        return NULL;
+    
+    return BlockBinSearchRange(block, item, compare, left, right);
 }
 
 void BlockReverseSlice(Block* block, Uint left, Uint right)

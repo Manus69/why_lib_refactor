@@ -66,19 +66,10 @@ static Int _parse_string(Natural* natural, const char* string)
     Uint        carry;
     Uint        n;
 
-    // substrings = StringCut(string, STRING_CHARS_PER_DIGIT);
     substrings = StringCutFromEnd(string, STRING_CHARS_PER_DIGIT);
-
-    // PrintDeck(substrings, PrintCstrS);
-    // printf("\n");
-    // //
-    // // DeckReverse(substrings);
-    // //
-    // PrintDeck(substrings, PrintCstrS);
-    // printf("\n");
-
     n = 0;
     carry = 0;
+    result = 0;
 
     while (n < DeckNItems(substrings))
     {

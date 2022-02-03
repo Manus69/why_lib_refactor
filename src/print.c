@@ -220,6 +220,7 @@ void PrintDeck(const Deck* deck, void (*print)(const void *))
     
     _print = (void (*)(void *))print;
     DeckMap((Deck *)deck, _print);
+    printf("\n");
 }
 
 void PrintTable(const Table* table, void (*print)(const void* ))

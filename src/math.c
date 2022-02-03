@@ -126,9 +126,10 @@ Deck* MathFactor(Uint n)
     Deck*   factors;
     Uint    p;
 
-    factors = DeckCreateUint();
+    if (!(factors = DeckCreateUint()))
+        return NULL;
+    
     p = 2;
-
     while (p <= n)
     {
         while (n % p == 0)
@@ -141,6 +142,44 @@ Deck* MathFactor(Uint n)
     }
 
     return factors;
+}
+
+static void _generate_divisors(const Deck* prime_divisors, Deck* divisors, Uint current, Uint index)
+{
+    Uint divisor;
+
+    if (index == DeckNItems(prime_divisors))
+    {
+        DeckPushBack(divisors, &current);
+        return ;
+    }
+    
+    divisor = *(Uint *)DeckPointAt(prime_divisors, index);
+    divisor *= current;
+
+    _generate_divisors(prime_divisors, divisors, current, index + 1);
+    _generate_divisors(prime_divisors, divisors, divisor, index + 1);
+}
+
+Deck* MathComputeDivisors(Uint n)
+{
+    Deck*   divisors;
+    Deck*   prime_divisors;
+    
+    if (!(prime_divisors = MathFactor(n)))
+        return NULL;
+    
+    if (!(divisors = DeckCreateUint()))
+    {
+        DeckDestroy(prime_divisors);
+        return NULL;
+    }
+
+    _generate_divisors(prime_divisors, divisors, 1, 0);
+
+    DeckDestroy(prime_divisors);
+
+    return divisors;
 }
 
 static void _sieve_init(Block* sieve, Uint start)

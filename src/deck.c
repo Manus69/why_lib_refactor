@@ -29,6 +29,7 @@ static Deck* _create(Uint n_items, void* (*copy)(const void *), void (*destroy)(
             deck->destroy = destroy ? destroy : _destroy_default;
             deck->left_insert_index = 0;
             deck->right_insert_index = deck->left_insert_index + 1;
+            deck->block_constructor = block_create;
 
             return deck;
         }
@@ -65,6 +66,16 @@ void DeckDestroy(Deck* deck)
 void DeckDestroyWRAP(void* deck)
 {
     DeckDestroy(*(Deck **)deck);
+}
+
+Deck* DeckCopyStructure(const Deck* deck)
+{
+    Deck* new_deck;
+
+    if (!(new_deck = _create(DECK_CAPACITY, deck->copy, deck->destroy, deck->block_constructor)))
+        return NULL;
+    
+    return new_deck;
 }
 
 Uint DeckNItems(const Deck* deck)
@@ -207,4 +218,55 @@ void DeckReverse(Deck* deck)
         return ;
     
     BlockReverseSlice(deck->block, deck->left_insert_index + 1, deck->right_insert_index - 1);
+}
+
+void* DeckBinSearch(const Deck* deck, const void* item, Int (*compare)(const void *, const void *))
+{
+    if (DeckNItems(deck) == 0)
+        return NULL;
+    
+    return BlockBinSearchRange(deck->block, item, compare, deck->left_insert_index + 1, deck->right_insert_index - 1);
+}
+
+Int DeckCompare(const Deck* deck, Uint j, Uint k, Int (*compare)(const void *, const void *))
+{
+    void* lhs;
+    void* rhs;
+
+    lhs = DeckPointAt(deck, j);
+    rhs = DeckPointAt(deck, k);
+
+    return compare(lhs, rhs);
+}
+
+Deck* DeckUnique(Deck* deck, Int (*compare)(const void *, const void *))
+{
+    Deck*   result;
+    void*   item;
+    Uint    n;
+
+    SortDeck(deck, compare);
+
+    if (!(result = DeckCopyStructure(deck)))
+        return NULL;
+    
+    if (DeckNItems(deck) == 0)
+        return result;
+
+    item = DeckPointAt(deck, 0);
+    DeckPushBack(deck, item);
+    n = deck->left_insert_index + 2;
+
+    while (n < deck->right_insert_index - 1)
+    {
+        if (DeckCompare(deck, n - 1, n, compare) != 0)
+        {
+            item = DeckPointAt(deck, n);
+            DeckPushBack(result, item);
+        }
+
+        ++ n;
+    }
+
+    return result;
 }
