@@ -20,15 +20,31 @@
 void block_test()
 {
     Block* block;
+    void* ptr;
 
     block = BlockCreateUint(4);
     Uint numbers[] = {1, 10, 100, 1000};
     BlockInitFromArray(block, numbers);
 
-    PrintBlock(block, PrintUintN);
+    // PrintBlock(block, PrintUintN);
+
 
     Uint n = 0;
     BlockFold(&n, block, UintAddWRAP);
+    PrintUintN(&n);
+
+    BlockDestroy(block);
+    block = BlockCreatePtr(3);
+    char* str = "this is a test";
+    BlockSet(block, 0, &str);
+    BlockGet(&ptr, block, 0);
+    PrintCstrN(&ptr);
+    BlockDestroy(block);
+
+    block = BlockCreateUint(3);
+    n = INT32_MAX;
+    BlockSet(block, 1, &n);
+    BlockGet(&n, block, 1);
     PrintUintN(&n);
 
     BlockDestroy(block);
@@ -41,7 +57,7 @@ void input_test()
     // lines = ReadFileAllLines("text_file.txt");
     lines = ReadFileAllLines2("text_file.txt");
     // PrintDeck(lines, PrintCstrN);
-    // SortDeck(lines, CompareCstr);
+    SortDeck(lines, CompareCstr);
     // PrintDeck(lines, PrintCstrN);
 
     DeckDestroy(lines);
@@ -264,7 +280,7 @@ void deck_test()
     DeckGet(&ptr, deck, 1);
     PrintCstrN(&ptr);
     ptr = strdup("ass");
-    DeckPushBack(deck, ptr);
+    DeckPushBack(deck, &ptr);
     PrintDeck(deck, PrintCstrP);
     // new_deck = DeckUnique(deck, CompareCstr);
     // PrintDeck(new_deck, PrintCstrP);
@@ -272,16 +288,15 @@ void deck_test()
     DeckDestroy(deck);
     // DeckDestroy(new_deck);
 
-    // deck = MathFactor(12);
-    // PrintDeck(deck, PrintUintS);
-    // r = DeckCompare(deck, 1, 2, CompareUint);
-    // PrintUintN(&r);
-    // DeckGet(ptr, deck, 1);
-    // PrintUintN(ptr);
-    // new_deck = DeckUnique(deck, CompareInt);
-    // PrintDeck(new_deck, PrintUintS);
-    // DeckDestroy(deck);
-    // DeckDestroy(new_deck);
+    deck = MathFactor(INT32_MAX - 1);
+    PrintDeck(deck, PrintUintS);
+    r = DeckCompare(deck, 1, 2, CompareUint);
+    PrintUintN(&r);
+    new_deck = DeckUnique(deck, CompareInt);
+    PrintDeck(new_deck, PrintUintS);
+    DeckDestroy(deck);
+    DeckDestroy(new_deck);
+
 }
 
 void parse_test()
@@ -464,12 +479,13 @@ void math_test()
     Deck* divisors;
     Uint n;
 
-    n = 12;
+    n = 284;
     divisors = MathFactor(n);
     PrintDeck(divisors, PrintUintS);
     DeckDestroy(divisors);
 
     divisors = MathComputeDivisors(n);
+    SortDeck(divisors, CompareUint);
     PrintDeck(divisors, PrintUintS);
 
     DeckDestroy(divisors);
@@ -517,6 +533,7 @@ void natural_test()
 int main()
 {
     WhyStart();
+    MathUnitInit(1 << 10);
 
     // ar_interface_test();
     // block_test();
@@ -525,12 +542,12 @@ int main()
     // matrix_test();
     // matrix_add_test();
     // matrix_rational_test();
-    deck_test();
+    // deck_test();
     // parse_test();
     // table_test();
     // string_test();
     // matrix_table_test();
-    // math_test();
+    math_test();
     // natural_test();
 
     // char* str = "ass";

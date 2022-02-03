@@ -48,7 +48,7 @@ Deck* StringSplitLengthDestructive(char* string, char separator, Uint length)
 
     while (true)
     {
-        DeckPushBack(deck, current);
+        DeckPushBack(deck, &current);
 
         while (*current != separator && current < last)
             ++ current;
@@ -108,7 +108,7 @@ Deck* StringSplitStr(char* string, const char* substring)
 
     while (true)
     {
-        DeckPushBack(strings, current);
+        DeckPushBack(strings, &current);
         next = strstr(current, substring);
 
         if (!next)
@@ -190,7 +190,7 @@ Deck* StringCut(const char* string, Uint cut_size)
             return NULL;
         }
 
-        DeckPushBack(strings, cut);
+        DeckPushBack(strings, &cut);
         string += cut_size;
         remaining_length -= cut_size;
     }
@@ -222,7 +222,7 @@ Deck* StringCutFromEnd(const char* string, Uint cut_size)
         }
 
         // DeckPushFront(strings, cut);
-        DeckPushBack(strings, cut);
+        DeckPushBack(strings, &cut);
         length -= cut_size;
     }
 

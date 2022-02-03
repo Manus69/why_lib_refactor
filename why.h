@@ -158,6 +158,7 @@ Int         DeckCompare(const Deck* deck, Uint j, Uint k, Int (*compare)(const v
 void*       DeckBinSearch(const Deck* deck, const void* item,
                             Int (*compare)(const void *, const void *));
 Deck*       DeckUnique(Deck* deck, Int (*compare)(const void *, const void *));
+void        DeckFold(void* target, const Deck* deck, void (*fold)(void *, const void *, const void *));
 
 Int         TableAddRow(Table* table);
 Table*      TableCreatePtr(void* (*copy)(const void *), void (*destroy)(void *));
@@ -236,6 +237,7 @@ Int         CompareUint(const void* lhs, const void* rhs);
 Int         ComapreFloat(const void* lhs, const void* rhs);
 Int         CompareCstr(const void* lhs, const void* rhs);
 
+Int         MathUnitInit(Uint sieve_size);
 Uint        MathRandom(void);
 Uint        MathRandomInRange(Uint n);
 bool        MathIsPrime(Uint n);
@@ -250,6 +252,7 @@ Deck*       MathFactor(Uint n);
 Deck*       MathComputeDivisors(Uint n);
 Block*      MathSieve(Uint size);
 Uint        MathGetNthPrime(Uint n);
+Block*      MathGetSieve();
 
 Matrix*     MatrixCreateFloat(Uint n_rows, Uint n_cols);
 Matrix*     MatrixCreateRational(Uint n_rows, Uint n_cols);

@@ -255,9 +255,9 @@ Deck* DeckUnique(Deck* deck, Int (*compare)(const void *, const void *))
 
     item = DeckPointAt(deck, 0);
     DeckPushBack(deck, item);
-    n = deck->left_insert_index + 2;
+    n = 1;
 
-    while (n < deck->right_insert_index - 1)
+    while (n < DeckNItems(deck))
     {
         if (DeckCompare(deck, n - 1, n, compare) != 0)
         {
@@ -269,4 +269,15 @@ Deck* DeckUnique(Deck* deck, Int (*compare)(const void *, const void *))
     }
 
     return result;
+}
+
+void DeckFold(void* target, const Deck* deck, void (*fold)(void *, const void *, const void *))
+{
+    Uint n_items;
+
+    n_items = DeckNItems(deck);
+    if (n_items == 0)
+        return ;
+    
+    BlockFoldNItems(target, deck->block, deck->left_insert_index + 1, n_items, fold);
 }

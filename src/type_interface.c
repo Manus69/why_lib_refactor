@@ -16,7 +16,7 @@ void GetPtr(void* target, const void* memory, Uint index)
 
 void SetPtr(void* memory, Uint index, const void* ptr)
 {
-    ((const void **)memory)[index] = ptr;
+    ((const void **)memory)[index] = *(const void **)ptr;
 }
 
 void SwapPtr(void* memory, Uint j, Uint k)

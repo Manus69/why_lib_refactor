@@ -10,7 +10,7 @@ Int TableAddRow(Table* table)
     DeckGet(&first_row, table->rows, 0);
     row = DeckCreatePtr(first_row->copy, first_row->destroy);
 
-    return DeckPushBack(table->rows, row);
+    return DeckPushBack(table->rows, &row);
 }
 
 Table* TableCreatePtr(void* (*copy)(const void *), void (*destroy)(void *))
@@ -35,7 +35,7 @@ Table* TableCreatePtr(void* (*copy)(const void *), void (*destroy)(void *))
         return NULL;
     }
     
-    DeckPushBack(table->rows, row);
+    DeckPushBack(table->rows, &row);
 
     return table;
 }
@@ -51,7 +51,7 @@ Int TablePush(Table* table, Uint row, const void* item)
 
     DeckGet(&deck, table->rows, row);
 
-    return DeckPushBack(deck, item);
+    return DeckPushBack(deck, &item);
 }
 
 Int TablePushLastRow(Table* table, const void* item)

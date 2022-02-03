@@ -68,7 +68,7 @@ Deck* ReadFileAllLines(const char* name)
         if (!*current)
             break ;
 
-        DeckPushBack(lines, current);
+        DeckPushBack(lines, &current);
 
         while (*current && *current != '\n')
             ++ current;

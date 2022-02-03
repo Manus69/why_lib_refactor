@@ -2,6 +2,8 @@
 
 #define FIB_LIMIT (90)
 
+static Block* _sieve;
+
 Uint MathRandom(void)
 {
     return random();
@@ -109,6 +111,14 @@ Uint MathFib(Uint n)
 bool MathIsPrime(Uint n)
 {
     Uint p;
+    Byte value;
+
+    if (n < BlockNItems(_sieve))
+    {
+        BlockGet(&value, _sieve, n);
+
+        return value;
+    }
 
     p = 2;
     while (p * p <= n)
@@ -165,6 +175,7 @@ Deck* MathComputeDivisors(Uint n)
 {
     Deck*   divisors;
     Deck*   prime_divisors;
+    Deck*   result;
     
     if (!(prime_divisors = MathFactor(n)))
         return NULL;
@@ -176,10 +187,17 @@ Deck* MathComputeDivisors(Uint n)
     }
 
     _generate_divisors(prime_divisors, divisors, 1, 0);
-
     DeckDestroy(prime_divisors);
 
-    return divisors;
+    if (!(result = DeckUnique(divisors, CompareUint)))
+    {
+        DeckDestroy(divisors);
+        return NULL;
+    }
+
+    DeckDestroy(divisors);
+
+    return result;
 }
 
 static void _sieve_init(Block* sieve, Uint start)
@@ -307,4 +325,17 @@ Uint MathGetNthPrime(Uint n)
     BlockDestroy(sieve);
 
     return index;
+}
+
+Int MathUnitInit(Uint sieve_size)
+{
+    if (!(_sieve = MathSieve(sieve_size)))
+        return WHY_ERROR;
+
+    return WHY_OK;
+}
+
+Block* MathGetSieve()
+{
+    return _sieve;
 }
