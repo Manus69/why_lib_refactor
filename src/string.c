@@ -264,3 +264,35 @@ char* StringPrepend(const char* string, char c)
 
     return new;
 }
+
+char* StringStripFront(const char* string, char c)
+{
+    Uint    length;
+
+    while (*string && (IsSpace(*string) || (*string == c)))
+        ++ string;
+    
+    length = strlen(string);
+
+    return StringNCopy(string, length);
+}
+
+void StringStripBackDestructive(char* string, char c)
+{
+    while (*string && (!IsSpace(*string) && *string != c))
+        ++ string;
+    
+    *string = 0;
+}
+
+char* StringStrip(const char* string, char front, char back)
+{
+    char* result;
+
+    if (!(result = StringStripFront(string, front)))
+        return NULL;
+
+    StringStripBackDestructive(result, back);
+
+    return result;
+}

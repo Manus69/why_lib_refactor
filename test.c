@@ -481,7 +481,7 @@ void math_test()
 
     n = 284;
     divisors = MathFactor(n);
-    PrintDeck(divisors, PrintUintS);
+    // PrintDeck(divisors, PrintUintS);
     DeckDestroy(divisors);
 
     divisors = MathComputeDivisors(n);
@@ -489,6 +489,9 @@ void math_test()
     PrintDeck(divisors, PrintUintS);
 
     DeckDestroy(divisors);
+
+    n = 360 / 100;
+    PrintUintN(&n);
 }
 
 void natural_test()

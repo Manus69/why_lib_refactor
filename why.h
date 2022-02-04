@@ -238,6 +238,7 @@ Int         ComapreFloat(const void* lhs, const void* rhs);
 Int         CompareCstr(const void* lhs, const void* rhs);
 
 Int         MathUnitInit(Uint sieve_size);
+void        MathUnitTerminate();
 Uint        MathRandom(void);
 Uint        MathRandomInRange(Uint n);
 bool        MathIsPrime(Uint n);
@@ -253,6 +254,7 @@ Deck*       MathComputeDivisors(Uint n);
 Block*      MathSieve(Uint size);
 Uint        MathGetNthPrime(Uint n);
 Block*      MathGetSieve();
+Uint        MathFactorial(Uint n);
 
 Matrix*     MatrixCreateFloat(Uint n_rows, Uint n_cols);
 Matrix*     MatrixCreateRational(Uint n_rows, Uint n_cols);
@@ -314,6 +316,9 @@ Deck*       StringCut(const char* string, Uint cut_size);
 Deck*       StringCutFromEnd(const char* string, Uint cut_size);
 char*       StringConcat(const char* lhs, const char* rhs);
 char*       StringPrepend(const char* string, char c);
+char*       StringStripFront(const char* string, char c);
+void        StringStripBackDestructive(char* string, char c);
+char*       StringStrip(const char* string, char front, char back);
 
 Byte*       ReadFile(const char* name);
 Deck*       ReadFileAllLines(const char* name);
