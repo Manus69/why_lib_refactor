@@ -533,6 +533,92 @@ void natural_test()
     // NaturalDestroy(n);
 }
 
+static Int _find_pivot(const char* str, Uint length)
+{
+    Int n;
+
+    n = length - 2;
+    while (n >= 0)
+    {
+        if (str[n] < str[n + 1])
+        {
+            return n;
+        }
+
+        -- n;
+    }
+
+    return NOT_FOUND;
+}
+
+static Int _find_index(const char* str, Int pivot, Uint length)
+{
+    Int n;
+
+    n = length - 1;
+    while (n > pivot)
+    {
+        if (str[n] > str[pivot])
+            return n;
+        -- n;
+    }
+
+    return NOT_FOUND;
+}
+
+static Int _permute(char* str, Uint length)
+{
+    Int pivot;
+    Int index;
+
+    if (length < 2)
+        return NOT_FOUND;
+    
+    pivot = _find_pivot(str, length);
+
+    if (pivot == NOT_FOUND)
+    {
+        StringReverseLength(str, length);
+
+        return pivot;
+    }
+
+    index = _find_index(str, pivot, length);
+
+    SWAP(str[pivot], str[index]);
+    StringReverseLength(str + pivot + 1, length - pivot - 1);
+
+    return pivot;
+}
+
+void permutation_test()
+{
+    char* str;
+
+    str = strdup("0123");
+    // str = strdup("0123456789");
+    Uint length = strlen(str);
+
+    while (_permute(str, length) != NOT_FOUND)
+    {
+        // PrintCstrN(&str);
+    }
+
+    free(str);
+
+    Block* block = BlockCreateInt(4);
+    Int array[] = {0, 1, 2, 3};
+    BlockInitFromArray(block, array);
+    PrintBlockN(block, PrintIntS);
+    
+    while (BlockPermuteLexical(block, CompareInt))
+    {
+        PrintBlockN(block, PrintIntS);
+    }
+
+    BlockDestroy(block);
+}
+
 int main()
 {
     WhyStart();
@@ -550,8 +636,9 @@ int main()
     // table_test();
     // string_test();
     // matrix_table_test();
-    math_test();
+    // math_test();
     // natural_test();
+    permutation_test();
 
     // char* str = "ass";
     // PrintCstrN(&str);

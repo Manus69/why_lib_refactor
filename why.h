@@ -136,6 +136,9 @@ void*       BlockBinSearchRange(const Block* block, const void* item,
                             Int (*compare)(const void *, const void *), Uint left, Uint right);
 void        BlockReverseSlice(Block* block, Uint left, Uint right);
 void        BlockReverse(Block* block);
+bool        BlockPermuteLexicalSlice(Block* block, 
+                            Int left, Int right, Int (*compare)(const void* , const void* ));
+bool        BlockPermuteLexical(Block* block, Int (*compare)(const void* , const void *));
 
 Deck*       DeckCreatePtr(void* (*copy)(const void *), void (*destroy)(void *));
 Deck*       DeckCreateUint();
@@ -232,11 +235,14 @@ void        UintMultWRAP(void* target, const void* lhs, const void* rhs);
 
 void        IntInit(Int* target, Int value);
 
+//compare
+Int         CompareByte(const void* lhs, const void* rhs);
 Int         CompareInt(const void* lhs, const void* rhs);
 Int         CompareUint(const void* lhs, const void* rhs);
 Int         ComapreFloat(const void* lhs, const void* rhs);
 Int         CompareCstr(const void* lhs, const void* rhs);
 
+//math
 Int         MathUnitInit(Uint sieve_size);
 void        MathUnitTerminate();
 Uint        MathRandom(void);
@@ -319,6 +325,7 @@ char*       StringPrepend(const char* string, char c);
 char*       StringStripFront(const char* string, char c);
 void        StringStripBackDestructive(char* string, char c);
 char*       StringStrip(const char* string, char front, char back);
+void        StringReverseLength(char* string, Uint length);
 
 Byte*       ReadFile(const char* name);
 Deck*       ReadFileAllLines(const char* name);
@@ -339,9 +346,13 @@ void        PrintUint(const Uint n);
 void        PrintUintWRAP(const void* n_pointer, const void* sep);
 void        PrintUintN(const void* n);
 void        PrintUintS(const void* n);
-void        PrintByte(const Byte b);
+void        PrintByte(Byte b);
+void        PrintChar(char c);
+void        PrintCharWRAP(const void* c, const void* sep);
+void        PrintCharS(const void* c);
 void        PrintByteWRAP(const void* byte_pointer, const void* sep);
 void        PrintByteN(const void* b);
+void        PrintByteS(const void* byte);
 void        PrintInt(const Int n);
 void        PrintIntWRAP(const void* n_pointer, const void* sep);
 void        PrintIntN(const void* n);
@@ -353,6 +364,8 @@ void        PrintTimeDiff(const void* start, const void* end);
 void        PrintNBits(Uint number, Uint n_bits);
 void        PrintBits(Uint n);
 void        PrintBlock(const Block* block, void (*print)(const void *));
+void        PrintBlockWRAP(const void* block, void (*print)(const void *), const void *sep);
+void        PrintBlockN(const void* block, void (*print)(const void *));
 void        PrintMatrix(const Matrix* matrix, void (*print)(const void* ));
 void        PrintDeck(const Deck* deck, void (*print)(const void *));
 void        PrintTable(const Table* table, void (*print)(const void* ));

@@ -1,4 +1,5 @@
 #include "declarations.h"
+#include "macro.h"
 
 char* StringSubstring(const char* string, Uint length)
 {
@@ -295,4 +296,23 @@ char* StringStrip(const char* string, char front, char back)
     StringStripBackDestructive(result, back);
 
     return result;
+}
+
+void StringReverseLength(char* string, Uint length)
+{
+    Uint lhs;
+    Uint rhs;
+
+    if (length < 2)
+        return ;
+
+    lhs = 0;
+    rhs = length - 1;
+
+    while (lhs < rhs)
+    {
+        SWAP(string[lhs], string[rhs]);
+        ++ lhs;
+        -- rhs;
+    }
 }

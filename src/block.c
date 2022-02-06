@@ -329,3 +329,75 @@ void BlockReverse(Block* block)
     
     BlockReverseSlice(block, 0, block->n_items - 1);
 }
+
+static Int _find_pivot(const Block* block, Int left, Int right, Int (*compare)(const void* , const void* ))
+{
+    Int     pivot;
+    void*   lhs;
+    void*   rhs;
+
+    pivot = right - 1;
+    while (pivot >= left)
+    {
+        lhs = BlockPointAt(block, pivot);
+        rhs = BlockPointAt(block, pivot + 1);
+        if (compare(lhs, rhs) > 0)
+            return pivot;
+        
+        -- pivot;
+    }
+
+    return NOT_FOUND;
+}
+
+static Int _find_swap_index(const Block* block, Int pivot, Int right, Int (*comapre)(const void* , const void *))
+{
+    void* lhs;
+    void* rhs;
+
+    lhs = BlockPointAt(block, pivot);
+    while (right >= pivot)
+    {
+        rhs = BlockPointAt(block, right);
+        if (comapre(lhs, rhs) > 0)
+            return right;
+        
+        -- right;
+    }
+
+    return NOT_FOUND;
+}
+//89210
+// 0321 -> 1023
+bool BlockPermuteLexicalSlice(Block* block, Int left, Int right, Int (*compare)(const void* , const void* ))
+{
+    Int pivot;
+    Int swap_index;
+
+    if (right - left < 1)
+        return NOT_FOUND;
+
+    pivot = _find_pivot(block, left, right, compare);
+
+    if (pivot == NOT_FOUND)
+    {
+        BlockReverse(block);
+        return false;
+    }
+
+    swap_index = _find_swap_index(block, pivot, right, compare);
+    BlockSwap(block, pivot, swap_index);
+    BlockReverseSlice(block, pivot + 1, right);
+
+    return true;
+}
+
+bool BlockPermuteLexical(Block* block, Int (*compare)(const void* , const void *))
+{
+    Uint n_items;
+
+    if ((n_items = BlockNItems(block)) < 2)
+        return false;
+
+    return BlockPermuteLexicalSlice(block, 0, n_items - 1, compare);
+}

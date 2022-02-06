@@ -2,6 +2,11 @@
 #include "macro.h"
 #include "declarations.h"
 
+Int CompareByte(const void* lhs, const void* rhs)
+{
+    return COMPARE_NUMERIC(lhs, rhs, Byte);
+}
+
 Int CompareInt(const void* lhs, const void* rhs)
 {
     return COMPARE_NUMERIC(lhs, rhs, Int);

@@ -101,15 +101,36 @@ void PrintUintS(const void* n)
     PrintUintWRAP(n, SPACE);
 }
 
-void PrintByte(const Byte b)
+void PrintByte(Byte b)
 {
     printf("%u", b);
+}
+
+void PrintChar(char c)
+{
+    printf("%c", c);
+}
+
+void PrintCharWRAP(const void* c, const void* sep)
+{
+    PrintChar(*(const char *)c);
+    PrintCstr(sep);
+}
+
+void PrintCharS(const void* c)
+{
+    PrintCharWRAP(c, SPACE);
 }
 
 void PrintByteWRAP(const void* byte, const void* sep)
 {
     PrintByte(*(const Byte *)byte);
     PrintCstr(sep);
+}
+
+void PrintByteS(const void* byte)
+{
+    PrintByteWRAP(byte, SPACE);
 }
 
 void PrintByteN(const void* b)
@@ -184,10 +205,16 @@ void PrintBlock(const Block* block, void (*print)(const void *))
     return BlockMap(block, 0, BlockNItems(block), print);
 }
 
-// void PrintBlockWRAP(const void* block, void (*print)(const void *, const void *), const void *sep)
-// {
+void PrintBlockWRAP(const void* block, void (*print)(const void *), const void *sep)
+{
+    PrintBlock(block, print);
+    printf("%s", (const char *)sep);
+}
 
-// }
+void PrintBlockN(const void* block, void (*print)(const void *))
+{
+    PrintBlockWRAP(block, print, NEW_LINE);
+}
 
 void PrintMatrix(const Matrix* matrix, void (*print)(const void* ))
 {
