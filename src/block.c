@@ -194,7 +194,7 @@ Int BlockCompare(const Block* block, Uint j, Uint k, Int (*compare)(const void* 
     return compare(_lhs, _rhs);
 }
 
-void BlockMap(const Block* block, Uint index, Uint n_items, void (*function)(const void *))
+void BlockMap(const Block* block, Uint index, Uint n_items, void (*function)(void *))
 {
     void*   item;
     Uint    cap;

@@ -44,6 +44,11 @@ Deck* DeckCreatePtr(void* (*copy)(const void *), void (*destroy)(void *))
     return _create(DECK_CAPACITY, copy, destroy, BlockCreatePtr);
 }
 
+Deck* DeckCreatePtrCapacity(void* (*copy)(const void *), void (*destroy)(void *), Uint capacity)
+{
+    return _create(capacity, copy, destroy, BlockCreatePtr);
+}
+
 Deck* DeckCreateUint()
 {
     return _create(DECK_CAPACITY, NULL, NULL, BlockCreateUint);
@@ -56,6 +61,9 @@ static void _destroy_items(Deck* deck)
 
 void DeckDestroy(Deck* deck)
 {
+    if (!deck)
+        return ;
+    
     if (deck->destroy != _destroy_default)
         _destroy_items(deck);
     

@@ -316,3 +316,34 @@ void StringReverseLength(char* string, Uint length)
         -- rhs;
     }
 }
+
+void StringReverse(char* string)
+{
+    Uint length;
+
+    length = strlen(string);
+
+    if (length < 2)
+        return ;
+
+    StringReverseLength(string, length);
+}
+
+Uint StringHash(const char* string)
+{
+    Uint value;
+
+    value = HASH_VALUE;
+    while (*string)
+    {
+        value = ((value << 5) + value) + *string;
+        ++ string;
+    }
+
+    return value;
+}
+
+Uint StringHashWRAP(const void* string)
+{
+    return StringHash(*(char **)string);
+}

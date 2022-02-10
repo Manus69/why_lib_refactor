@@ -31,6 +31,7 @@ typedef struct List             List;
 typedef struct Tree             Tree;
 typedef struct Matrix           Matrix;
 typedef struct Table            Table;
+typedef struct HashTable        HashTable;
 
 enum Status
 {
@@ -80,6 +81,7 @@ void*       MemExpandZero(void* memory, Uint size, Uint extra_size);
 void        MemDestroy(void* ptr);
 void*       MemZero(Uint size);
 
+//type interface
 void        GetPtr(void* target, const void* memory, Uint index);
 void        SetPtr(void* memory, Uint index, const void* ptr);
 void        SwapPtr(void* memory, Uint j, Uint k);
@@ -102,6 +104,7 @@ void        GetComplex(void* target, const void* memory, Uint index);
 void        SetComplex(void* memory, Uint index, const void* ptr);
 void        SwapComplex(void* memory, Uint j, Uint k);
 
+//block
 #define     BlockCreate(n_items, type) BlockCreate ## type(n_items)
 Block*      BlockCreateByte(Uint n_items);
 Block*      BlockCreateInt(Uint n_items);
@@ -127,7 +130,7 @@ void        BlockSet(Block* block, Uint index, const void* item);
 void        BlockSwap(Block* block, Uint j, Uint k);
 Int         BlockWriteBytes(Block* block, Uint index, const Byte* bytes, Uint n_bytes);
 Int         BlockCompare(const Block* block, Uint j, Uint k, Int (*compare)(const void* lhs, const void* rhs));
-void        BlockMap(const Block* block, Uint index, Uint n_items, void (*function)(const void *));
+void        BlockMap(const Block* block, Uint index, Uint n_items, void (*function)(void *));
 void        BlockFold(void* target, const Block* block, void (*fold)(void *, const void *, const void *));
 void        BlockFoldNItems(void* target, const Block* block, Uint index, Uint n_items, 
                             void (*fold)(void *, const void *, const void *));
@@ -140,6 +143,7 @@ bool        BlockPermuteLexicalSlice(Block* block,
                             Int left, Int right, Int (*compare)(const void* , const void* ));
 bool        BlockPermuteLexical(Block* block, Int (*compare)(const void* , const void *));
 
+//deck
 Deck*       DeckCreatePtr(void* (*copy)(const void *), void (*destroy)(void *));
 Deck*       DeckCreateUint();
 void        DeckDestroy(Deck* deck);
@@ -163,6 +167,18 @@ void*       DeckBinSearch(const Deck* deck, const void* item,
 Deck*       DeckUnique(Deck* deck, Int (*compare)(const void *, const void *));
 void        DeckFold(void* target, const Deck* deck, void (*fold)(void *, const void *, const void *));
 
+//hash table
+HashTable*  HashTableCreate(Uint capacity, void* (*copy)(const void *),
+                            void (*destroy)(void *), Uint (*hash)(const void *));
+Uint        HashTableNItems(const HashTable* table);
+Uint        HashTableNCells(const HashTable* table);
+void        HashTableDestroy(HashTable* table);
+void        HashTableMapCell(HashTable* table, Uint n, void (*function)(void *));
+Int         HashTableInsert(HashTable* table, const void* item);
+HashTable*  HashDeck(const Deck* deck, Uint capacity, Uint (*hash)(const void *),
+                    void* (*copy)(const void *), void (*destroy)(void *));
+
+//table
 Int         TableAddRow(Table* table);
 Table*      TableCreatePtr(void* (*copy)(const void *), void (*destroy)(void *));
 Uint        TableNRows(const Table* table);
@@ -201,11 +217,12 @@ void        RationalInvWRAP(void* target, const void* p);
 void        RationalNegateWRAP(void* target, const void* p);
 void        RationalDivWRAP(void* target, const void* lhs, const void* rhs);
 
-Natural*    NaturalCreate(const char* string);
-void        NaturalDestroy(Natural* n);
-void        NaturalDestroyWRAP(void* n);
-Int         NaturalAdd(Natural* target, const Natural* lhs, const Natural* rhs);
-char*       NaturalToString(const Natural* number);
+void        NaturalInit(char* target, Uint n);
+char*       NaturalCreate(const char* string);
+void        NaturalAdd(char* target, const char* lhs, const char* rhs);
+Uint        NaturalAddRetDigits(char* target, const char* lhs, const char* rhs);
+void        NaturalSetLength(char* target, const char* number, Uint n_digits);
+void        NaturalSet(char* target, const char* number);
 
 void        FloatZero(Float* x);
 void        FloatOne(Float* x);
@@ -262,6 +279,7 @@ Uint        MathGetNthPrime(Uint n);
 Block*      MathGetSieve();
 Uint        MathFactorial(Uint n);
 
+//matrix
 Matrix*     MatrixCreateFloat(Uint n_rows, Uint n_cols);
 Matrix*     MatrixCreateRational(Uint n_rows, Uint n_cols);
 Matrix*     MatrixCreateUint(Uint n_rows, Uint n_cols);
@@ -293,6 +311,7 @@ void        MatrixRowEliminate(Matrix* matrix, Uint pivot_row, Uint target_row);
 void        MatrixEchelonForm(Matrix* matrix);
 void        MatrixEliminateUp(Matrix* matrix);
 
+//parse
 bool        IsDigit(char c);
 bool        IsAlpha(char c);
 bool        IsSpace(char c);
@@ -308,6 +327,7 @@ Int         ParseRationalWRAP(void* target, const char* string);
 Int         ParseTable(Table* table, const char* string, char table_sep_left, char table_sep_right,
                         char row_sep_left, char row_sep_right, char col_sep);
 
+//string
 char*       StringSubstring(const char* string, Uint length);
 char*       StringNCopy(const char* string, Uint n);
 Int         StringFindC(const char* string, char c);
@@ -326,12 +346,17 @@ char*       StringStripFront(const char* string, char c);
 void        StringStripBackDestructive(char* string, char c);
 char*       StringStrip(const char* string, char front, char back);
 void        StringReverseLength(char* string, Uint length);
+void        StringReverse(char* string);
+Uint        StringHash(const char* string);
+Uint        StringHashWRAP(const void* string);
 
+//input
 Byte*       ReadFile(const char* name);
 Deck*       ReadFileAllLines(const char* name);
 Deck*       ReadFileAllLines2(const char* name);
 Byte*       ReadFileSplitSplice(const char* name, const char* substring);
 
+//print
 void        PrintCstr(const char* str);
 void        PrintCstrWRAP(const void* str_pointer, const void* sep);
 void        PrintCstrN(const void* str);
@@ -369,8 +394,7 @@ void        PrintBlockN(const void* block, void (*print)(const void *));
 void        PrintMatrix(const Matrix* matrix, void (*print)(const void* ));
 void        PrintDeck(const Deck* deck, void (*print)(const void *));
 void        PrintTable(const Table* table, void (*print)(const void* ));
-void        PrintNatural(const Natural* number);
-void        PrintNaturalWRAP(const void* number_pointer, const void* sep);
-void        PrintNaturalN(const void* number);
+void        PrintNatural(const char* natural);
+void        PrintHashTable(const HashTable* table, void (*print)(const void *));
 
 #endif

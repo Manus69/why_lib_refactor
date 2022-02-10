@@ -496,41 +496,24 @@ void math_test()
 
 void natural_test()
 {
-    Natural* n;
-    Natural* m;
-    /*
-                   0123456789|123456789|1234567890
-    */
-    char* m_str = "157809211410916853570920356427320726420653771310417";
-    // char* m_str = "9";
-    char* n_str = "91942213363574161572522430563301811072406154908250";
+    char* result = MemZero(1000);
+    // char* m = NaturalCreate("101");
+    // char* n = NaturalCreate("901");
 
-    // // Deck* strings = StringCut(m_str, 18);
-    // // PrintDeck(strings, PrintCstrN);
-    // // DeckDestroy(strings);
+    char* m = MemZero(1000);
+    char* n = MemZero(1000);
 
-    n = NaturalCreate(n_str);
-    m = NaturalCreate(m_str);
+    NaturalInit(m, 9);
+    NaturalInit(n, 9);
+    PrintNatural(m);
+    printf("\n");
 
-    PrintNaturalN(&m);
-    PrintNaturalN(&n);
+    NaturalAdd(result, m, n);
+    PrintNatural(result);
 
-    // PrintNaturalN(&m);
-    NaturalAdd(m, m, n);
-    // PrintNaturalN(&m);
-    
-    char* str = NaturalToString(m);
-    printf("%.10s\n", str);
-    free(str);
-
-    NaturalDestroy(m);
-    NaturalDestroy(n);
-
-    // n_str = "46376937677490009712648124896970078050417018260538";
-
-    // n = NaturalCreate(n_str);
-    // PrintNaturalN(&n);
-    // NaturalDestroy(n);
+    free(m);
+    free(n);
+    free(result);
 }
 
 static Int _find_pivot(const char* str, Uint length)
@@ -606,8 +589,8 @@ void permutation_test()
 
     free(str);
 
-    Block* block = BlockCreateInt(4);
-    Int array[] = {0, 1, 2, 3};
+    Block* block = BlockCreateInt(5);
+    Int array[] = {0, 1, 2, 2, 3};
     BlockInitFromArray(block, array);
     PrintBlockN(block, PrintIntS);
     
@@ -617,6 +600,21 @@ void permutation_test()
     }
 
     BlockDestroy(block);
+}
+
+void hash_table_test()
+{
+    HashTable* table;
+    Deck* strings;
+
+    strings = ReadFileAllLines2(_FILE_NAME);
+    table = HashDeck(strings, 1024, StringHashWRAP, NULL, NULL);
+
+    PrintHashTable(table, PrintCstrS);
+
+    DeckDestroy(strings);
+    HashTableDestroy(table);
+    
 }
 
 int main()
@@ -638,7 +636,8 @@ int main()
     // matrix_table_test();
     // math_test();
     // natural_test();
-    permutation_test();
+    // permutation_test();
+    hash_table_test();
 
     // char* str = "ass";
     // PrintCstrN(&str);

@@ -1,7 +1,6 @@
 #include "why.h"
 #include "macro.h"
 #include "rational.h"
-#include "natural.h"
 #include "declarations.h"
 
 #define NEW_LINE ("\n")
@@ -202,7 +201,11 @@ void PrintBits(Uint n)
 
 void PrintBlock(const Block* block, void (*print)(const void *))
 {
-    return BlockMap(block, 0, BlockNItems(block), print);
+    void (*_print)(void *);
+
+    _print = (void (*)(void *))print;
+
+    return BlockMap(block, 0, BlockNItems(block), _print);
 }
 
 void PrintBlockWRAP(const void* block, void (*print)(const void *), const void *sep)
@@ -268,31 +271,35 @@ void PrintTable(const Table* table, void (*print)(const void* ))
     }
 }
 
-void PrintNatural(const Natural* number)
+void PrintNatural(const char* natural)
 {
-    Int n;
+    Int length;
 
-    n = number->n_digits - 1;
-    if (n < 0)
-        return ;
-        
-    PrintUint(number->digits[n]);
-    -- n;
+    length = strlen(natural);
+    -- length;
 
-    while (n >= 0)
+    while (length >= 0)
     {
-        printf("%018zu", number->digits[n]); //this is bad
-        -- n;
+        PrintChar(natural[length]);
+        -- length;
     }
 }
 
-void PrintNaturalWRAP(const void* number, const void* sep)
+void PrintHashTable(const HashTable* table, void (*print)(const void *))
 {
-    PrintNatural(*(Natural **)number);
-    PrintCstr(sep);
-}
+    Uint n;
+    Uint n_cells;
+    void (*_print)(void *);
 
-void PrintNaturalN(const void* number)
-{
-    PrintNaturalWRAP(number, NEW_LINE);
+    _print = (void (*)(void *))print;
+    n_cells = HashTableNCells(table);
+    n = 0;
+
+    while (n < n_cells)
+    {
+        printf("%zu: ", n);
+        HashTableMapCell((HashTable *)table, n, _print);
+        ++ n;
+        printf("\n");
+    }
 }

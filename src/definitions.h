@@ -14,8 +14,9 @@
 #include <math.h>
 #include <assert.h>
 
-#define Q_SORT_THRESHOLD (1 << 4)
-#define FLT_EPSILON (((Float)1) / (1 << 20))
-#define BLOCK_CAPACITY (1 << 10)
+#define Q_SORT_THRESHOLD    (1 << 4)
+#define FLT_EPSILON         (((Float)1) / (1 << 20))
+#define BLOCK_CAPACITY      (1 << 10)
+#define HASH_VALUE          (5381)
 
 #endif
