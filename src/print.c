@@ -285,6 +285,17 @@ void PrintNatural(const char* natural)
     }
 }
 
+void PrintNaturalWRAP(const void* n, const char* sep)
+{
+    PrintNatural(*(const char **)n);
+    printf("%s", sep);
+}
+
+void PrintNaturalN(const void* n)
+{
+    PrintNaturalWRAP(n, NEW_LINE);
+}
+
 void PrintHashTable(const HashTable* table, void (*print)(const void *))
 {
     Uint n;

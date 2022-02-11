@@ -34,5 +34,5 @@ void WhyEnd(void)
 
 Int WhySavePtr(const void* ptr)
 {
-    return DeckPushBack(_why.pointers, &ptr);
+    return DeckPushBack(_why.pointers, ptr);
 }

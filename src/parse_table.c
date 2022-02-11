@@ -114,7 +114,7 @@ Int ParseTable(Table* table, const char* string, char table_sep_left, char table
         return 0;
     }
     
-    WhySavePtr(copy);
+    WhySavePtr(&copy);
     status = _parse_table_rows(table, rows, row_sep_left, col_sep);
 
     DeckDestroy(rows); 

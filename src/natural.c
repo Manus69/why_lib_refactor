@@ -16,6 +16,12 @@ void NaturalInit(char* target, Uint n)
     }
 }
 
+void NaturalClearInit(char* target, Uint n, Uint length)
+{
+    memset(target, 0, length);
+    NaturalInit(target, n);
+}
+
 char* NaturalCreate(const char* string)
 {
     Uint        length;
@@ -77,6 +83,76 @@ Uint NaturalAddRetDigits(char* target, const char* lhs, const char* rhs)
 void NaturalAdd(char* target, const char* lhs, const char* rhs)
 {
     NaturalAddRetDigits(target, lhs, rhs);
+}
+
+// Uint NaturalMultRetDigits(char* target, const char* lhs, const char* rhs)
+// {
+//     ;
+// }
+
+static void _mult_by_digit(char* target, const char* lhs, Uint start, char digit)
+{
+    char result;
+    char carry;
+
+    carry = 0;
+    while (true)
+    {
+        if (!*lhs && !carry)
+            return ;
+
+        result = _value(*lhs) * _value(digit) + _value(target[start]) + carry;
+
+        if (result >= 10)
+        {
+            carry = result / 10;
+            result = result % 10;
+        }
+        else
+        {
+            carry = 0;
+        }
+
+        target[start] = result + '0';
+
+        ++ start;
+        ++ lhs;
+    }
+}
+
+void NaturalMult(char* target, const char* lhs, const char* rhs)
+{
+    Uint n;
+
+    n = 0;
+    while (rhs[n])
+    {
+        _mult_by_digit(target, lhs, n, rhs[n]);
+        ++ n;
+    }
+}
+
+#define BUFF_SIZE (1 << 12)
+void NaturalPower(char* target, const char* number, Uint exponent)
+{
+    char temp_buffer[BUFF_SIZE];
+
+    if (exponent == 0)
+        return NaturalInit(target, 1);
+    
+    NaturalAdd(target, target, number);
+    if (exponent == 1)
+        return ;
+
+    -- exponent;
+
+    while (exponent)
+    {
+        memset(temp_buffer, 0, BUFF_SIZE);
+        NaturalMult(temp_buffer, target, number);
+        memcpy(target, temp_buffer, BUFF_SIZE);
+        -- exponent;
+    }
 }
 
 void NaturalSetLength(char* target, const char* number, Uint n_digits)

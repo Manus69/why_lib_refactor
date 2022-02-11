@@ -71,7 +71,7 @@ Deck* StringSplitLength(const char* string, char separator, Uint length)
     if (!(copy = StringSubstring(string, length)))
         return NULL;
     
-    WhySavePtr(copy);
+    WhySavePtr(&copy);
     
     return StringSplitLengthDestructive(copy, separator, length);
 }
@@ -327,6 +327,21 @@ void StringReverse(char* string)
         return ;
 
     StringReverseLength(string, length);
+}
+
+Uint StringHashLength(const char* string, Uint length)
+{
+    Uint value;
+
+    value = HASH_VALUE;
+    while (length)
+    {
+        value = ((value << 5) + value) + *string;
+        ++ string;
+        -- length;
+    }
+
+    return value;
 }
 
 Uint StringHash(const char* string)

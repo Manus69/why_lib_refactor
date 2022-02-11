@@ -298,6 +298,24 @@ void* BlockBinSearchRange(const Block* block, const void* item,
     return NULL;
 }
 
+void* BlockSearchRange(const Block* block, const void* item,
+                            Int (*compare)(const void *, const void *), Uint left, Uint right)
+{
+    void* _item;
+
+    while (left <= right)
+    {
+        _item = BlockPointAt(block, left);
+
+        if (compare(_item, item) == 0)
+            return _item;
+        
+        ++ left;
+    }
+
+    return NULL;
+}
+
 void* BlockBinSearch(const Block* block, const void* item, Int (*compare)(const void *, const void *))
 {
     Uint    left;

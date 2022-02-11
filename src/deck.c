@@ -228,6 +228,14 @@ void DeckReverse(Deck* deck)
     BlockReverseSlice(deck->block, deck->left_insert_index + 1, deck->right_insert_index - 1);
 }
 
+void* DeckSearchLinear(const Deck* deck, const void* item, Int (*compare)(const void *, const void *))
+{
+    if (DeckNItems(deck) == 0)
+        return NULL;
+
+    return BlockSearchRange(deck->block, item, compare, deck->left_insert_index + 1, deck->right_insert_index - 1);
+}
+
 void* DeckBinSearch(const Deck* deck, const void* item, Int (*compare)(const void *, const void *))
 {
     if (DeckNItems(deck) == 0)

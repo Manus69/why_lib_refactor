@@ -86,16 +86,17 @@ void HashTableMapCell(HashTable* table, Uint n, void (*function)(void *))
     DeckMap(cell, function);
 }
 
-static Int _insert(HashTable* table, const void* item, Uint index)
+static void* _find(const HashTable* table, const void* item, 
+                    Uint index, Int (*compare)(const void *, const void *))
 {
     Deck* cell;
 
     cell = *(Deck **)BlockPointAt(table->table, index);
 
-    return DeckPushBack(cell, item);
+    return DeckSearchLinear(cell, item, compare);
 }
 
-Int HashTableInsert(HashTable* table, const void* item)
+void* HashTableFind(const HashTable* table, const void* item, Int (*compare)(const void *, const void *))
 {
     Uint hash;
     Uint index;
@@ -103,11 +104,41 @@ Int HashTableInsert(HashTable* table, const void* item)
     hash = table->hash_function(item);
     index = hash % HashTableNCells(table);
 
-    return _insert(table, item, index);
+    return _find(table, item, index, compare);
+}
+
+static Int _insert(HashTable* table, const void* item, Uint index, Int (*compare)(const void *, const void *))
+{
+    Deck* cell;
+
+    cell = *(Deck **)BlockPointAt(table->table, index);
+
+    if (DeckSearchLinear(cell, item, compare))
+        return WHY_ELEMENT_EXISTS;
+
+    if (DeckPushBack(cell, item) == WHY_OK)
+    {
+        ++ table->n_items;
+        return WHY_OK;
+    }
+
+    return WHY_ERROR;
+}
+
+Int HashTableInsert(HashTable* table, const void* item, Int (*compare)(const void *, const void *))
+{
+    Uint hash;
+    Uint index;
+
+    hash = table->hash_function(item);
+    index = hash % HashTableNCells(table);
+
+    return _insert(table, item, index, compare);
 }
 
 HashTable* HashDeck(const Deck* deck, Uint capacity, Uint (*hash)(const void *),
-                    void* (*copy)(const void *), void (*destroy)(void *))
+                    void* (*copy)(const void *), void (*destroy)(void *),
+                    Int (*compare)(const void *, const void *))
 {
     HashTable*  table;
     Uint        n;
@@ -120,10 +151,11 @@ HashTable* HashDeck(const Deck* deck, Uint capacity, Uint (*hash)(const void *),
     while (n < DeckNItems(deck))
     {
         item = DeckPointAt(deck, n);
-        HashTableInsert(table, item);
+        HashTableInsert(table, item, compare);
 
         ++ n;
     }
 
     return table;
 }
+

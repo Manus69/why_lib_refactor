@@ -35,7 +35,7 @@ typedef struct HashTable        HashTable;
 
 enum Status
 {
-    WHY_OK = 0, WHY_ERROR = -1, 
+    WHY_OK = 0, WHY_ERROR = -1, WHY_ELEMENT_EXISTS = 1, 
 };
 
 struct TypeInterface
@@ -137,6 +137,8 @@ void        BlockFoldNItems(void* target, const Block* block, Uint index, Uint n
 void*       BlockBinSearch(const Block* block, const void* item, Int (*compare)(const void *, const void *));
 void*       BlockBinSearchRange(const Block* block, const void* item,
                             Int (*compare)(const void *, const void *), Uint left, Uint right);
+void*       BlockSearchRange(const Block* block, const void* item,
+                            Int (*compare)(const void *, const void *), Uint left, Uint right);
 void        BlockReverseSlice(Block* block, Uint left, Uint right);
 void        BlockReverse(Block* block);
 bool        BlockPermuteLexicalSlice(Block* block, 
@@ -164,6 +166,7 @@ void        DeckReverse(Deck* deck);
 Int         DeckCompare(const Deck* deck, Uint j, Uint k, Int (*compare)(const void *, const void *));
 void*       DeckBinSearch(const Deck* deck, const void* item,
                             Int (*compare)(const void *, const void *));
+void*       DeckSearchLinear(const Deck* deck, const void* item, Int (*compare)(const void *, const void *));
 Deck*       DeckUnique(Deck* deck, Int (*compare)(const void *, const void *));
 void        DeckFold(void* target, const Deck* deck, void (*fold)(void *, const void *, const void *));
 
@@ -174,9 +177,13 @@ Uint        HashTableNItems(const HashTable* table);
 Uint        HashTableNCells(const HashTable* table);
 void        HashTableDestroy(HashTable* table);
 void        HashTableMapCell(HashTable* table, Uint n, void (*function)(void *));
-Int         HashTableInsert(HashTable* table, const void* item);
+void*       HashTableFind(const HashTable* table, const void* item,
+                            Int (*compare)(const void *, const void *));
+Int         HashTableInsert(HashTable* table, const void* item,
+                            Int (*compare)(const void *, const void *));
 HashTable*  HashDeck(const Deck* deck, Uint capacity, Uint (*hash)(const void *),
-                    void* (*copy)(const void *), void (*destroy)(void *));
+                    void* (*copy)(const void *), void (*destroy)(void *),
+                    Int (*compare)(const void *, const void *));
 
 //table
 Int         TableAddRow(Table* table);
@@ -218,9 +225,12 @@ void        RationalNegateWRAP(void* target, const void* p);
 void        RationalDivWRAP(void* target, const void* lhs, const void* rhs);
 
 void        NaturalInit(char* target, Uint n);
+void        NaturalClearInit(char* target, Uint n, Uint length);
 char*       NaturalCreate(const char* string);
 void        NaturalAdd(char* target, const char* lhs, const char* rhs);
 Uint        NaturalAddRetDigits(char* target, const char* lhs, const char* rhs);
+void        NaturalMult(char* target, const char* lhs, const char* rhs);
+void        NaturalPower(char* target, const char* number, Uint exponent);
 void        NaturalSetLength(char* target, const char* number, Uint n_digits);
 void        NaturalSet(char* target, const char* number);
 
@@ -348,6 +358,7 @@ char*       StringStrip(const char* string, char front, char back);
 void        StringReverseLength(char* string, Uint length);
 void        StringReverse(char* string);
 Uint        StringHash(const char* string);
+Uint        StringHashLength(const char* string, Uint length);
 Uint        StringHashWRAP(const void* string);
 
 //input
@@ -395,6 +406,8 @@ void        PrintMatrix(const Matrix* matrix, void (*print)(const void* ));
 void        PrintDeck(const Deck* deck, void (*print)(const void *));
 void        PrintTable(const Table* table, void (*print)(const void* ));
 void        PrintNatural(const char* natural);
+void        PrintNaturalWRAP(const void* n, const char* sep);
+void        PrintNaturalN(const void* n);
 void        PrintHashTable(const HashTable* table, void (*print)(const void *));
 
 #endif

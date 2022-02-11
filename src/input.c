@@ -53,7 +53,7 @@ Deck* ReadFileAllLines(const char* name)
     if (!(bytes = ReadFile(name)))
         return NULL;
 
-    WhySavePtr(bytes);
+    WhySavePtr(&bytes);
 
     if (!(lines = DeckCreatePtr(NULL, NULL)))
         return NULL;
@@ -91,7 +91,7 @@ Deck* ReadFileAllLines2(const char* name)
     if (!(bytes = ReadFile(name)))
         return NULL;
 
-    WhySavePtr(bytes);
+    WhySavePtr(&bytes);
 
     lines = StringSplitDestructive((char *)bytes, '\n');
 

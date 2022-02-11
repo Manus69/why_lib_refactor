@@ -496,20 +496,35 @@ void math_test()
 
 void natural_test()
 {
-    char* result = MemZero(1000);
+    Uint length = 1 << 12;
+    char* result = MemZero(length);
     // char* m = NaturalCreate("101");
     // char* n = NaturalCreate("901");
 
-    char* m = MemZero(1000);
-    char* n = MemZero(1000);
+    char* m = MemZero(length);
+    char* n = MemZero(length);
 
     NaturalInit(m, 9);
     NaturalInit(n, 9);
-    PrintNatural(m);
-    printf("\n");
 
     NaturalAdd(result, m, n);
-    PrintNatural(result);
+    PrintNaturalN(&result);
+
+    // memset(result, 0, length);
+    // NaturalMult(result, m, n);
+    // PrintNaturalN(&result);
+
+    memset(result, 0, length);
+    NaturalInit(m, 100);
+    NaturalInit(n, 10);
+    NaturalMult(result, m, n);
+    PrintNaturalN(&result);
+
+    memset(result, 0, length);
+    // NaturalInit(result, 1);
+    NaturalClearInit(m, 100, length);
+    NaturalPower(result, m, 100);
+    PrintNaturalN(&result);
 
     free(m);
     free(n);
@@ -608,9 +623,13 @@ void hash_table_test()
     Deck* strings;
 
     strings = ReadFileAllLines2(_FILE_NAME);
-    table = HashDeck(strings, 1024, StringHashWRAP, NULL, NULL);
+    table = HashDeck(strings, 3, StringHashWRAP, NULL, NULL, CompareCstr);
 
     PrintHashTable(table, PrintCstrS);
+
+    char* item = "OPTIONS";
+    char* str = *(char **)HashTableFind(table, &item, CompareCstr);
+    printf("%s\n", str);
 
     DeckDestroy(strings);
     HashTableDestroy(table);
@@ -635,13 +654,14 @@ int main()
     // string_test();
     // matrix_table_test();
     // math_test();
-    // natural_test();
+    natural_test();
     // permutation_test();
-    hash_table_test();
+    // hash_table_test();
 
     // char* str = "ass";
     // PrintCstrN(&str);
 
+    MathUnitTerminate();
     WhyEnd();
     return EXIT_SUCCESS;
 }
