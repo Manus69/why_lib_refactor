@@ -1,48 +1,177 @@
 #include "declarations.h"
+#include "natural.h"
 
-void NaturalInit(char* target, Uint n)
+static Int _expand(Natural* number, Uint extra_digits)
 {
+    void* new;
+
+    new = MemExpandZero(number->digits, number->capacity + 1, extra_digits);
+    if (!new)
+        return WHY_ERROR;
+    
+    free(number->digits);
+    number->digits = new;
+    number->capacity += extra_digits;
+
+    return WHY_OK;
+}
+
+void NaturalInit(Natural* number, Uint n)
+{
+    Uint index;
+    Uint n_digits;
+
+    n_digits = MathCountDigits(n);
+
+    if (n_digits > number->capacity)
+    {
+        if (!_expand(number, n_digits))
+            return ;
+    }
+
+    memset(number->digits, 0, number->capacity);
     if (n == 0)
     {
-        *target = '0';
-        return ;
+        number->digits[0] = '0';
     }
 
+    index = 0;
     while (n)
     {
-        *target = ((n % 10)) + '0';
-        ++ target;
+        number->digits[index] = (n % 10) + '0';
         n = n / 10;
+        ++ index;
     }
 }
 
-void NaturalClearInit(char* target, Uint n, Uint length)
+void NaturalInitStr(Natural* number, const char* string, Uint length)
 {
-    memset(target, 0, length);
-    NaturalInit(target, n);
+    Uint n;
+
+    if (number->capacity < length)
+    {
+        if (_expand(number, length))
+            return ;
+    }
+    
+    memset(number->digits, 0, number->capacity);
+
+    n = 0;
+    while (n < length)
+    {
+        number->digits[n] = string[length - n - 1];
+        ++ n;
+    }
 }
 
-char* NaturalCreate(const char* string)
+char* NaturalGetDigits(const Natural* number)
 {
+    return number->digits;
+}
+
+static Natural* _create(Uint n_digits)
+{
+    Natural* number;
+
+    if ((number = malloc(sizeof(*number))))
+    {
+        if ((number->digits = MemZero(n_digits + 1)))
+        {
+            number->capacity = n_digits;
+            return number;
+        }
+        free(number);
+    }
+
+    return number;
+}
+
+Natural* NaturalCreateZero(Uint n_digits)
+{
+    return _create(n_digits);
+}
+
+Natural* NaturalCreate(const char* digit_string)
+{
+    Natural*    number;
     Uint        length;
-    char*       result;
     const char* current;
     
-    if (*string == '0')
+    if (*digit_string == '0')
         return NULL;
     
-    current = string;
+    current = digit_string;
     while (IsDigit(*current))
         ++ current;
     
     if (*current)
         return NULL;
     
-    length = current - string;
-    result = StringNCopy(string, length);
-    StringReverseLength(result, length);
+    length = current - digit_string;
+    if (!(number = _create(length)))
+        return NULL;
+    
+    NaturalInitStr(number, digit_string, length);
 
-    return result;
+    return number;
+}
+
+Natural* NaturalCreateFromUint(Uint n)
+{
+    Uint        length;
+    Natural*    number;
+
+    length = MathCountDigits(n);
+    if (!(number = _create(length)))
+        return NULL;
+
+    NaturalInit(number, n);
+
+    return number;
+}
+
+void NaturalDestroy(Natural* number)
+{
+    if (!number)
+        return ;
+    
+    free(number->digits);
+    free(number);
+}
+
+Int NaturalCompare(const Natural* lhs, const Natural* rhs)
+{
+    Uint _lhs_length;
+    Uint _rhs_length;
+    Int  n;
+
+    _lhs_length = strlen(lhs->digits);
+    _rhs_length = strlen(rhs->digits);
+
+    if (_lhs_length > _rhs_length)
+        return -1;
+    if (_lhs_length < _rhs_length)
+        return 1;
+    if (!_lhs_length)
+        return 0;
+
+    n = _lhs_length - 1;
+    while (n >= 0)
+    {
+        if (lhs->digits[n] > rhs->digits[n])
+            return -1;
+        else if (lhs->digits[n] < rhs->digits[n])
+            return 1;
+        
+        -- n;
+    }
+    
+    return 0;
+}
+
+Int NaturalCompareWRAP(const void* lhs, const void* rhs)
+{
+    return NaturalCompare(*(const Natural **)lhs, *(const Natural **)rhs);
 }
 
 static char _value(char c)
@@ -50,17 +179,34 @@ static char _value(char c)
     return c > 0 ? c - '0' : 0;
 }
 
-Uint NaturalAddRetDigits(char* target, const char* lhs, const char* rhs)
+Uint NaturalNDIgits(const Natural* n)
+{
+    return strlen(n->digits);
+}
+
+void NaturalSet(Natural* number, const Natural* rhs)
+{
+    memset(number->digits, 0, number->capacity);
+    strcpy(number->digits, rhs->digits);
+}
+
+void NaturalAdd(Natural* target, const Natural* lhs, const Natural* rhs)
 {
     char    carry;
     char    result;
-    char*   start;
+    Uint    _lhs;
+    Uint    _rhs;
+    Uint    index;
 
+    memset(target->digits, 0, target->capacity);
     carry = 0;
-    start = target;
-    while (*lhs || *rhs || carry)
+    _lhs = 0;
+    _rhs = 0;
+    index = 0;
+
+    while (lhs->digits[_lhs] || rhs->digits[_rhs] || carry)
     {
-        result = _value(*lhs) + _value(*rhs) + carry;
+        result = _value(lhs->digits[_lhs]) + _value(rhs->digits[_rhs]) + carry;
 
         if (result >= 10)
         {
@@ -70,25 +216,13 @@ Uint NaturalAddRetDigits(char* target, const char* lhs, const char* rhs)
         else
             carry = 0;
         
-        *target = result + '0';
+        target->digits[index] = result + '0';
 
-        lhs = *lhs ? lhs + 1 : lhs;
-        rhs = *rhs ? rhs + 1 : rhs;
-        ++ target;
+        ++ index;
+        _lhs = lhs->digits[_lhs] ? _lhs + 1 : _lhs;
+        _rhs = rhs->digits[_rhs] ? _rhs + 1 : _rhs;
     }
-
-    return target - start;
 }
-
-void NaturalAdd(char* target, const char* lhs, const char* rhs)
-{
-    NaturalAddRetDigits(target, lhs, rhs);
-}
-
-// Uint NaturalMultRetDigits(char* target, const char* lhs, const char* rhs)
-// {
-//     ;
-// }
 
 static void _mult_by_digit(char* target, const char* lhs, Uint start, char digit)
 {
@@ -120,51 +254,36 @@ static void _mult_by_digit(char* target, const char* lhs, Uint start, char digit
     }
 }
 
-void NaturalMult(char* target, const char* lhs, const char* rhs)
+void NaturalMult(Natural* target, const Natural* lhs, const Natural* rhs)
 {
-    Uint n;
+    Uint    n;
+    char    buffer[target->capacity];
 
     n = 0;
-    while (rhs[n])
+    memset(buffer, 0, target->capacity);
+
+    while (rhs->digits[n])
     {
-        _mult_by_digit(target, lhs, n, rhs[n]);
+        _mult_by_digit(buffer, lhs->digits, n, rhs->digits[n]);
         ++ n;
     }
+
+    memcpy(target, buffer, target->capacity);
 }
 
-#define BUFF_SIZE (1 << 12)
-void NaturalPower(char* target, const char* number, Uint exponent)
+void NaturalPower(Natural* target, const Natural* number, Uint exponent)
 {
-    char temp_buffer[BUFF_SIZE];
-
     if (exponent == 0)
         return NaturalInit(target, 1);
     
     NaturalAdd(target, target, number);
     if (exponent == 1)
-        return ;
+        return NaturalSet(target, number);
 
     -- exponent;
-
     while (exponent)
     {
-        memset(temp_buffer, 0, BUFF_SIZE);
-        NaturalMult(temp_buffer, target, number);
-        memcpy(target, temp_buffer, BUFF_SIZE);
+        NaturalMult(target, target, number);
         -- exponent;
     }
-}
-
-void NaturalSetLength(char* target, const char* number, Uint n_digits)
-{
-    memcpy(target, number, n_digits);
-}
-
-void NaturalSet(char* target, const char* number)
-{
-    Uint length;
-
-    length = strlen(number);
-
-    NaturalSetLength(target, number, length);
 }

@@ -329,6 +329,16 @@ void StringReverse(char* string)
     StringReverseLength(string, length);
 }
 
+char* StringCreateReversed(const char* string)
+{
+    char* copy;
+
+    copy = strdup(string);
+    StringReverse(copy);
+
+    return copy;
+}
+
 Uint StringHashLength(const char* string, Uint length)
 {
     Uint value;

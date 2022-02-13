@@ -1,6 +1,7 @@
 #include "why.h"
 #include "macro.h"
 #include "rational.h"
+#include "natural.h"
 #include "declarations.h"
 
 #define NEW_LINE ("\n")
@@ -271,23 +272,25 @@ void PrintTable(const Table* table, void (*print)(const void* ))
     }
 }
 
-void PrintNatural(const char* natural)
+void PrintNatural(const Natural* natural)
 {
-    Int length;
+    Int     length;
+    char*   digits;
 
-    length = strlen(natural);
+    digits = NaturalGetDigits(natural);
+    length = strlen(digits);
     -- length;
 
     while (length >= 0)
     {
-        PrintChar(natural[length]);
+        PrintChar(digits[length]);
         -- length;
     }
 }
 
 void PrintNaturalWRAP(const void* n, const char* sep)
 {
-    PrintNatural(*(const char **)n);
+    PrintNatural(*(const Natural **)n);
     printf("%s", sep);
 }
 

@@ -496,39 +496,21 @@ void math_test()
 
 void natural_test()
 {
-    Uint length = 1 << 12;
-    char* result = MemZero(length);
-    // char* m = NaturalCreate("101");
-    // char* n = NaturalCreate("901");
+    Natural* lhs = NaturalCreateFromUint(1);
+    Natural* rhs = NaturalCreateFromUint(1);
+    Natural* result = NaturalCreateZero(1000);
 
-    char* m = MemZero(length);
-    char* n = MemZero(length);
-
-    NaturalInit(m, 9);
-    NaturalInit(n, 9);
-
-    NaturalAdd(result, m, n);
+    NaturalAdd(result, lhs, rhs);
     PrintNaturalN(&result);
 
-    // memset(result, 0, length);
-    // NaturalMult(result, m, n);
-    // PrintNaturalN(&result);
-
-    memset(result, 0, length);
-    NaturalInit(m, 100);
-    NaturalInit(n, 10);
-    NaturalMult(result, m, n);
+    NaturalInit(lhs, 64);
+    NaturalInit(rhs, 16);
+    NaturalMult(result, lhs, rhs);
     PrintNaturalN(&result);
 
-    memset(result, 0, length);
-    // NaturalInit(result, 1);
-    NaturalClearInit(m, 100, length);
-    NaturalPower(result, m, 100);
-    PrintNaturalN(&result);
-
-    free(m);
-    free(n);
-    free(result);
+    NaturalDestroy(lhs);
+    NaturalDestroy(rhs);
+    NaturalDestroy(result);
 }
 
 static Int _find_pivot(const char* str, Uint length)

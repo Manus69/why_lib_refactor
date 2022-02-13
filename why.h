@@ -224,15 +224,21 @@ void        RationalInvWRAP(void* target, const void* p);
 void        RationalNegateWRAP(void* target, const void* p);
 void        RationalDivWRAP(void* target, const void* lhs, const void* rhs);
 
-void        NaturalInit(char* target, Uint n);
-void        NaturalClearInit(char* target, Uint n, Uint length);
-char*       NaturalCreate(const char* string);
-void        NaturalAdd(char* target, const char* lhs, const char* rhs);
-Uint        NaturalAddRetDigits(char* target, const char* lhs, const char* rhs);
-void        NaturalMult(char* target, const char* lhs, const char* rhs);
-void        NaturalPower(char* target, const char* number, Uint exponent);
-void        NaturalSetLength(char* target, const char* number, Uint n_digits);
-void        NaturalSet(char* target, const char* number);
+//natural
+void        NaturalInit(Natural* number, Uint n);
+void        NaturalInitStr(Natural* number, const char* string, Uint length);
+Natural*    NaturalCreateZero(Uint n_digits);
+Natural*    NaturalCreate(const char* digit_string);
+Natural*    NaturalCreateFromUint(Uint n);
+void        NaturalDestroy(Natural* number);
+Int         NaturalCompare(const Natural* lhs, const Natural* rhs);
+Int         NaturalCompareWRAP(const void* lhs, const void* rhs);
+Uint        NaturalNDIgits(const Natural* n);
+char*       NaturalGetDigits(const Natural* number);
+void        NaturalSet(Natural* number, const Natural* rhs);
+void        NaturalAdd(Natural* target, const Natural* lhs, const Natural* rhs);
+void        NaturalMult(Natural* target, const Natural* lhs, const Natural* rhs);
+void        NaturalPower(Natural* target, const Natural* number, Uint exponent);
 
 void        FloatZero(Float* x);
 void        FloatOne(Float* x);
@@ -288,6 +294,7 @@ Block*      MathSieve(Uint size);
 Uint        MathGetNthPrime(Uint n);
 Block*      MathGetSieve();
 Uint        MathFactorial(Uint n);
+Uint        MathCountDigits(Uint n);
 
 //matrix
 Matrix*     MatrixCreateFloat(Uint n_rows, Uint n_cols);
@@ -357,6 +364,7 @@ void        StringStripBackDestructive(char* string, char c);
 char*       StringStrip(const char* string, char front, char back);
 void        StringReverseLength(char* string, Uint length);
 void        StringReverse(char* string);
+char*       StringCreateReversed(const char* string);
 Uint        StringHash(const char* string);
 Uint        StringHashLength(const char* string, Uint length);
 Uint        StringHashWRAP(const void* string);
@@ -405,7 +413,7 @@ void        PrintBlockN(const void* block, void (*print)(const void *));
 void        PrintMatrix(const Matrix* matrix, void (*print)(const void* ));
 void        PrintDeck(const Deck* deck, void (*print)(const void *));
 void        PrintTable(const Table* table, void (*print)(const void* ));
-void        PrintNatural(const char* natural);
+void        PrintNatural(const Natural* natural);
 void        PrintNaturalWRAP(const void* n, const char* sep);
 void        PrintNaturalN(const void* n);
 void        PrintHashTable(const HashTable* table, void (*print)(const void *));

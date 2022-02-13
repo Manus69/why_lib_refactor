@@ -124,6 +124,23 @@ Uint MathFactorial(Uint n)
     return result;
 }
 
+Uint MathCountDigits(Uint n)
+{
+    Uint count;
+
+    if (n == 0)
+        return 1;
+    
+    count = 0;
+    while (n)
+    {
+        n = n / 10;
+        ++ count;
+    }
+
+    return count;
+}
+
 bool MathIsPrime(Uint n)
 {
     Uint p;
