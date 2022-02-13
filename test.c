@@ -502,11 +502,32 @@ void natural_test()
 
     NaturalAdd(result, lhs, rhs);
     PrintNaturalN(&result);
+    NaturalAdd(result, result, rhs);
+    PrintNaturalN(&result);
 
-    NaturalInit(lhs, 64);
-    NaturalInit(rhs, 16);
+    NaturalInit(lhs, 2);
+    NaturalInit(rhs, 2);
     NaturalMult(result, lhs, rhs);
     PrintNaturalN(&result);
+
+    NaturalInit(rhs, 1000);
+    NaturalMult(result, rhs, rhs);
+    PrintNaturalN(&result);
+
+    NaturalAdd(rhs, rhs, rhs);
+    PrintNaturalN(&rhs);
+    NaturalMult(rhs, rhs, rhs);
+    PrintNaturalN(&rhs);
+
+    NaturalInitStr(lhs, "1024");
+    NaturalInitStr(rhs, "2048");
+    NaturalMult(result, lhs, rhs);
+    PrintNaturalN(&result);
+
+    NaturalInit(lhs, 100);
+    NaturalInit(rhs, 100);
+    NaturalPower(lhs, lhs, 100);
+    PrintNaturalN(&lhs);
 
     NaturalDestroy(lhs);
     NaturalDestroy(rhs);

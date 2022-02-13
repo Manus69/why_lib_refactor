@@ -226,7 +226,8 @@ void        RationalDivWRAP(void* target, const void* lhs, const void* rhs);
 
 //natural
 void        NaturalInit(Natural* number, Uint n);
-void        NaturalInitStr(Natural* number, const char* string, Uint length);
+void        NaturalInitStr(Natural* number, const char* string);
+void        NaturalInitStrLength(Natural* number, const char* string, Uint length);
 Natural*    NaturalCreateZero(Uint n_digits);
 Natural*    NaturalCreate(const char* digit_string);
 Natural*    NaturalCreateFromUint(Uint n);

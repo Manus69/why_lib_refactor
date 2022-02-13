@@ -25,7 +25,7 @@ void NaturalInit(Natural* number, Uint n)
 
     if (n_digits > number->capacity)
     {
-        if (!_expand(number, n_digits))
+        if (_expand(number, n_digits) != WHY_OK)
             return ;
     }
 
@@ -44,16 +44,16 @@ void NaturalInit(Natural* number, Uint n)
     }
 }
 
-void NaturalInitStr(Natural* number, const char* string, Uint length)
+void NaturalInitStrLength(Natural* number, const char* string, Uint length)
 {
     Uint n;
 
     if (number->capacity < length)
     {
-        if (_expand(number, length))
+        if (_expand(number, length) != WHY_OK)
             return ;
     }
-    
+
     memset(number->digits, 0, number->capacity);
 
     n = 0;
@@ -62,6 +62,11 @@ void NaturalInitStr(Natural* number, const char* string, Uint length)
         number->digits[n] = string[length - n - 1];
         ++ n;
     }
+}
+
+void NaturalInitStr(Natural* number, const char* string)
+{
+    return NaturalInitStrLength(number, string, strlen(string));
 }
 
 char* NaturalGetDigits(const Natural* number)
@@ -111,7 +116,7 @@ Natural* NaturalCreate(const char* digit_string)
     if (!(number = _create(length)))
         return NULL;
     
-    NaturalInitStr(number, digit_string, length);
+    NaturalInitStrLength(number, digit_string, length);
 
     return number;
 }
@@ -186,8 +191,31 @@ Uint NaturalNDIgits(const Natural* n)
 
 void NaturalSet(Natural* number, const Natural* rhs)
 {
-    memset(number->digits, 0, number->capacity);
-    strcpy(number->digits, rhs->digits);
+    if (number->capacity < rhs->capacity)
+    {
+        if (_expand(number, rhs->capacity - number->capacity) != WHY_OK)
+            return ;
+    }
+
+    memmove(number->digits, rhs->digits, rhs->capacity);
+    // memset(number->digits, 0, number->capacity);
+    // strcpy(number->digits, rhs->digits);
+}
+
+static Int _check_capacity(Natural* target, const Natural* lhs, const Natural* rhs)
+{
+    Uint max;
+    Uint _lhs;
+    Uint _rhs;
+
+    _lhs = NaturalNDIgits(lhs);
+    _rhs = NaturalNDIgits(rhs);
+    max = MAX(_lhs, _rhs);
+
+    if (target->capacity >= max * 2)
+        return WHY_OK;
+
+    return _expand(target, 2 * max);
 }
 
 void NaturalAdd(Natural* target, const Natural* lhs, const Natural* rhs)
@@ -198,7 +226,10 @@ void NaturalAdd(Natural* target, const Natural* lhs, const Natural* rhs)
     Uint    _rhs;
     Uint    index;
 
-    memset(target->digits, 0, target->capacity);
+    // memset(target->digits, 0, target->capacity);
+    if (_check_capacity(target, lhs, rhs) != WHY_OK)
+        return ;
+
     carry = 0;
     _lhs = 0;
     _rhs = 0;
@@ -256,34 +287,46 @@ static void _mult_by_digit(char* target, const char* lhs, Uint start, char digit
 
 void NaturalMult(Natural* target, const Natural* lhs, const Natural* rhs)
 {
-    Uint    n;
-    char    buffer[target->capacity];
+    Uint        n;  
+    Natural*    buffer;
 
+    if (_check_capacity(target, lhs, rhs) != WHY_OK)
+        return ;
+
+    buffer = NaturalCreateZero(target->capacity);
     n = 0;
-    memset(buffer, 0, target->capacity);
+    memset(buffer->digits, 0, target->capacity);
 
     while (rhs->digits[n])
     {
-        _mult_by_digit(buffer, lhs->digits, n, rhs->digits[n]);
+        _mult_by_digit(buffer->digits, lhs->digits, n, rhs->digits[n]);
         ++ n;
     }
 
-    memcpy(target, buffer, target->capacity);
+    memcpy(target->digits, buffer->digits, target->capacity);
+    NaturalDestroy(buffer);
 }
 
 void NaturalPower(Natural* target, const Natural* number, Uint exponent)
 {
+    Natural* buffer;
+
     if (exponent == 0)
         return NaturalInit(target, 1);
     
-    NaturalAdd(target, target, number);
     if (exponent == 1)
         return NaturalSet(target, number);
 
+    buffer = NaturalCreateZero(target->capacity);
+    NaturalSet(buffer, number);
     -- exponent;
+
     while (exponent)
     {
-        NaturalMult(target, target, number);
+        NaturalMult(buffer, buffer, number);
         -- exponent;
     }
+
+    NaturalSet(target, buffer);
+    NaturalDestroy(buffer);
 }
