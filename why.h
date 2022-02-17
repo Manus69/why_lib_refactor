@@ -205,7 +205,12 @@ void        QuickSort(Block* block, Int left_index, Int right_index, Int (*compa
 void        SortDeck(Deck* deck, Int (*compare)(const void *, const void *));
 
 void        RationalInit(Rational* p, Int top, Int bot);
+Rational*   RationalCreate(Int top, Int bot);
+void        RationalDestroy(Rational* p);
 Rational    RationalCopy(const Rational* p);
+Int         RationalTop(const Rational* p);
+Int         RationalBot(const Rational* p);
+void        RationalScale(Rational* p, Int top, Int bot);
 void        RationalZero(Rational* p);
 void        RationalOne(Rational* p);
 void        RationalAdd(Rational* p, const Rational* lhs, const Rational* rhs);
@@ -232,6 +237,7 @@ Natural*    NaturalCreateZero(Uint n_digits);
 Natural*    NaturalCreate(const char* digit_string);
 Natural*    NaturalCreateFromUint(Uint n);
 void        NaturalDestroy(Natural* number);
+void        NaturalDestroyWRAP(void* number);
 Int         NaturalCompare(const Natural* lhs, const Natural* rhs);
 Int         NaturalCompareWRAP(const void* lhs, const void* rhs);
 Uint        NaturalNDIgits(const Natural* n);
@@ -266,6 +272,8 @@ void        UintAdd(Uint* target, const Uint* lhs, const Uint* rhs);
 void        UintAddWRAP(void* target, const void* lhs, const void* rhs);
 void        UintMult(Uint* target, const Uint* lhs, const Uint* rhs);
 void        UintMultWRAP(void* target, const void* lhs, const void* rhs);
+void        UintToStringBuffer(char* buffer, Uint n, Uint base);
+char*       UintToString(Uint n);
 
 void        IntInit(Int* target, Int value);
 
@@ -296,6 +304,7 @@ Uint        MathGetNthPrime(Uint n);
 Block*      MathGetSieve();
 Uint        MathFactorial(Uint n);
 Uint        MathCountDigits(Uint n);
+Uint        MathPower(Uint base, Uint exp);
 
 //matrix
 Matrix*     MatrixCreateFloat(Uint n_rows, Uint n_cols);

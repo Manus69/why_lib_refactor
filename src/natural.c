@@ -144,6 +144,11 @@ void NaturalDestroy(Natural* number)
     free(number);
 }
 
+void NaturalDestroyWRAP(void* number)
+{
+    NaturalDestroy(*(Natural **)number);
+}
+
 Int NaturalCompare(const Natural* lhs, const Natural* rhs)
 {
     Uint _lhs_length;
@@ -198,8 +203,6 @@ void NaturalSet(Natural* number, const Natural* rhs)
     }
 
     memmove(number->digits, rhs->digits, rhs->capacity);
-    // memset(number->digits, 0, number->capacity);
-    // strcpy(number->digits, rhs->digits);
 }
 
 static Int _check_capacity(Natural* target, const Natural* lhs, const Natural* rhs)

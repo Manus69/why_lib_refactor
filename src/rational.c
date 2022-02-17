@@ -1,5 +1,7 @@
 #include "rational.h"
 
+#include <stdlib.h>
+
 void RationalInit(Rational* p, Int top, Int bot)
 {
     Int gcd;
@@ -14,6 +16,44 @@ void RationalInit(Rational* p, Int top, Int bot)
 
     p->top = top / gcd;
     p->bot = bot / gcd;
+}
+
+Rational* RationalCreate(Int top, Int bot)
+{
+    Rational* p;
+
+    if ((p = malloc(sizeof(*p))))
+    {
+        RationalInit(p, top, bot);
+
+        return p;
+    }
+
+    return NULL;
+}
+
+void RationalScale(Rational* p, Int top, Int bot)
+{
+    Rational q;
+
+    RationalInit(&q, top, bot);
+    RationalMult(p, p, &q);
+}
+
+void RationalDestroy(Rational* p)
+{
+    if (p)
+        free(p);
+}
+
+Int RationalTop(const Rational* p)
+{
+    return p->top;
+}
+
+Int RationalBot(const Rational* p)
+{
+    return p->bot;
 }
 
 Rational RationalCopy(const Rational* p)

@@ -263,9 +263,12 @@ Deck* DeckUnique(Deck* deck, Int (*compare)(const void *, const void *))
 
     SortDeck(deck, compare);
 
-    if (!(result = DeckCopyStructure(deck)))
-        return NULL;
+    // if (!(result = DeckCopyStructure(deck)))
+    //     return NULL;
     
+    if (!(result = _create(DeckNItems(deck), NULL, NULL, deck->block_constructor)))
+        return NULL;
+
     if (DeckNItems(deck) == 0)
         return result;
 

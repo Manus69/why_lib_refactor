@@ -388,3 +388,17 @@ Block* MathGetSieve()
 {
     return _sieve;
 }
+
+Uint MathPower(Uint base, Uint exp)
+{
+    if (exp == 0)
+        return 1;
+    
+    if (exp == 1)
+        return base;
+    
+    if (exp % 2 == 0)
+        return MathPower(base * base, exp / 2);
+    
+    return base * MathPower(base * base, (exp - 1) / 2);
+}

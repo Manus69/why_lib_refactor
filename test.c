@@ -639,6 +639,26 @@ void hash_table_test()
     
 }
 
+void uint_test()
+{
+    Uint n;
+    char* str;
+
+    n = 16;
+    str = UintToString(n);
+
+    PrintCstrN(&str);
+    free(str);
+
+    char* buffer = MemZero(100);
+    UintToStringBuffer(buffer, n, 10);
+    PrintCstrN(&buffer);
+    memset(buffer, 0, 100);
+    UintToStringBuffer(buffer, n, 2);
+    PrintCstrN(&buffer);
+    free(buffer);
+}
+
 int main()
 {
     WhyStart();
@@ -657,9 +677,10 @@ int main()
     // string_test();
     // matrix_table_test();
     // math_test();
-    natural_test();
+    // natural_test();
     // permutation_test();
     // hash_table_test();
+    uint_test();
 
     // char* str = "ass";
     // PrintCstrN(&str);

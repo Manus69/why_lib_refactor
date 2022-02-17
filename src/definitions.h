@@ -18,5 +18,6 @@
 #define FLT_EPSILON         (((Float)1) / (1 << 20))
 #define BLOCK_CAPACITY      (1 << 10)
 #define HASH_VALUE          (5381)
+#define DIGITS              ("0123456789abcdef")
 
 #endif

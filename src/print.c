@@ -59,7 +59,7 @@ void PrintRational(const Rational* p)
 
 void PrintRationalWRAP(const void* p, const void* sep)
 {
-    PrintRational(p);
+    PrintRational(*(Rational **)p);
     PrintCstr(sep);
 }
 
