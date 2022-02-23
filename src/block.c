@@ -280,7 +280,7 @@ void* BlockBinSearchRange(const Block* block, const void* item,
     if (!_check_right(block, right, item, compare))
         return NULL;
     
-    while (left < right)
+    while (left <= right)
     {
         index = (left + right) / 2;
 
@@ -385,7 +385,7 @@ static Int _find_swap_index(const Block* block, Int pivot, Int right, Int (*coma
 
     return NOT_FOUND;
 }
-//89210
+
 // 0321 -> 1023
 bool BlockPermuteLexicalSlice(Block* block, Int left, Int right, Int (*compare)(const void* , const void* ))
 {

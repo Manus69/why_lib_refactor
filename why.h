@@ -203,6 +203,7 @@ Deck*       TablePointAtRow(const Table* table, Uint row);
 void        InsertionSort(Block* block, Int left_index, Int right_index, Int (*compare)(const void *, const void *));
 void        QuickSort(Block* block, Int left_index, Int right_index, Int (*compare)(const void *, const void *));
 void        SortDeck(Deck* deck, Int (*compare)(const void *, const void *));
+void        SortDeckSlice(Deck* deck, Uint left, Uint right, Int (*compare)(const void *, const void *));
 
 void        RationalInit(Rational* p, Int top, Int bot);
 Rational*   RationalCreate(Int top, Int bot);
@@ -246,6 +247,7 @@ void        NaturalSet(Natural* number, const Natural* rhs);
 void        NaturalAdd(Natural* target, const Natural* lhs, const Natural* rhs);
 void        NaturalMult(Natural* target, const Natural* lhs, const Natural* rhs);
 void        NaturalPower(Natural* target, const Natural* number, Uint exponent);
+void        NaturalPower2(Natural* target, const Natural* number, Uint exponent);
 
 void        FloatZero(Float* x);
 void        FloatOne(Float* x);
@@ -272,16 +274,17 @@ void        UintAdd(Uint* target, const Uint* lhs, const Uint* rhs);
 void        UintAddWRAP(void* target, const void* lhs, const void* rhs);
 void        UintMult(Uint* target, const Uint* lhs, const Uint* rhs);
 void        UintMultWRAP(void* target, const void* lhs, const void* rhs);
-void        UintToStringBuffer(char* buffer, Uint n, Uint base);
+Uint        UintToStringBuffer(char* buffer, Uint n, Uint base);
 char*       UintToString(Uint n);
 
 void        IntInit(Int* target, Int value);
 
 //compare
 Int         CompareByte(const void* lhs, const void* rhs);
+Int         CompareChar(const void* lhs, const void* rhs);
 Int         CompareInt(const void* lhs, const void* rhs);
 Int         CompareUint(const void* lhs, const void* rhs);
-Int         ComapreFloat(const void* lhs, const void* rhs);
+Int         CompareFloat(const void* lhs, const void* rhs);
 Int         CompareCstr(const void* lhs, const void* rhs);
 
 //math
@@ -302,9 +305,12 @@ Deck*       MathComputeDivisors(Uint n);
 Block*      MathSieve(Uint size);
 Uint        MathGetNthPrime(Uint n);
 Block*      MathGetSieve();
+Int         MathGetNextPrime(Deck* primes);
+Deck*       MathGetPrimesUpToN(Uint n);
 Uint        MathFactorial(Uint n);
 Uint        MathCountDigits(Uint n);
 Uint        MathPower(Uint base, Uint exp);
+void        MathPascalsTriangleFill(Uint n, Uint array[n][n]);
 
 //matrix
 Matrix*     MatrixCreateFloat(Uint n_rows, Uint n_cols);
@@ -378,6 +384,8 @@ char*       StringCreateReversed(const char* string);
 Uint        StringHash(const char* string);
 Uint        StringHashLength(const char* string, Uint length);
 Uint        StringHashWRAP(const void* string);
+bool        StringPermuteLexicalSlice(char* string, Uint length);
+bool        StringPermuteLexical(char* string);
 
 //input
 Byte*       ReadFile(const char* name);

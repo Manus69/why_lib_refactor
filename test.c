@@ -374,6 +374,11 @@ void string_test()
     strings = StringCutFromEnd("0123456789", 3);
     PrintDeck(strings, PrintCstrN);
 
+    str = strdup("123");
+    while (StringPermuteLexical(str))
+        PrintCstrN(&str);
+    free(str);
+
     DeckDestroy(strings);
 }
 
@@ -496,9 +501,13 @@ void math_test()
 
 void natural_test()
 {
-    Natural* lhs = NaturalCreateFromUint(1);
-    Natural* rhs = NaturalCreateFromUint(1);
-    Natural* result = NaturalCreateZero(1000);
+    Natural* lhs;
+    Natural* rhs;
+    Natural* result;
+
+    lhs = NaturalCreateFromUint(1);
+    rhs = NaturalCreateFromUint(1);
+    result = NaturalCreateZero(1000);
 
     NaturalAdd(result, lhs, rhs);
     PrintNaturalN(&result);
@@ -524,10 +533,13 @@ void natural_test()
     NaturalMult(result, lhs, rhs);
     PrintNaturalN(&result);
 
-    NaturalInit(lhs, 100);
-    NaturalInit(rhs, 100);
-    NaturalPower(lhs, lhs, 100);
+    NaturalInit(lhs, 1000);
+    NaturalPower(lhs, lhs, 1000);
     PrintNaturalN(&lhs);
+
+    // NaturalInit(lhs, 1000);
+    // NaturalPower2(lhs, lhs, 1000);
+    // PrintNaturalN(&lhs);
 
     NaturalDestroy(lhs);
     NaturalDestroy(rhs);
@@ -659,10 +671,32 @@ void uint_test()
     free(buffer);
 }
 
+void prime_test()
+{
+    MathUnitInit(1 << 20);
+    Deck* primes;
+
+    primes = MathGetPrimesUpToN(1 << 20);
+    // PrintDeck(primes, PrintUintS);
+
+    DeckDestroy(primes);
+
+    MathUnitTerminate();
+}
+
+void pascals_test(Uint n)
+{
+    Uint triangle[n][n];
+
+    MathPascalsTriangleFill(n, triangle);
+
+    Uint t = triangle[99][50];
+    PrintUintN(&t);
+}
+
 int main()
 {
     WhyStart();
-    MathUnitInit(1 << 10);
 
     // ar_interface_test();
     // block_test();
@@ -677,15 +711,16 @@ int main()
     // string_test();
     // matrix_table_test();
     // math_test();
-    // natural_test();
+    natural_test();
     // permutation_test();
     // hash_table_test();
-    uint_test();
+    // uint_test();
+    // prime_test();
+    // pascals_test(100);
 
     // char* str = "ass";
     // PrintCstrN(&str);
 
-    MathUnitTerminate();
     WhyEnd();
     return EXIT_SUCCESS;
 }

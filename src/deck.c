@@ -54,6 +54,11 @@ Deck* DeckCreateUint()
     return _create(DECK_CAPACITY, NULL, NULL, BlockCreateUint);
 }
 
+Deck* DeckCreateUintCapacity(Uint capacity)
+{
+    return _create(capacity, NULL, NULL, BlockCreateUint);
+}
+
 static void _destroy_items(Deck* deck)
 {
     DeckMap(deck, deck->destroy);
@@ -299,4 +304,9 @@ void DeckFold(void* target, const Deck* deck, void (*fold)(void *, const void *,
         return ;
     
     BlockFoldNItems(target, deck->block, deck->left_insert_index + 1, n_items, fold);
+}
+
+void SortDeckSlice(Deck* deck, Uint left, Uint right, Int (*compare)(const void *, const void *))
+{
+    return QuickSort(deck->block, _index_to_abs(deck, left), _index_to_abs(deck, right), compare);
 }

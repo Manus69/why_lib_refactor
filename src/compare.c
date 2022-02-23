@@ -7,6 +7,11 @@ Int CompareByte(const void* lhs, const void* rhs)
     return COMPARE_NUMERIC(lhs, rhs, Byte);
 }
 
+Int CompareChar(const void* lhs, const void* rhs)
+{
+    return COMPARE_NUMERIC(lhs, rhs, char);
+}
+
 Int CompareInt(const void* lhs, const void* rhs)
 {
     return COMPARE_NUMERIC(lhs, rhs, Int);
@@ -17,7 +22,7 @@ Int CompareUint(const void* lhs, const void* rhs)
     return COMPARE_NUMERIC(lhs, rhs, Uint);
 }
 
-Int ComapreFloat(const void* lhs, const void* rhs)
+Int CompareFloat(const void* lhs, const void* rhs)
 {
     return COMPARE_NUMERIC(lhs, rhs, Float);
 }

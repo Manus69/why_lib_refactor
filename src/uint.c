@@ -25,7 +25,7 @@ void UintMultWRAP(void* target, const void* lhs, const void* rhs)
     UintMult(target, lhs, rhs);
 }
 
-void UintToStringBuffer(char* buffer, Uint n, Uint base)
+Uint UintToStringBuffer(char* buffer, Uint n, Uint base)
 {
     Uint index;
 
@@ -35,7 +35,7 @@ void UintToStringBuffer(char* buffer, Uint n, Uint base)
         ++ buffer;
         *buffer = 0;
 
-        return ;
+        return 1;
     }
 
     index = 0;
@@ -48,6 +48,8 @@ void UintToStringBuffer(char* buffer, Uint n, Uint base)
 
     buffer[index] = 0;
     StringReverseLength(buffer, index);
+
+    return index;
 }
 
 #define BUFFER_SIZE (20)

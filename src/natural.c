@@ -310,6 +310,30 @@ void NaturalMult(Natural* target, const Natural* lhs, const Natural* rhs)
     NaturalDestroy(buffer);
 }
 
+// void NaturalPower(Natural* target, const Natural* number, Uint exponent)
+// {
+//     Natural* buffer;
+
+//     if (exponent == 0)
+//         return NaturalInit(target, 1);
+    
+//     if (exponent == 1)
+//         return NaturalSet(target, number);
+
+//     buffer = NaturalCreateZero(target->capacity);
+//     NaturalSet(buffer, number);
+//     -- exponent;
+
+//     while (exponent)
+//     {
+//         NaturalMult(buffer, buffer, number);
+//         -- exponent;
+//     }
+
+//     NaturalSet(target, buffer);
+//     NaturalDestroy(buffer);
+// }
+
 void NaturalPower(Natural* target, const Natural* number, Uint exponent)
 {
     Natural* buffer;
@@ -320,16 +344,20 @@ void NaturalPower(Natural* target, const Natural* number, Uint exponent)
     if (exponent == 1)
         return NaturalSet(target, number);
 
-    buffer = NaturalCreateZero(target->capacity);
-    NaturalSet(buffer, number);
-    -- exponent;
-
-    while (exponent)
+    if (!(buffer = NaturalCreateZero(target->capacity)))
+        return ;
+    
+    if (exponent % 2 == 0)
     {
-        NaturalMult(buffer, buffer, number);
-        -- exponent;
+        NaturalMult(buffer, number, number);
+        NaturalPower(target, buffer, exponent / 2);
+    }
+    else
+    {
+        NaturalMult(buffer, number, number);
+        NaturalPower(buffer, buffer, (exponent - 1) / 2);
+        NaturalMult(target, buffer, number);
     }
 
-    NaturalSet(target, buffer);
     NaturalDestroy(buffer);
 }

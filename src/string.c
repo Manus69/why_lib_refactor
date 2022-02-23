@@ -1,5 +1,6 @@
 #include "declarations.h"
 #include "macro.h"
+#include "block.h"
 
 char* StringSubstring(const char* string, Uint length)
 {
@@ -371,4 +372,24 @@ Uint StringHash(const char* string)
 Uint StringHashWRAP(const void* string)
 {
     return StringHash(*(char **)string);
+}
+
+bool StringPermuteLexicalSlice(char* string, Uint length)
+{
+    Block block;
+
+    block.interface = &ByteInterface;
+    block.memory = string;
+    block.n_items = length;
+
+    return BlockPermuteLexicalSlice(&block, 0, block.n_items - 1, CompareChar);
+}
+
+bool StringPermuteLexical(char* string)
+{
+    Uint length;
+
+    length = strlen(string);
+
+    return StringPermuteLexicalSlice(string, length);
 }
