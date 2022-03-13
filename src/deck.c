@@ -195,19 +195,24 @@ Int DeckFirst(void* target, const Deck* deck)
     return WHY_ERROR;
 }
 
-void DeckMap(Deck* deck, void (*function)(void *))
+void DeckMapRange(Deck* deck, void (*function)(void *), Uint left_index, Uint n_items)
 {
-    Uint    n;
-    void*   item;
+    void* item;
 
-    n = deck->left_insert_index + 1;
-    while (n < deck->right_insert_index)
+    left_index = _index_to_abs(deck, left_index);
+    while (n_items)
     {
-        item = BlockPointAt(deck->block, n);
+        item = BlockPointAt(deck->block, left_index);
         function(item);
 
-        ++ n;
+        ++ left_index;
+        -- n_items;
     }
+}
+
+void DeckMap(Deck* deck, void (*function)(void *))
+{
+    DeckMapRange(deck, function, 0, DeckNItems(deck));
 }
 
 void DeckAppend(Deck* lhs, const Deck* rhs)

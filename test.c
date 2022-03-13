@@ -676,7 +676,7 @@ void prime_test()
     MathUnitInit(1 << 20);
     Deck* primes;
 
-    primes = MathGetPrimesUpToN(1 << 20);
+    primes = MathGetPrimesUpToN(1 << 25);
     // PrintDeck(primes, PrintUintS);
 
     DeckDestroy(primes);
@@ -711,11 +711,11 @@ int main()
     // string_test();
     // matrix_table_test();
     // math_test();
-    natural_test();
+    // natural_test();
     // permutation_test();
     // hash_table_test();
     // uint_test();
-    // prime_test();
+    prime_test();
     // pascals_test(100);
 
     // char* str = "ass";

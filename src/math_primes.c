@@ -221,6 +221,8 @@ Deck* MathGetNPrimes(Uint n)
     return primes;
 }
 
+//this is wrong;
+//get a better approxiamtion for the prime density function; use existing sieve
 Uint MathGetNthPrime(Uint n)
 {
     Block*  sieve;

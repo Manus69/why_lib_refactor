@@ -242,16 +242,23 @@ void PrintMatrix(const Matrix* matrix, void (*print)(const void* ))
     printf("\n");
 }
 
+void PrintDeckTail(const Deck* deck, void (*print)(const void *), Uint n_items)
+{
+    void    (*_print)(void *);
+    Uint    index;
+
+    if (n_items == 0)
+        return ;
+
+    _print = (void (*)(void *))print;
+    index = DeckNItems(deck) - n_items;
+    DeckMapRange((Deck *)deck, _print, index, n_items);
+    printf("\n");
+}
+
 void PrintDeck(const Deck* deck, void (*print)(const void *))
 {
-    void (*_print)(void *);
-
-    if (!deck)
-        return ;
-    
-    _print = (void (*)(void *))print;
-    DeckMap((Deck *)deck, _print);
-    printf("\n");
+    PrintDeckTail(deck, print, DeckNItems(deck));
 }
 
 void PrintTable(const Table* table, void (*print)(const void* ))

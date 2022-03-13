@@ -23,6 +23,22 @@ Int StringFindC(const char* string, char c)
     return NOT_FOUND;
 }
 
+Int StringFindCLast(const char* string, char c)
+{
+    Int n;
+
+    n = strlen(string) - 1;
+
+    while (n >= 0)
+    {
+        if (string[n] == c)
+            return n;
+        -- n;
+    }
+
+    return NOT_FOUND;
+}
+
 char* StringNCopy(const char* string, Uint n)
 {
     char*   str;
@@ -265,6 +281,31 @@ char* StringPrepend(const char* string, char c)
     new[length + 1] = 0;
 
     return new;
+}
+
+char* StringEnclose(const char* string, const char* lhs, const char* rhs)
+{
+    char*   result;
+    Uint    length;
+    Uint    old_length;
+    Uint    lhs_length;
+    Uint    rhs_length;
+
+    old_length = strlen(string);
+    lhs_length = strlen(lhs);
+    rhs_length = strlen(rhs);
+
+    length = old_length + lhs_length + rhs_length;
+    if (!(result = malloc(length + 1)))
+        return NULL;
+    
+    memcpy(result, lhs, lhs_length);
+    memcpy(result + lhs_length, string, old_length);
+    memcpy(result + lhs_length + old_length, rhs, rhs_length);
+
+    result[length] = '\0';
+
+    return result;
 }
 
 char* StringStripFront(const char* string, char c)
