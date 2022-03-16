@@ -4,8 +4,9 @@
 #include "natural.h"
 #include "declarations.h"
 
-#define NEW_LINE ("\n")
-#define SPACE (" ")
+#define NEW_LINE    ("\n")
+#define SPACE       (" ")
+#define NULL_MSG    ("NULL")
 
 void PrintObject(const void* object, void (*print)(const void *, const void *), const void* sep)
 {
@@ -258,7 +259,9 @@ void PrintDeckTail(const Deck* deck, void (*print)(const void *), Uint n_items)
 
 void PrintDeck(const Deck* deck, void (*print)(const void *))
 {
-    PrintDeckTail(deck, print, DeckNItems(deck));
+    if (deck)
+        PrintDeckTail(deck, print, DeckNItems(deck));
+    else printf("%s\n", NULL_MSG);
 }
 
 void PrintTable(const Table* table, void (*print)(const void* ))

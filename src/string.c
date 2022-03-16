@@ -292,6 +292,27 @@ char* StringConcat(const char* lhs, const char* rhs)
     return result;
 }
 
+char* StringJoin(const char* lhs, const char* mid, const char* rhs)
+{
+    Uint    lhs_length, mid_length, rhs_length;
+    char*   result;
+
+    lhs_length = strlen(lhs);
+    mid_length = strlen(mid);
+    rhs_length = strlen(rhs);
+
+    if (!(result = malloc(lhs_length + mid_length + rhs_length + 1)))
+        return NULL;
+    
+    memcpy(result, lhs, lhs_length);
+    memcpy(result + lhs_length, mid, mid_length);
+    memcpy(result + lhs_length + mid_length, rhs, rhs_length);
+
+    result[lhs_length + mid_length + rhs_length] = 0;
+
+    return result;
+}
+
 char* StringToLowerDestructive(char* string)
 {
     char*   ptr;

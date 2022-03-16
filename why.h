@@ -80,6 +80,7 @@ void*       MemExpand(void* memory, Uint size, Uint extra_size);
 void*       MemExpandZero(void* memory, Uint size, Uint extra_size);
 void        MemDestroy(void* ptr);
 void*       MemZero(Uint size);
+void*       MemPass(const void* ptr);
 
 //type interface
 void        GetPtr(void* target, const void* memory, Uint index);
@@ -170,6 +171,8 @@ void*       DeckBinSearch(const Deck* deck, const void* item,
                             Int (*compare)(const void *, const void *));
 void*       DeckSearchLinear(const Deck* deck, const void* item, Int (*compare)(const void *, const void *));
 Deck*       DeckUnique(Deck* deck, Int (*compare)(const void *, const void *));
+Deck*       DeckUniqueCopy(Deck* deck, void* (*copy)(const void *),
+                            void (*destroy)(void *), Int (*comapre)(const void *, const void *));
 void        DeckFold(void* target, const Deck* deck, void (*fold)(void *, const void *, const void *));
 Deck*       DeckFilter(const Deck* deck, bool (*predicate)(const void *));
 
@@ -381,6 +384,7 @@ Byte*       StringSplitSplice(char* string, const char* substring);
 Deck*       StringCut(const char* string, Uint cut_size);
 Deck*       StringCutFromEnd(const char* string, Uint cut_size);
 char*       StringConcat(const char* lhs, const char* rhs);
+char*       StringJoin(const char* lhs, const char* mid, const char* rhs);
 char*       StringToLowerDestructive(char* string);
 char*       StringToLower(const char* string);
 char*       StringPrepend(const char* string, char c);
@@ -404,7 +408,13 @@ Deck*       ReadFileAllLines2(const char* name);
 Byte*       ReadFileSplitSplice(const char* name, const char* substring);
 
 //output
+bool        FileExists(const char* file_name);
 Int         FileCreate(const char* file_name);
+Int         FileTruncate(const char* file_name);
+Int         FileWriteStringInto(Int file, const char* string);
+Int         FileWriteStringIntoN(Int file, const char* string);
+Int         FileWriteStringsInto(Int file, const Deck* strings);
+
 //print
 void        PrintCstr(const char* str);
 void        PrintCstrWRAP(const void* str_pointer, const void* sep);

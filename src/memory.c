@@ -46,8 +46,12 @@ void* MemExpandZero(void* memory, Uint size, Uint extra_size)
     return new;
 }
 
-
 void MemDestroy(void* ptr)
 {
     free(*(void **)ptr);
+}
+
+void* MemPass(const void* ptr)
+{
+    return (void *)ptr;
 }

@@ -283,8 +283,9 @@ void deck_test()
     ptr = strdup("ass");
     DeckPushBack(deck, &ptr);
     PrintDeck(deck, PrintCstrP);
-    // new_deck = DeckUnique(deck, CompareCstr);
-    // PrintDeck(new_deck, PrintCstrP);
+    new_deck = DeckUnique(deck, CompareCstr);
+    PrintDeck(new_deck, PrintCstrP);
+    DeckDestroy(new_deck);
     free(ptr);
     DeckDestroy(deck);
     // DeckDestroy(new_deck);
@@ -721,7 +722,15 @@ void file_test()
 
 void file_test2()
 {
-    FileCreate("test_file");
+    Int file;
+    Deck* strings;
+
+    file = FileCreate("test_file.txt");
+    FileTruncate("test_file.txt");
+    strings = ReadFileAllLines2(_FILE_NAME);
+    SortDeck(strings, CompareCstr);
+    FileWriteStringsInto(file, strings);
+    DeckDestroy(strings);
 }
 
 int main()
@@ -735,7 +744,7 @@ int main()
     // matrix_test();
     // matrix_add_test();
     // matrix_rational_test();
-    // deck_test();
+    deck_test();
     // parse_test();
     // table_test();
     // string_test();
@@ -748,7 +757,7 @@ int main()
     // prime_test();
     // pascals_test(100);
     // file_test();
-    file_test2();
+    // file_test2();
 
     WhyEnd();
     return EXIT_SUCCESS;

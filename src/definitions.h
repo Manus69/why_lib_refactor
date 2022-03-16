@@ -13,6 +13,7 @@
 #include <complex.h>
 #include <math.h>
 #include <assert.h>
+#include <sys/stat.h>
 
 #define Q_SORT_THRESHOLD    (1 << 4)
 #define FLT_EPSILON         (((Float)1) / (1 << 20))

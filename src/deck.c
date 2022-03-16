@@ -275,7 +275,8 @@ Int DeckCompare(const Deck* deck, Uint j, Uint k, Int (*compare)(const void *, c
     return compare(lhs, rhs);
 }
 
-Deck* DeckUnique(Deck* deck, Int (*compare)(const void *, const void *))
+Deck* DeckUniqueCopy(Deck* deck, void* (*copy)(const void *),
+                    void (*destroy)(void *),Int (*compare)(const void *, const void *))
 {
     Deck*   result;
     void*   item;
@@ -283,7 +284,7 @@ Deck* DeckUnique(Deck* deck, Int (*compare)(const void *, const void *))
 
     SortDeck(deck, compare);
     
-    if (!(result = _create(DeckNItems(deck), NULL, NULL, deck->block_constructor)))
+    if (!(result = _create(DeckNItems(deck), copy, destroy, deck->block_constructor)))
         return NULL;
 
     if (DeckNItems(deck) == 0)
@@ -305,6 +306,11 @@ Deck* DeckUnique(Deck* deck, Int (*compare)(const void *, const void *))
     }
 
     return result;
+}
+
+Deck* DeckUnique(Deck* deck, Int (*compare)(const void *, const void *))
+{
+    return DeckUniqueCopy(deck, MemPass, NULL, compare);
 }
 
 Deck* DeckFilter(const Deck* deck, bool (*predicate)(const void *))
