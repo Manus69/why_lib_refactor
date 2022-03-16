@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <complex.h>
 #include <time.h>
+#include <dirent.h>
 
 #include "why.h"
 //
@@ -694,6 +695,35 @@ void pascals_test(Uint n)
     PrintUintN(&t);
 }
 
+void file_test()
+{
+    DIR*            directory;
+    struct dirent*  dir_entry;
+
+    directory = opendir("./src");
+
+    if (!directory)
+        return ;
+    
+    while (true)
+    {
+        if (!(dir_entry = readdir(directory)))
+            break ;
+
+        printf("%s\n", dir_entry->d_name);
+        char* str = StringConcat("echo ", dir_entry->d_name);
+        system(str);
+        free(str);
+    }
+
+    closedir(directory);
+}
+
+void file_test2()
+{
+    FileCreate("test_file");
+}
+
 int main()
 {
     WhyStart();
@@ -715,11 +745,10 @@ int main()
     // permutation_test();
     // hash_table_test();
     // uint_test();
-    prime_test();
+    // prime_test();
     // pascals_test(100);
-
-    // char* str = "ass";
-    // PrintCstrN(&str);
+    // file_test();
+    file_test2();
 
     WhyEnd();
     return EXIT_SUCCESS;

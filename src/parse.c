@@ -20,6 +20,11 @@ bool IsWSpace(char c)
     return c == ' ';
 }
 
+bool IsUpper(char c)
+{
+    return (c >= 'A') && (c <= 'Z');
+}
+
 Int ParseUint32(uint32_t* target, const char* string, Uint length)
 {
     Uint        result;

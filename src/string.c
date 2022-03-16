@@ -39,6 +39,31 @@ Int StringFindCLast(const char* string, char c)
     return NOT_FOUND;
 }
 
+bool StringStartsWith(const char* string, const char* start)
+{
+    Uint length;
+
+    length = strlen(start);
+
+    return strncmp(string, start, length) == 0;
+}
+
+bool StringEndsWith(const char* string, const char* suffix)
+{
+    Uint suffix_length;
+    Uint lhs_length;
+
+    suffix_length = strlen(suffix);
+    lhs_length = strlen(string);
+
+    if (lhs_length < suffix_length)
+        return false;
+    
+    string += (lhs_length - suffix_length);
+
+    return strncmp(string, suffix, suffix_length) == 0;
+}
+
 char* StringNCopy(const char* string, Uint n)
 {
     char*   str;
@@ -265,6 +290,33 @@ char* StringConcat(const char* lhs, const char* rhs)
     result[lhs_length + rhs_length] = 0;
 
     return result;
+}
+
+char* StringToLowerDestructive(char* string)
+{
+    char*   ptr;
+    char    diff;
+
+    diff = 'a' - 'A';
+    ptr = string;
+    while (*ptr)
+    {
+        if (IsUpper(*ptr))
+            *ptr = *ptr + diff;
+        
+        ++ ptr;
+    }
+
+    return string;
+}
+
+char* StringToLower(const char* string)
+{
+    char* copy;
+
+    copy = strdup(string);
+
+    return StringToLowerDestructive(copy);
 }
 
 char* StringPrepend(const char* string, char c)

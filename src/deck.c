@@ -39,6 +39,16 @@ static Deck* _create(Uint n_items, void* (*copy)(const void *), void (*destroy)(
     return NULL;
 }
 
+Deck* DeckCreateInherit(const Deck* deck)
+{
+    Deck* new_deck;
+
+    if (!(new_deck = _create(DeckNItems(deck), deck->copy, deck->destroy, deck->block_constructor)))
+        return NULL;
+    
+    return new_deck;
+}
+
 Deck* DeckCreatePtr(void* (*copy)(const void *), void (*destroy)(void *))
 {
     return _create(DECK_CAPACITY, copy, destroy, BlockCreatePtr);
@@ -272,9 +282,6 @@ Deck* DeckUnique(Deck* deck, Int (*compare)(const void *, const void *))
     Uint    n;
 
     SortDeck(deck, compare);
-
-    // if (!(result = DeckCopyStructure(deck)))
-    //     return NULL;
     
     if (!(result = _create(DeckNItems(deck), NULL, NULL, deck->block_constructor)))
         return NULL;
@@ -298,6 +305,31 @@ Deck* DeckUnique(Deck* deck, Int (*compare)(const void *, const void *))
     }
 
     return result;
+}
+
+Deck* DeckFilter(const Deck* deck, bool (*predicate)(const void *))
+{
+    Deck*   new_deck;
+    void*   item;
+    Uint    n;
+    Uint    n_items;
+
+    n_items = DeckNItems(deck);
+    if (!(new_deck =_create(n_items, NULL, NULL, deck->block_constructor)))
+        return NULL;
+
+    n = 0;
+    while (n < n_items)
+    {
+        item = DeckPointAt(deck, n);
+
+        if (predicate(item))
+            DeckPushBack(new_deck, item);
+        
+        ++ n;
+    }
+
+    return new_deck;
 }
 
 void DeckFold(void* target, const Deck* deck, void (*fold)(void *, const void *, const void *))

@@ -24,12 +24,14 @@ Int WhyStart(void)
     return WHY_OK;
 }
 
-void WhyEnd(void)
+Int WhyEnd(void)
 {
     MatrixUnitTerminate();
     DeckDestroy(_why.pointers);
     _why.end = clock();
     PrintTimeDiff(&_why.start, &_why.end);
+
+    return WHY_OK;
 }
 
 Int WhySavePtr(const void* ptr)

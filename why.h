@@ -73,7 +73,7 @@ extern const ArInterface    RationalArInterface;
 extern const ArInterface    FloatArInterface;
 
 Int         WhyStart(void);
-void        WhyEnd(void);
+Int         WhyEnd(void);
 Int         WhySavePtr(const void* ptr);
 
 void*       MemExpand(void* memory, Uint size, Uint extra_size);
@@ -148,6 +148,7 @@ bool        BlockPermuteLexical(Block* block, Int (*compare)(const void* , const
 //deck
 Deck*       DeckCreatePtr(void* (*copy)(const void *), void (*destroy)(void *));
 Deck*       DeckCreateUint();
+Deck*       DeckCreateInherit(const Deck* deck);
 void        DeckDestroy(Deck* deck);
 Deck*       DeckCopyStructure(const Deck* deck);
 void        DeckDestroyWRAP(void* deck_pointer);
@@ -170,6 +171,7 @@ void*       DeckBinSearch(const Deck* deck, const void* item,
 void*       DeckSearchLinear(const Deck* deck, const void* item, Int (*compare)(const void *, const void *));
 Deck*       DeckUnique(Deck* deck, Int (*compare)(const void *, const void *));
 void        DeckFold(void* target, const Deck* deck, void (*fold)(void *, const void *, const void *));
+Deck*       DeckFilter(const Deck* deck, bool (*predicate)(const void *));
 
 //hash table
 HashTable*  HashTableCreate(Uint capacity, void* (*copy)(const void *),
@@ -349,6 +351,7 @@ void        MatrixEliminateUp(Matrix* matrix);
 bool        IsDigit(char c);
 bool        IsAlpha(char c);
 bool        IsSpace(char c);
+bool        IsUpper(char c);
 Int         ParseUint32(uint32_t* target, const char* string, Uint length);
 Int         ParseUint(Uint* target, const char* string);
 Int         ParseInt(Int* target, const char* string);
@@ -366,6 +369,8 @@ char*       StringSubstring(const char* string, Uint length);
 char*       StringNCopy(const char* string, Uint n);
 Int         StringFindC(const char* string, char c);
 Int         StringFindCLast(const char* string, char c);
+bool        StringStartsWith(const char* string, const char* start);
+bool        StringEndsWith(const char* string, const char* suffix);
 Deck*       StringSplitLength(const char* string, char separator, Uint length);
 Deck*       StringSplit(const char* string, char separator);
 Deck*       StringSplitDestructive(char* string, char separator);
@@ -376,6 +381,8 @@ Byte*       StringSplitSplice(char* string, const char* substring);
 Deck*       StringCut(const char* string, Uint cut_size);
 Deck*       StringCutFromEnd(const char* string, Uint cut_size);
 char*       StringConcat(const char* lhs, const char* rhs);
+char*       StringToLowerDestructive(char* string);
+char*       StringToLower(const char* string);
 char*       StringPrepend(const char* string, char c);
 char*       StringEnclose(const char* string, const char* lhs, const char* rhs);
 char*       StringStripFront(const char* string, char c);
@@ -396,6 +403,8 @@ Deck*       ReadFileAllLines(const char* name);
 Deck*       ReadFileAllLines2(const char* name);
 Byte*       ReadFileSplitSplice(const char* name, const char* substring);
 
+//output
+Int         FileCreate(const char* file_name);
 //print
 void        PrintCstr(const char* str);
 void        PrintCstrWRAP(const void* str_pointer, const void* sep);
