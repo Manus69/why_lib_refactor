@@ -313,6 +313,99 @@ char* StringJoin(const char* lhs, const char* mid, const char* rhs)
     return result;
 }
 
+static Uint _measure_length(va_list args)
+{
+    char*   current;
+    Uint    length;
+
+    length = 0;
+    while (true)
+    {
+        if (!(current = va_arg(args, char *)))
+            return length;
+        
+        length += strlen(current);
+    }
+    va_end(args);
+
+    return length;
+}
+
+char* StringJoinVariadic(const char* str, ...)
+{
+    Uint    length;
+    Uint    current_length;
+    char*   ptr;
+    char*   result;
+    char*   current;
+    va_list args, args_copy;
+
+    if (!str)
+        return NULL;
+
+    va_start(args, str);
+    va_copy(args_copy, args);
+
+    current_length = strlen(str);
+    length = current_length + _measure_length(args_copy);
+
+    if (!(result = malloc(length + 1)))
+        return NULL;
+    
+    ptr = result;
+    memcpy(result, str, current_length);
+    result += current_length;
+
+    while (true)
+    {
+        if (!(current = va_arg(args, char *)))
+            break ;
+        
+        current_length = strlen(current);
+        memcpy(result, current, current_length);
+        result += current_length;
+    }
+    
+    *result = 0;
+    va_end(args);
+
+    return ptr;
+}
+
+static void _increment_length(void* target, const void* lhs, const void* item)
+{
+    Uint length;
+
+    length = strlen(*(char **)item);
+    UintAddWRAP(target, lhs, &length);
+}
+
+char* StringjoinDeck(const Deck* strings)
+{
+    Uint    length;
+    char*   result;
+    char*   start;
+    void*   ptr;
+
+    length = 0;
+    DeckFold(&length, strings, _increment_length);
+
+    if (!(result = malloc(length + 1)))
+        return NULL;
+    
+    start = result;
+
+    while ((ptr = DeckNext(strings)))
+    {
+        length = strlen(*(char **)ptr);
+        memcpy(result, *(char **)ptr, length);
+        result += length;
+    }
+    *result = 0;
+
+    return start;
+}
+
 char* StringToLowerDestructive(char* string)
 {
     char*   ptr;
@@ -395,10 +488,20 @@ char* StringStripFront(const char* string, char c)
 
 void StringStripBackDestructive(char* string, char c)
 {
-    while (*string && (!IsSpace(*string) && *string != c))
-        ++ string;
+    Int n;
+
+    n = strlen(string) - 1;
+    if (n < 0)
+        return ;
     
-    *string = 0;
+    while (n >= 0)
+    {
+        if (string[n] != c || (!IsSpace(string[n])))
+            break ;
+        
+        string[n] = 0;
+        -- n;
+    }
 }
 
 char* StringStrip(const char* string, char front, char back)

@@ -353,3 +353,20 @@ void SortDeckSlice(Deck* deck, Uint left, Uint right, Int (*compare)(const void 
 {
     return QuickSort(deck->block, _index_to_abs(deck, left), _index_to_abs(deck, right), compare);
 }
+
+void* DeckNext(const Deck* deck)
+{
+    static Uint n;
+    void*       item;
+
+    if (!deck || (n == DeckNItems(deck)))
+    {
+        n = 0;
+        return NULL;
+    }
+    
+    item = DeckPointAt(deck, n);
+    ++ n;
+
+    return item;
+}

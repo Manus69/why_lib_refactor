@@ -744,7 +744,7 @@ int main()
     // matrix_test();
     // matrix_add_test();
     // matrix_rational_test();
-    deck_test();
+    // deck_test();
     // parse_test();
     // table_test();
     // string_test();
@@ -758,6 +758,12 @@ int main()
     // pascals_test(100);
     // file_test();
     // file_test2();
+
+    Deck* strings = ReadFileAllLines2(_FILE_NAME);
+    char* str = StringjoinDeck(strings);
+    // printf("%s\n", str);
+    DeckDestroy(strings);
+    free(str);
 
     WhyEnd();
     return EXIT_SUCCESS;

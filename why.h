@@ -175,6 +175,7 @@ Deck*       DeckUniqueCopy(Deck* deck, void* (*copy)(const void *),
                             void (*destroy)(void *), Int (*comapre)(const void *, const void *));
 void        DeckFold(void* target, const Deck* deck, void (*fold)(void *, const void *, const void *));
 Deck*       DeckFilter(const Deck* deck, bool (*predicate)(const void *));
+void*       DeckNext(const Deck* deck);
 
 //hash table
 HashTable*  HashTableCreate(Uint capacity, void* (*copy)(const void *),
@@ -255,6 +256,7 @@ void        NaturalMult(Natural* target, const Natural* lhs, const Natural* rhs)
 void        NaturalPower(Natural* target, const Natural* number, Uint exponent);
 void        NaturalPower2(Natural* target, const Natural* number, Uint exponent);
 
+//float
 void        FloatZero(Float* x);
 void        FloatOne(Float* x);
 void        FloatAdd(Float* x, const Float* lhs, const Float* rhs);
@@ -385,6 +387,8 @@ Deck*       StringCut(const char* string, Uint cut_size);
 Deck*       StringCutFromEnd(const char* string, Uint cut_size);
 char*       StringConcat(const char* lhs, const char* rhs);
 char*       StringJoin(const char* lhs, const char* mid, const char* rhs);
+char*       StringJoinVariadic(const char* str, ...);
+char*       StringjoinDeck(const Deck* strings);
 char*       StringToLowerDestructive(char* string);
 char*       StringToLower(const char* string);
 char*       StringPrepend(const char* string, char c);
@@ -408,12 +412,15 @@ Deck*       ReadFileAllLines2(const char* name);
 Byte*       ReadFileSplitSplice(const char* name, const char* substring);
 
 //output
-bool        FileExists(const char* file_name);
-Int         FileCreate(const char* file_name);
 Int         FileTruncate(const char* file_name);
 Int         FileWriteStringInto(Int file, const char* string);
 Int         FileWriteStringIntoN(Int file, const char* string);
 Int         FileWriteStringsInto(Int file, const Deck* strings);
+
+//file
+char*       FileNameBase(const char* name);
+bool        FileExists(const char* file_name);
+Int         FileCreate(const char* file_name);
 
 //print
 void        PrintCstr(const char* str);
