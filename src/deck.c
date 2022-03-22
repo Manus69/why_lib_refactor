@@ -354,19 +354,16 @@ void SortDeckSlice(Deck* deck, Uint left, Uint right, Int (*compare)(const void 
     return QuickSort(deck->block, _index_to_abs(deck, left), _index_to_abs(deck, right), compare);
 }
 
-void* DeckNext(const Deck* deck)
+bool DeckNext(const Deck* deck, Iterator* iterator)
 {
-    static Uint n;
-    void*       item;
-
-    if (!deck || (n == DeckNItems(deck)))
+    if (iterator->index == (Int)DeckNItems(deck))
     {
-        n = 0;
-        return NULL;
+        iterator->index = NOT_FOUND;
+        return false;
     }
-    
-    item = DeckPointAt(deck, n);
-    ++ n;
 
-    return item;
+    iterator->item_pointer = DeckPointAt(deck, iterator->index);
+    ++ iterator->index;
+
+    return true;
 }

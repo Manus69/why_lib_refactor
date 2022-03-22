@@ -393,11 +393,11 @@ static void _copy_and_advance(char** target, const char* source, Uint size)
 
 char* StringjoinDeck(const Deck* strings, const char* joint)
 {
-    Uint    length;
-    Uint    joint_length;
-    char*   result;
-    char*   start;
-    void*   ptr;
+    Uint        length;
+    Uint        joint_length;
+    char*       result;
+    char*       start;
+    Iterator    iterator;
 
     if (!strings)
         return strdup("");
@@ -413,13 +413,14 @@ char* StringjoinDeck(const Deck* strings, const char* joint)
     
     start = result;
 
-    ptr = DeckNext(strings);
-    _copy_and_advance(&result, *(char **)ptr, strlen(*(char **)ptr));
+    IteratorInit(&iterator);
+    DeckNext(strings, &iterator);
+    _copy_and_advance(&result, *(char **)iterator.item_pointer, strlen(*(char **)iterator.item_pointer));
 
-    while ((ptr = DeckNext(strings)))
+    while (DeckNext(strings, &iterator))
     {
         _copy_and_advance(&result, joint, joint_length);
-        _copy_and_advance(&result, *(char **)ptr, strlen(*(char **)ptr));
+        _copy_and_advance(&result, *(char **)iterator.item_pointer, strlen(*(char **)iterator.item_pointer));
     }   
     
     *result = 0;

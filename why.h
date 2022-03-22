@@ -20,6 +20,7 @@ typedef unsigned char           Byte;
 typedef double                  Float;
 typedef void *                  Ptr;
 
+typedef struct Iterator         Iterator;
 typedef struct TypeInterface    TypeInterface;
 typedef struct ArInterface      ArInterface;
 typedef struct Rational         Rational;
@@ -59,6 +60,12 @@ struct ArInterface
     bool (*is_zero)(const void* number);
 };
 
+struct Iterator
+{
+    void*   item_pointer;
+    Int     index;
+};
+
 extern const Byte           ZERO_BYTE;
 
 extern const TypeInterface  PtrInterface;
@@ -72,6 +79,7 @@ extern const TypeInterface  ComplexInterface;
 extern const ArInterface    RationalArInterface;
 extern const ArInterface    FloatArInterface;
 
+//memory
 Int         WhyStart(void);
 Int         WhyEnd(void);
 Int         WhySavePtr(const void* ptr);
@@ -175,7 +183,7 @@ Deck*       DeckUniqueCopy(Deck* deck, void* (*copy)(const void *),
                             void (*destroy)(void *), Int (*comapre)(const void *, const void *));
 void        DeckFold(void* target, const Deck* deck, void (*fold)(void *, const void *, const void *));
 Deck*       DeckFilter(const Deck* deck, bool (*predicate)(const void *));
-void*       DeckNext(const Deck* deck);
+bool        DeckNext(const Deck* deck, Iterator* iterator);
 
 //hash table
 HashTable*  HashTableCreate(Uint capacity, void* (*copy)(const void *),
@@ -465,5 +473,9 @@ void        PrintNatural(const Natural* natural);
 void        PrintNaturalWRAP(const void* n, const char* sep);
 void        PrintNaturalN(const void* n);
 void        PrintHashTable(const HashTable* table, void (*print)(const void *));
+
+//ietrator
+void        IteratorInit(Iterator* iterator);
+bool        IteratorDone(Iterator* iterator);
 
 #endif
