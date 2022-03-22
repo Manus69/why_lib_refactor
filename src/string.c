@@ -380,27 +380,48 @@ static void _increment_length(void* target, const void* lhs, const void* item)
     UintAddWRAP(target, lhs, &length);
 }
 
-char* StringjoinDeck(const Deck* strings)
+static Uint _compute_length(const Deck* strings, Uint length, Uint joint_length)
+{
+    return length + ((DeckNItems(strings) - 1) * joint_length) + 1;
+}
+
+static void _copy_and_advance(char** target, const char* source, Uint size)
+{
+    memcpy(*target, source, size);
+    *target += size;
+}
+
+char* StringjoinDeck(const Deck* strings, const char* joint)
 {
     Uint    length;
+    Uint    joint_length;
     char*   result;
     char*   start;
     void*   ptr;
 
+    if (!strings)
+        return strdup("");
+    
     length = 0;
     DeckFold(&length, strings, _increment_length);
-
-    if (!(result = malloc(length + 1)))
+    if (length == 0)
+        return strdup("");
+    
+    joint_length = strlen(joint);
+    if (!(result = malloc(_compute_length(strings, length, joint_length))))
         return NULL;
     
     start = result;
 
+    ptr = DeckNext(strings);
+    _copy_and_advance(&result, *(char **)ptr, strlen(*(char **)ptr));
+
     while ((ptr = DeckNext(strings)))
     {
-        length = strlen(*(char **)ptr);
-        memcpy(result, *(char **)ptr, length);
-        result += length;
-    }
+        _copy_and_advance(&result, joint, joint_length);
+        _copy_and_advance(&result, *(char **)ptr, strlen(*(char **)ptr));
+    }   
+    
     *result = 0;
 
     return start;

@@ -388,7 +388,7 @@ Deck*       StringCutFromEnd(const char* string, Uint cut_size);
 char*       StringConcat(const char* lhs, const char* rhs);
 char*       StringJoin(const char* lhs, const char* mid, const char* rhs);
 char*       StringJoinVariadic(const char* str, ...);
-char*       StringjoinDeck(const Deck* strings);
+char*       StringjoinDeck(const Deck* strings, const char* joint);
 char*       StringToLowerDestructive(char* string);
 char*       StringToLower(const char* string);
 char*       StringPrepend(const char* string, char c);

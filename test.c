@@ -759,9 +759,10 @@ int main()
     // file_test();
     // file_test2();
 
-    Deck* strings = ReadFileAllLines2(_FILE_NAME);
-    char* str = StringjoinDeck(strings);
-    // printf("%s\n", str);
+    // Deck* strings = ReadFileAllLines2(_FILE_NAME);
+    Deck* strings = StringSplit("this is a test", ' ');
+    char* str = StringjoinDeck(strings, "cock");
+    printf("'%s'\n", str);
     DeckDestroy(strings);
     free(str);
 
