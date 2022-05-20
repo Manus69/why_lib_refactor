@@ -55,13 +55,21 @@ void input_test()
 {
     Deck* lines;
 
-    // lines = ReadFileAllLines("text_file.txt");
-    lines = ReadFileAllLines2("text_file.txt");
+    // lines = ReadFileAllLines(_FILE_NAME);
+    lines = ReadFileAllLines2(_FILE_NAME);
     // PrintDeck(lines, PrintCstrN);
     SortDeck(lines, CompareCstr);
-    // PrintDeck(lines, PrintCstrN);
+    PrintDeck(lines, PrintCstrN);
 
     DeckDestroy(lines);
+}
+
+void input_test_stdin()
+{
+    Byte* bytes;
+
+    bytes = ReadSTDIN();
+    PrintCstrN(&bytes);
 }
 
 void sort_test()
@@ -733,6 +741,28 @@ void file_test2()
     DeckDestroy(strings);
 }
 
+void string_split_test()
+{
+    Deck* strings;
+    
+    strings = StringSplitStr("ass ass", "ass");
+    PrintDeck(strings, PrintCstrP);
+    DeckDestroy(strings);
+
+    // strings = StringSplitStr("", "");
+    // PrintDeck(strings, PrintCstrP);
+    // DeckDestroy(strings);
+
+    // Byte* bytes;
+
+    // bytes = ReadFile(_FILE_NAME);
+    // strings = StringSplitStr((char *)bytes, "GNU");
+    // // strings = StringSplit((char *)bytes, ' ');
+    // free(bytes);
+    // PrintDeck(strings, PrintCstrP);
+    // DeckDestroy(strings);
+}
+
 int main()
 {
     WhyStart();
@@ -758,14 +788,9 @@ int main()
     // pascals_test(100);
     // file_test();
     // file_test2();
+    // input_test();
+    // input_test_stdin();
+    string_split_test();
 
-    // Deck* strings = ReadFileAllLines2(_FILE_NAME);
-    Deck* strings = StringSplit("this is a test", ' ');
-    char* str = StringjoinDeck(strings, "cock");
-    printf("'%s'\n", str);
-    DeckDestroy(strings);
-    free(str);
-
-    WhyEnd();
-    return EXIT_SUCCESS;
+    return WhyEnd();
 }

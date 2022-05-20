@@ -12,16 +12,12 @@ static void* _read_abort(Block* block, int file)
     return NULL;
 }
 
-Byte* ReadFile(const char* name)
+static Byte* _read_fd(int file)
 {
-    int     file;
     ssize_t read_size;
     Uint    index;
     Block*  block;
     Byte    zero;
-
-    if ((file = open(name, O_RDONLY)) < 0)
-        return NULL;
 
     block = BlockCreateByte(READ_SIZE);
     index = 0;
@@ -42,6 +38,21 @@ Byte* ReadFile(const char* name)
     close(file);
 
     return BlockDestroyReturnContent(block);
+}
+
+Byte* ReadSTDIN()
+{
+    return _read_fd(STDERR_FILENO);
+}
+
+Byte* ReadFile(const char* name)
+{
+    int file;
+
+    if ((file = open(name, O_RDONLY)) < 0)
+        return NULL;
+
+    return _read_fd(file);
 }
 
 Deck* ReadFileAllLines(const char* name)

@@ -138,5 +138,7 @@ void SortBlock(Block* block, Int (*compare)(const void *, const void *))
 
 void SortDeck(Deck* deck, Int (*compare)(const void *, const void *))
 {
-    return QuickSort(deck->block, deck->left_insert_index + 1, deck->right_insert_index - 1, compare);
+    if (deck)
+        return QuickSort(deck->block, deck->left_insert_index + 1,
+                        deck->right_insert_index - 1, compare);
 }

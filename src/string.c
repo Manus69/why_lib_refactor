@@ -136,30 +136,48 @@ Deck* StringSplitDestructive(char* string, char separator)
     return StringSplitLengthDestructive(string, separator, length);
 }
 
+static bool _check_start(const char* string, const  char* substring)
+{
+    return StringStartsWith(string, substring);
+}
+
 Deck* StringSplitStr(char* string, const char* substring)
 {
     Deck*   strings;
     Uint    length;
     char*   current;
-    char*   next;
+    char*   copy;
+
+    if (!(length = strlen(substring)))
+        return NULL;
 
     if (!(strings = DeckCreatePtr(NULL, NULL)))
         return NULL;
     
-    length = strlen(substring);
-    current = string;
+    copy = strdup(string);
+    WhySavePtr(&copy);
+    current = copy;
+    
+    if (!_check_start(string, substring))
+        DeckPushBack(strings, &copy);
 
     while (true)
     {
-        DeckPushBack(strings, &current);
-        next = strstr(current, substring);
+        current = strstr(current, substring);
+        if (!current)
+            break;
+        
+        memset(current, 0, length);
+        current += length;
 
-        if (!next)
-            return strings;
-
-        memset(next, 0, length);
-        current = next + length;
+        if (*current)
+            DeckPushBack(strings, &current);
     }
+
+    if (DeckNItems(strings) == 0)
+        DeckPushBack(strings, &copy);
+    
+    return strings;
 }
 
 Byte* StringSplice(const Deck* strings)
@@ -391,7 +409,7 @@ static void _copy_and_advance(char** target, const char* source, Uint size)
     *target += size;
 }
 
-char* StringjoinDeck(const Deck* strings, const char* joint)
+char* StringJoinDeck(const Deck* strings, const char* joint)
 {
     Uint        length;
     Uint        joint_length;
