@@ -749,18 +749,18 @@ void string_split_test()
     PrintDeck(strings, PrintCstrP);
     DeckDestroy(strings);
 
-    // strings = StringSplitStr("", "");
-    // PrintDeck(strings, PrintCstrP);
-    // DeckDestroy(strings);
+    strings = StringSplitStr("", "");
+    PrintDeck(strings, PrintCstrP);
+    DeckDestroy(strings);
 
-    // Byte* bytes;
+    Byte* bytes;
 
-    // bytes = ReadFile(_FILE_NAME);
-    // strings = StringSplitStr((char *)bytes, "GNU");
-    // // strings = StringSplit((char *)bytes, ' ');
-    // free(bytes);
-    // PrintDeck(strings, PrintCstrP);
-    // DeckDestroy(strings);
+    bytes = ReadFile(_FILE_NAME);
+    strings = StringSplitStr((char *)bytes, "GNU");
+    // strings = StringSplit((char *)bytes, ' ');
+    free(bytes);
+    PrintDeck(strings, PrintCstrP);
+    DeckDestroy(strings);
 }
 
 int main()
