@@ -745,22 +745,22 @@ void string_split_test()
 {
     Deck* strings;
     
-    strings = StringSplitStr("ass ass", "ass");
+    strings = StringSplitStr("xAx", "x");
     PrintDeck(strings, PrintCstrP);
     DeckDestroy(strings);
 
-    strings = StringSplitStr("", "");
-    PrintDeck(strings, PrintCstrP);
-    DeckDestroy(strings);
+    // strings = StringSplitStr("AxxxxA", "x");
+    // strings = StringSplit("xx", 'x');
+    // PrintDeck(strings, PrintCstrP);
+    // DeckDestroy(strings);
 
-    Byte* bytes;
-
-    bytes = ReadFile(_FILE_NAME);
-    strings = StringSplitStr((char *)bytes, "GNU");
+    // Byte* bytes;
+    // bytes = ReadFile(_FILE_NAME);
+    // // strings = StringSplitStr((char *)bytes, " ");
     // strings = StringSplit((char *)bytes, ' ');
-    free(bytes);
-    PrintDeck(strings, PrintCstrP);
-    DeckDestroy(strings);
+    // free(bytes);
+    // PrintDeck(strings, PrintCstrP);
+    // DeckDestroy(strings);
 }
 
 int main()

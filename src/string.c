@@ -136,11 +136,6 @@ Deck* StringSplitDestructive(char* string, char separator)
     return StringSplitLengthDestructive(string, separator, length);
 }
 
-static bool _check_start(const char* string, const  char* substring)
-{
-    return StringStartsWith(string, substring);
-}
-
 Deck* StringSplitStr(char* string, const char* substring)
 {
     Deck*   strings;
@@ -157,21 +152,17 @@ Deck* StringSplitStr(char* string, const char* substring)
     copy = strdup(string);
     WhySavePtr(&copy);
     current = copy;
-    
-    if (!_check_start(string, substring))
-        DeckPushBack(strings, &copy);
 
     while (true)
     {
+        DeckPushBack(strings, &current);
+
         current = strstr(current, substring);
         if (!current)
             break;
         
         memset(current, 0, length);
         current += length;
-
-        if (*current)
-            DeckPushBack(strings, &current);
     }
 
     if (DeckNItems(strings) == 0)
