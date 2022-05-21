@@ -196,9 +196,30 @@ void PrintNBits(Uint number, Uint n_bits)
     }
 }
 
-void PrintBits(Uint n)
+void PrintUintAsBits(Uint n)
 {
     PrintNBits(n, sizeof(Uint) * __CHAR_BIT__);
+}
+
+void PrintByteAsBits(Byte byte)
+{
+    PrintNBits(byte, __CHAR_BIT__);
+}
+
+void PrintObjAsBits(const void* object, Uint size)
+{
+    Byte* current_byte;
+
+    current_byte = (Byte *)object;
+
+    while (size)
+    {
+        PrintByteAsBits(*current_byte);
+        printf(" ");
+
+        -- size;
+        ++ current_byte;
+    }
 }
 
 void PrintBlock(const Block* block, void (*print)(const void *))

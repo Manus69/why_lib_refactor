@@ -66,3 +66,18 @@ char* UintToString(Uint n)
 
     return NULL;
 }
+
+Uint Popcount(Uint n)
+{
+    Uint count;
+
+    count = 0;
+
+    while (n)
+    {
+        ++ count;
+        n = n & (n - 1);
+    }
+
+    return count;
+}

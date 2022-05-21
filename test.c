@@ -745,7 +745,7 @@ void string_split_test()
 {
     Deck* strings;
     
-    strings = StringSplitStr("xAx", "x");
+    strings = StringSplitStr("this is a test", "is");
     PrintDeck(strings, PrintCstrP);
     DeckDestroy(strings);
 
@@ -761,6 +761,22 @@ void string_split_test()
     // free(bytes);
     // PrintDeck(strings, PrintCstrP);
     // DeckDestroy(strings);
+}
+
+void string_replace_test()
+{
+    char* string;
+    char* what;
+    char* to;
+    Byte* result;
+
+    // string = "this is a test";
+    string = "x";
+    what = "x";
+    to = "xxx";
+    result = StringReplace(string, what, to);
+    PrintCstrN(&result);
+    free(result);
 }
 
 int main()
@@ -790,7 +806,11 @@ int main()
     // file_test2();
     // input_test();
     // input_test_stdin();
-    string_split_test();
+    // string_split_test();
+    // string_replace_test();
+
+    Uint x = (1 << 10);
+    printf("%zu\n", Popcount(x));
 
     return WhyEnd();
 }

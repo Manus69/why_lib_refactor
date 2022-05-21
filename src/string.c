@@ -136,7 +136,7 @@ Deck* StringSplitDestructive(char* string, char separator)
     return StringSplitLengthDestructive(string, separator, length);
 }
 
-Deck* StringSplitStr(char* string, const char* substring)
+Deck* StringSplitStr(const char* string, const char* substring)
 {
     Deck*   strings;
     Uint    length;
@@ -164,9 +164,6 @@ Deck* StringSplitStr(char* string, const char* substring)
         memset(current, 0, length);
         current += length;
     }
-
-    if (DeckNItems(strings) == 0)
-        DeckPushBack(strings, &copy);
     
     return strings;
 }
@@ -207,7 +204,7 @@ Byte* StringSplice(const Deck* strings)
     return BlockDestroyReturnContent(block);
 }
 
-Byte* StringSplitSplice(char* string, const char* substring)
+Byte* StringSplitSplice(const char* string, const char* substring)
 {
     Deck* strings;
     Byte* new_string;
@@ -219,6 +216,39 @@ Byte* StringSplitSplice(char* string, const char* substring)
     DeckDestroy(strings);
 
     return new_string;
+}
+
+Byte* StringReplace(const char* string, const char* what, const char* to)
+{
+    Byte* result;
+    Deck* strings;
+    Deck* split;
+    char* current;
+    Iterator iterator;
+
+    if (!(split = StringSplitStr(string, what)))
+        return NULL;
+    
+    if (!(strings = DeckCreatePtr(NULL, NULL)))
+        return NULL;
+
+    IteratorInit(&iterator);
+    DeckNext(split, &iterator);
+    DeckPushBack(strings, iterator.item_pointer);
+
+    while (DeckNext(split, &iterator))
+    {
+        DeckPushBack(strings, &to);
+        current = *(char **)iterator.item_pointer;
+        DeckPushBack(strings, &current);
+    }
+
+    result = StringSplice(strings);
+
+    DeckDestroy(split);
+    DeckDestroy(strings);
+
+    return result;
 }
 
 Deck* StringCut(const char* string, Uint cut_size)

@@ -285,6 +285,7 @@ bool        FloatIsZeroWRAP(const void* x);
 void        FloatNegateWRAP(void* target, const void* x);
 void        FloatInvWRAP(void* target, const void* x);
 
+//Uint
 void        UintInit(Uint* target, Uint value);
 void        UintAdd(Uint* target, const Uint* lhs, const Uint* rhs);
 void        UintAddWRAP(void* target, const void* lhs, const void* rhs);
@@ -292,7 +293,9 @@ void        UintMult(Uint* target, const Uint* lhs, const Uint* rhs);
 void        UintMultWRAP(void* target, const void* lhs, const void* rhs);
 Uint        UintToStringBuffer(char* buffer, Uint n, Uint base);
 char*       UintToString(Uint n);
+Uint        Popcount(Uint n);
 
+//Int
 void        IntInit(Int* target, Int value);
 
 //compare
@@ -388,9 +391,10 @@ Deck*       StringSplitLength(const char* string, char separator, Uint length);
 Deck*       StringSplit(const char* string, char separator);
 Deck*       StringSplitDestructive(char* string, char separator);
 Deck*       StringSplitLengthDestructive(char* string, char separator, Uint length);
-Deck*       StringSplitStr(char* string, const char* substring);
+Deck*       StringSplitStr(const char* string, const char* substring);
 Byte*       StringSplice(const Deck* strings);
-Byte*       StringSplitSplice(char* string, const char* substring);
+Byte*       StringSplitSplice(const char* string, const char* substring);
+Byte*       StringReplace(const char* string, const char* what, const char* to);
 Deck*       StringCut(const char* string, Uint cut_size);
 Deck*       StringCutFromEnd(const char* string, Uint cut_size);
 char*       StringConcat(const char* lhs, const char* rhs);
@@ -462,7 +466,9 @@ void        PrintFloatWRAP(const void* x_pointer, const void* sep);
 void        PrintFloatS(const void* x);
 void        PrintTimeDiff(const void* start, const void* end);
 void        PrintNBits(Uint number, Uint n_bits);
-void        PrintBits(Uint n);
+void        PrintUintAsBits(Uint n);
+void        PrintByteAsBits(Byte byte);
+void        PrintObjAsBits(const void* object, Uint size);
 void        PrintBlock(const Block* block, void (*print)(const void *));
 void        PrintBlockWRAP(const void* block, void (*print)(const void *), const void *sep);
 void        PrintBlockN(const void* block, void (*print)(const void *));
